@@ -17,3 +17,11 @@
 - [CG Map](https://github.com/ayya-keshet/CGMap)
 
   A reference resource for characterization of CGM data collected from more than 7,000 non-diabetic individuals, aged 40-70 years.
+
+## Collection of Python Signal Processing Library Repositories
+
+- [BioSPPy - Biosignal Processing in Python](https://github.com/PIA-Group/BioSPPy)
+- [Type-2-Diabetes-Prediction-Using-Short-PPG-Signals-and-Physiological-Characteristics](https://github.com/chirathyh/clardia---Type-2-Diabetes-Prediction-Using-Short-PPG-Signals-and-Physiological-Characteristics-)
+- [Python Signal Processing](https://github.com/jinglescode/python-signal-processing)
+- [spm1d - One-Dimensional Statistical Parametric Mapping in Python and MATLAB](https://github.com/0todd0000/spm1d/)
+  
