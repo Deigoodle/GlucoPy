@@ -22,6 +22,8 @@
 
 - [BioSPPy - Biosignal Processing in Python](https://github.com/PIA-Group/BioSPPy)
 - [Type-2-Diabetes-Prediction-Using-Short-PPG-Signals-and-Physiological-Characteristics](https://github.com/chirathyh/clardia---Type-2-Diabetes-Prediction-Using-Short-PPG-Signals-and-Physiological-Characteristics-)
-- [Python Signal Processing](https://github.com/jinglescode/python-signal-processing)
-- [spm1d - One-Dimensional Statistical Parametric Mapping in Python and MATLAB](https://github.com/0todd0000/spm1d/)
+- [splearn: Python Signal Processing](https://github.com/jinglescode/python-signal-processing)
+- [spm1d: One-Dimensional Statistical Parametric Mapping in Python and MATLAB](https://github.com/0todd0000/spm1d/)
+- [NeuroKit2: The Python Toolbox for Neurophysiological Signal Processing](https://github.com/neuropsychology/NeuroKit)
+- [PyGSP: Graph Signal Processing in Python](https://github.com/epfl-lts2/pygsp)
   
