@@ -26,4 +26,26 @@
 - [spm1d: One-Dimensional Statistical Parametric Mapping in Python and MATLAB](https://github.com/0todd0000/spm1d/)
 - [NeuroKit2: The Python Toolbox for Neurophysiological Signal Processing](https://github.com/neuropsychology/NeuroKit)
 - [PyGSP: Graph Signal Processing in Python](https://github.com/epfl-lts2/pygsp)
-  
+
+## File Structure Proposal
+```
+├── .gitignore
+├── README.md
+└── src
+    ├── read_file/
+        ├── read_csv.py
+        ├── read_xlsx.py
+        └── read_txt.py
+    ├── format_data/
+        ├── format.py
+        ├── format.py
+        └── format.py
+    ├── metrics/
+        ├── metrics1.py
+        ├── metrics2.py
+        └── metrics3.py
+    └── plot/
+        ├── ex_plot1.py
+        ├── ex_plot2.py
+        └── ex_plot3.py
+```
