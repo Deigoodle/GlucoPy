@@ -20,6 +20,8 @@
 
 ## Collection of Python Signal Processing Library Repositories
 
+- [PyRadiomics](https://github.com/AIM-Harvard/pyradiomics/tree/master)
+- [StatsModels](https://github.com/statsmodels/statsmodels/)
 - [BioSPPy - Biosignal Processing in Python](https://github.com/PIA-Group/BioSPPy)
 - [Type-2-Diabetes-Prediction-Using-Short-PPG-Signals-and-Physiological-Characteristics](https://github.com/chirathyh/clardia---Type-2-Diabetes-Prediction-Using-Short-PPG-Signals-and-Physiological-Characteristics-)
 - [splearn: Python Signal Processing](https://github.com/jinglescode/python-signal-processing)
