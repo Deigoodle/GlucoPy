@@ -31,7 +31,7 @@
 ```
 ├── .gitignore
 ├── README.md
-└── src
+└── src/
     ├── read_file/
         ├── read_csv.py
         ├── read_xlsx.py
