@@ -1,5 +1,6 @@
 # DATASETS
 DATASETS/
+examples.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
