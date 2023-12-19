@@ -1,4 +1,5 @@
-# Python-Glycemic-Signal-Processing-Toolbox
+# GlucoPy
+Python Toolbox for glycaemic signal processing
 
 ## Public Datasets
 
