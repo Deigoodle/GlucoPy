@@ -1,0 +1,8 @@
+numpy==1.26.2
+matplotlib==3.8.2
+pandas==2.1.4
+xlrd==2.0.1 ; extra == "excel"
+statsmodels==0.14.1
+plotly==5.18.0
+seaborn==0.13.0
+nbformat>=4.2.0
