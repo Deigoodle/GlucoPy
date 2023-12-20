@@ -4,9 +4,12 @@ import pandas as pd
 
 # Python
 from collections.abc import Sequence
+import datetime
+from typing import List
+from itertools import islice
 
 # Local
-from glucopy.util.date_processing import disjoinDays
+from glucopy.utils.date_processing import disjoin_days_and_hours
 
 class Gframe:
     '''
@@ -15,7 +18,8 @@ class Gframe:
     Parameters
     -----------
     data : pandas Dataframe 
-        Dataframe containing the CGM signal information, it will be saved into a Dataframe with the columns ['Day','Time','CGM']
+        Dataframe containing the CGM signal information, it will be saved into a Dataframe with the columns 
+        ['Timestamp','Day','Time','CGM']
     unit : String, default 'mg/dL'
         CGM signal measurement unit.
     date_name : String or String array, default None
@@ -41,13 +45,18 @@ class Gframe:
         if isinstance(data, pd.DataFrame):
             # Check date_name
             if isinstance(date_name, str) or date_name is None:
-                self.data = disjoinDays(data, date_name, cgm_name)
+                self.data = disjoin_days_and_hours(data, date_name, cgm_name)
+
             # if date_name is a list of 2 strings
             elif isinstance(date_name, Sequence) and len(date_name) == 2:
-                self.data = pd.DataFrame(columns=['Day','Time','CGM'])
-                self.data['Day'] = pd.to_datetime(data[date_name[0]]).dt.date
-                self.data['Time'] = pd.to_datetime(data[date_name[1]]).dt.time
+                self.data = pd.DataFrame(columns=['Timestamp','Day','Time','CGM'])
+                combined_timestamp = pd.to_datetime(data[date_name[0]].astype(str) + ' ' + data[date_name[1]].astype(str))
+
+                self.data['Timestamp'] = combined_timestamp
+                self.data['Day'] = combined_timestamp.dt.date
+                self.data['Time'] = combined_timestamp.dt.time
                 self.data['CGM'] = data[cgm_name]
+
             else:
                 raise ValueError('date_name must be a String or a sequence of 2 Strings')
 
@@ -114,27 +123,101 @@ class Gframe:
         return q3 - q1
     
     # Mean of Daily Differences
-    def modd(self,
-             time:str,
-             ndays:int = 0) -> float:
+    def modd(self, 
+             target_time: str | pd.Timestamp | datetime.time, 
+             error_range, 
+             ndays: int = 0) -> float:
         
+        if error_range < 0:
+            raise ValueError('error_range must be a positive number or 0')
+    
+        if ndays < 0 or ndays == 1:
+            raise ValueError('ndays must be a greater than 1 or 0')
+        
+        if ndays == 0: # if ndays is 0, use all days
+            ndays = len(self.data['Day'].unique())
+    
         # convert time to same format as self.data['Time']
-        try:
-            time = pd.to_datetime(time).time()
-        except:
-            raise ValueError('time must be a valid time format')
-        
-        # get all the values with the time specified
-        mask = self.data['Time'] == time
-        values = self.data[mask]['CGM'].values
+        if isinstance(target_time, str):# String -> datetime.time
+            try:
+                if target_time.count(':') == 0:  # Format is 'HH'
+                    target_str = target_time + ':00:00'
+                elif target_time.count(':') == 1:  # Format is 'HH:MM'
+                    target_str = target_time + ':00'
+                else:  # Format is 'HH:MM:SS'
+                    target_str = target_time
+                target_time = pd.to_datetime(target_str).time()
+            except:
+                raise ValueError('time must be a valid time format')
+            
+        elif isinstance(target_time, pd.Timestamp): # pandas Timestamp -> datetime.time
+            target_str = target_time.strftime('%H:%M:%S')
+            target_time = target_time.time()
 
-        # if ndays is 0, return the mean of the differences
-        if ndays == 0:
-            return np.mean(np.diff(values))
-        # if ndays is not 0, return the mean of the differences of the first ndays
+        elif isinstance(target_time, datetime.time): # datetime.time
+            target_str = target_time.strftime('%H:%M:%S')
+
         else:
-            return np.mean(np.abs(np.diff(values[:ndays])))
+            raise TypeError('time must be a string, a pandas Timestamp, or a datetime.time')
+        
+        # convert error_range to timedelta
+        error_range = pd.to_timedelta(error_range, unit='m')
+    
+        cgm_values: List[float] = []
 
+        # search given time in each day
+        for day, day_data in islice(self.data.groupby('Day'), ndays):
+            mask_exact = day_data['Time'] == target_time
+            # if exact time is found, use it
+            if mask_exact.any():
+                cgm_values.append(day_data.loc[mask_exact, 'CGM'].values[0])
+            # if not, search for closest time within error range
+            else:
+                # combine "day" and target_time to compare it with Timestamp
+                target_date = str(day) + ' ' + target_str
+                target_datetime = pd.to_datetime(target_date)
+                # search for closest time within error range
+                mask_range = ((day_data['Timestamp'] - target_datetime).abs() <= error_range)
+                if mask_range.any():
+                    closest_index = (day_data.loc[mask_range, 'Timestamp'] - target_datetime).abs().idxmin()
+                    cgm_values.append(day_data.loc[closest_index, 'CGM'])
+                else:
+                    raise ValueError(f"No data found for date {day}")
+    
+        return np.sum(np.abs(np.diff(cgm_values))) / (ndays)
+
+    def tir(self,
+        total_time:int = 24,
+        target_range:tuple = (70,140)):
+    
+        if total_time <= 0 or total_time > 24:
+            raise ValueError('total_time must be an integer between 1 and 24 (inclusive)')
+    
+        # convert target_range to a list of floats
+        try:
+            target_range = [float(num) for num in target_range]
+        except TypeError:
+            raise ValueError("target_range must be an iterable of two numbers")
+    
+        if len(target_range) != 2:
+            raise ValueError("target_range must contain exactly two numbers")
+    
+        if target_range[0] >= target_range[1]:
+            target_range = sorted(target_range)
+    
+        # for each day calculate the time that the CGM signal was within the target range divided by total_time
+        tir = []
+        for _, day_data in self.data.groupby('Day'):
+            day_tir = pd.Timedelta(0)
+            prev_timestamp = None
+            for timestamp, cgm in zip(day_data['Timestamp'], day_data['CGM']):
+                if target_range[0] <= cgm <= target_range[1]:
+                    if prev_timestamp is not None:
+                        day_tir += timestamp - prev_timestamp
+                    prev_timestamp = timestamp
+            tir.append(day_tir.total_seconds() * 100 / (total_time * 3600))
+    
+        return tir
 
     
     # Mean of Daily differences
