@@ -152,9 +152,11 @@ class Gframe:
         modd : float
         '''
         
+        # Check input
         if error_range < 0:
             raise ValueError('error_range must be a positive number or 0')
     
+        # Check input
         if ndays < 0 or ndays == 1:
             raise ValueError('ndays must be a greater than 1 or 0')
         
@@ -214,7 +216,7 @@ class Gframe:
         tir : list 
             List of TIR for each day, in format [[low, normal, high], ...].
         '''
-        # Ensure target_range is a list with 0 and the max value of the data
+        # Check input, Ensure target_range is a list with 0 and the max value of the data
         if 0 not in target_range:
             target_range = [0] + target_range
         if max(self.data['CGM']) > target_range[-1]:
@@ -237,8 +239,39 @@ class Gframe:
     
     # 2. Analysis of distribution in the plane for glycaemia dynamics.
 
-    # Frecuency distribution
-    #def fd(self):
+    # Frecuency distribution : counts the amount of observations given certain intervals of CGM
+    def fd(self,
+           intervals: list = [0,70,140,350]):
+        '''
+        Calculates the frequency distribution for a given intervals of CGM for each day.
+
+        Parameters
+        ----------
+        intervals : list of int|float, default [0,70,140,350]
+            Intervals of Glucose concentration.
+        
+        Returns
+        -------
+        fd : list 
+            List of frequency distribution for each day.
+        '''
+        # Check input
+        if not isinstance(intervals, list) or not all(isinstance(i, (int, float)) for i in intervals):
+            raise ValueError("intervals must be a list of numbers")
+        
+        # Group data by day
+        day_groups = self.data.groupby('Day')
+
+        fd = []
+
+        # Calculate fd for each day
+        for _, day_df in day_groups:
+            day_df['intervals'] = pd.cut(day_df['CGM'], bins=intervals)
+            result = (day_df.groupby([pd.Grouper(key='Timestamp',freq='D'),'intervals'],observed=False)['intervals'].count().unstack(0).T)
+            summed_results = result.sum()
+            fd.append(np.array(summed_results/summed_results.sum()))
+
+        return fd
 
     # Ambulatory Glucose Profile (AGP)
     #def agp(self):
@@ -336,8 +369,8 @@ class Gframe:
         dt = []
 
         # Calculate DT for each day
-        for _, day_df in day_groups:
-            dt.append(np.sum(np.abs(np.diff(day_df['CGM']))))
+        for _, day_data in day_groups:
+            dt.append(np.sum(np.abs(np.diff(day_data['CGM']))))
 
         return dt
     
@@ -440,6 +473,66 @@ class Gframe:
             grade = 425 * np.square( np.log10( np.log10(values*18) ) + 0.16)
         
         return grade
+
+
+    # 5. Metrics for the analysis of glycaemic dynamics using variability estimation.
+
+    # Continuous Overall Net Glycaemic Action (CONGA)
+    '''
+    def conga(self,
+              separate_days: bool = True):
+        
+        Calculates the Continuous Overall Net Glycaemic Action (CONGA) for each day.
+
+        Parameters
+        ----------
+        separate_days : bool, default True
+            If True, returns the CONGA for each day separately. If False, returns the CONGA for all days combined.
+
+        Returns
+        -------
+        conga : list
+            List of CONGA for each day.
+        
+        conga = []
+        if separate_days:
+            # Group data by day
+            day_groups = self.data.groupby('Day')
+            for _, day_data in day_groups:
+                # count number of times a measurement has a previous measurement 60 min ago
+                k = 0
+                for i in range(1, day_data.shape[0]):
+                    if (day_data.iloc[i]['Timestamp'] - day_data.iloc[i-1]['Timestamp']) == pd.Timedelta('60 min'):
+                        k += 1
+    '''
+
+    # Glucose Variability Percentage (GVP)
+    def gvp(self):
+        '''
+        Calculates the Glucose Variability Percentage (GVP).
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        gvp : float
+            Glucose Variability Percentage.
+        '''
+        # Calculate the difference between consecutive timestamps
+        timeStamp_diff = pd.Series(np.diff(self.data['Timestamp']))
+        # Calculate the difference between consecutive CGM values
+        cgm_diff = pd.Series(np.diff(self.data['CGM']))
+
+        line_length  = np.sum( np.sqrt( np.square(cgm_diff) \
+                                      + np.square(timeStamp_diff.dt.total_seconds()/60) ) )
+        
+        t0 = pd.Timedelta(self.data['Timestamp'].tail(1).values[0] \
+                         -self.data['Timestamp'].head(1).values[0]).total_seconds()/60
+        
+        gvp = (line_length/t0 - 1) *100
+        return gvp
 
 
     
