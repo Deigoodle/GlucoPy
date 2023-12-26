@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 
-# Python
+# Built-in
 from collections.abc import Sequence
 import datetime
 from typing import List
@@ -276,7 +276,8 @@ class Gframe:
         return fd
 
     # Ambulatory Glucose Profile (AGP)
-    #def agp(self):
+    def agp(self):
+        pass
 
     # Area Under the Curve (AUC)
     def auc(self, time_unit='m'):
@@ -476,6 +477,9 @@ class Gframe:
         
         return grade
 
+    # Q-Score Glucose=180.15588[g/mol] | 1 [mg/dL] -> 0.05551 [mmol/L] | 1 [mmol/L] -> 18.0182 [mg/dL]
+    def qscore(self):
+        pass
 
     # 5. Metrics for the analysis of glycaemic dynamics using variability estimation.
 

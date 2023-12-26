@@ -1,7 +1,7 @@
 # 3rd party
 import pandas as pd
 
-# Python
+# Built-in
 import datetime
 
 def disjoin_days_and_hours(df,
