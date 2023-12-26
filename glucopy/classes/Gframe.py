@@ -23,12 +23,12 @@ class Gframe:
         ['Timestamp','Day','Time','CGM']
     unit : String, default 'mg/dL'
         CGM signal measurement unit.
-    date_name : String or String array, default None
+    date_column : String or String array, default None
         The name or names of the column(s) containing the date information
         If it's a String, it will be the name of the single column containing the date information
         If it's a String array, it will be the 2 names of the columns containing the date information, eg. ['Date','Time']
         If it's None, it will be assumed that the date information is in the first column
-    cgm_name : String, default None
+    cgm_column : String, default None
         The name of the column containing the CGM signal information
         If it's None, it will be assumed that the CGM signal information is in the second column
     '''
@@ -37,28 +37,28 @@ class Gframe:
     def __init__(self, 
                  data=None, 
                  unit:str = 'mg/dL',
-                 date_name = None,
-                 cgm_name:str = None,
+                 date_column: list[str] | str | int = 0,
+                 cgm_column: str | int = 1,
                  dropna:bool = True):
         
         # Check data is a dataframe
         if isinstance(data, pd.DataFrame):
-            # Check date_name
-            if isinstance(date_name, str) or date_name is None:
-                self.data = disjoin_days_and_hours(data, date_name, cgm_name)
+            # Check date_column
+            if isinstance(date_column, str) or isinstance(date_column, int):
+                self.data = disjoin_days_and_hours(data, date_column, cgm_column)
 
-            # if date_name is a list of 2 strings
-            elif isinstance(date_name, Sequence) and len(date_name) == 2:
+            # if date_column is a list of 2 strings
+            elif isinstance(date_column, Sequence) and len(date_column) == 2:
                 self.data = pd.DataFrame(columns=['Timestamp','Day','Time','CGM'])
-                combined_timestamp = pd.to_datetime(data[date_name[0]].astype(str) + ' ' + data[date_name[1]].astype(str))
+                combined_timestamp = pd.to_datetime(data[date_column[0]].astype(str) + ' ' + data[date_column[1]].astype(str))
 
                 self.data['Timestamp'] = combined_timestamp
                 self.data['Day'] = combined_timestamp.dt.date
                 self.data['Time'] = combined_timestamp.dt.time
-                self.data['CGM'] = data[cgm_name]
+                self.data['CGM'] = data[cgm_column]
 
             else:
-                raise ValueError('date_name must be a String or a sequence of 2 Strings')
+                raise ValueError('date_column must be a String or a sequence of 2 Strings')
             
         if dropna: # remove all rows with NaN values
             self.data.dropna(inplace=True)
@@ -217,6 +217,8 @@ class Gframe:
             List of TIR for each day, in format [[low, normal, high], ...].
         '''
         # Check input, Ensure target_range is a list with 0 and the max value of the data
+        if not isinstance(target_range, list) or not all(isinstance(i, (int, float)) for i in target_range):
+            raise ValueError("target_range must be a list of numbers")
         if 0 not in target_range:
             target_range = [0] + target_range
         if max(self.data['CGM']) > target_range[-1]:

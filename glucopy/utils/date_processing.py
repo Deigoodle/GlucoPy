@@ -5,20 +5,23 @@ import pandas as pd
 import datetime
 
 def disjoin_days_and_hours(df,
-                           date_name = None, 
-                           cgm_name = None) -> pd.DataFrame:
-    
-    if date_name is None:
-        date_name = df.columns[0]
-    if cgm_name is None:
-        cgm_name = df.columns[1]
+                           date_column: str | int = 0, 
+                           cgm_column: str | int = 1) -> pd.DataFrame:
 
     disjoined_df = pd.DataFrame(columns=['Timestamp','Day','Time','CGM'])
 
-    disjoined_df['Timestamp'] = df[date_name]
-    disjoined_df['Day'] = df[date_name].dt.date
-    disjoined_df['Time'] = df[date_name].dt.time
-    disjoined_df['CGM'] = df[cgm_name]
+    if isinstance(date_column, int):
+        disjoined_df['Timestamp'] = df.iloc[:, date_column]
+    else:
+        disjoined_df['Timestamp'] = df.loc[:, date_column]
+
+    if isinstance(cgm_column, int):
+        disjoined_df['CGM'] = df.iloc[:, cgm_column]
+    else:
+        disjoined_df['CGM'] = df.loc[:, cgm_column]
+
+    disjoined_df['Day'] = disjoined_df['Timestamp'].dt.date
+    disjoined_df['Time'] = disjoined_df['Timestamp'].dt.time
 
     return disjoined_df
 
