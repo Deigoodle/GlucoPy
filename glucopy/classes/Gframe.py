@@ -132,7 +132,7 @@ class Gframe:
     # Mean of Daily Differences
     def modd(self, 
              target_time: str | datetime.time, 
-             error_range, 
+             error_range:int = 0, 
              ndays: int = 0) -> float:
         '''
         Calculates the Mean of Daily Differences (MODD) for a given time of day.
@@ -142,7 +142,7 @@ class Gframe:
         target_time : str | datetime.time
             Time of day to calculate the MODD for. If a string is given, it must be in the format 'HH:MM:SS','HH:MM'
             or 'HH'.
-        error_range : int
+        error_range : int, default 0
             Maximum number of minutes that the given time can differ from the actual time in the data.
         ndays : int, default 0
             Number of days to use for the calculation. If 0, all days will be used. There will be used the first ndays
@@ -164,15 +164,13 @@ class Gframe:
             ndays = self.n_days
     
         # convert time to same format as self.data['Time']
-        if isinstance(target_time, str):# String -> datetime.time
+        if not isinstance(target_time, str) and not isinstance(target_time, datetime.time):
+            raise TypeError('time must be a string or a datetime.time')
+        elif isinstance(target_time, str):# String -> datetime.time
             target_str = target_time
             target_time = str_to_time(target_str)
-
-        elif isinstance(target_time, datetime.time): # datetime.time
+        else: # datetime.time
             target_str = target_time.strftime('%H:%M:%S')
-
-        else:
-            raise TypeError('time must be a string, a pandas Timestamp, or a datetime.time')
         
         # convert error_range to timedelta
         error_range = pd.to_timedelta(error_range, unit='m')
@@ -186,7 +184,7 @@ class Gframe:
             if mask_exact.any():
                 cgm_values.append(day_data.loc[mask_exact, 'CGM'].values[0])
             # if not, search for closest time within error range
-            elif error_range != pd.Timedelta(0):
+            elif error_range > pd.Timedelta('0 min'):
                 # combine "day" and target_time to compare it with Timestamp
                 target_date = str(day) + ' ' + target_str
                 target_datetime = pd.to_datetime(target_date)
