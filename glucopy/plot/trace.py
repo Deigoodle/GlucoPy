@@ -109,10 +109,10 @@ def mean_trace(gf: Gframe,
         fig.add_trace(go.Scatter(x=mean_list.index, y=all_mean-all_std, name='All mean-std', line_color='blue', line=dict(dash='dot')))
     
     if(add_std_peak):
-        std_peak_max = [max(mean_list+std_list)] * len(mean_list)
-        std_peak_min = [min(mean_list-std_list)] * len(mean_list)
-        fig.add_trace(go.Scatter(x=mean_list.index, y=std_peak_max, name='Max std', line_color='green', line=dict(dash='dot')))
-        fig.add_trace(go.Scatter(x=mean_list.index, y=std_peak_min, name='Min std', line_color='green', line=dict(dash='dot')))
+        std_max = [max(mean_list+std_list)] * len(mean_list)
+        std_min = [min(mean_list-std_list)] * len(mean_list)
+        fig.add_trace(go.Scatter(x=mean_list.index, y=std_max, name='Max std', line_color='green', line=dict(dash='dot')))
+        fig.add_trace(go.Scatter(x=mean_list.index, y=std_min, name='Min std', line_color='green', line=dict(dash='dot')))
     
     if(add_quartiles):
         q1 = time_groups['CGM'].quantile(0.25)
