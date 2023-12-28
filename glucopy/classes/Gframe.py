@@ -513,7 +513,7 @@ class Gframe:
     # Glucose Variability Percentage (GVP)
     def gvp(self):
         '''
-        Calculates the Glucose Variability Percentage (GVP).
+        Calculates the Glucose Variability Percentage (GVP), with time in minutes.
 
         Parameters
         ----------
@@ -537,6 +537,60 @@ class Gframe:
         
         gvp = (line_length/t0 - 1) *100
         return gvp
+    
+    # Mean Absolute Glucose Change per unit of time (MAG)
+    def mag(self,
+            unit: str = 'm',
+            per_day: bool = False):
+        '''
+        Calculates the Mean Absolute Glucose Change per unit of time (MAG).
+
+        Parameters
+        ----------
+        unit : str, default 'm' (minutes)
+            The time unit for the x-axis. Can be 's (seconds)', 'm (minutes)', or 'h (hours)'.
+        per_day : bool, default False
+            If True, returns the an array with the MAG for each day. If False, returns the MAG for all days combined.
+        
+        Returns
+        -------
+        mag : float
+            Mean Absolute Glucose Change per unit of time.
+        '''
+        # Determine the factor to multiply the total seconds by
+        if unit == 's':
+            factor = 1
+        elif unit == 'm':
+            factor = 60
+        elif unit == 'h':
+            factor = 3600
+        else:
+            return "Error: Invalid time unit. Must be 's', 'm', or 'h'."
+        
+        if(per_day):
+            # Group data by day
+            day_groups = self.data.groupby('Day')
+            mag = []
+            for _, day_data in day_groups:
+                # Calculate the difference between consecutive timestamps
+                timeStamp_diff = pd.Series(np.diff(day_data['Timestamp']))
+                # Calculate the difference between consecutive CGM values
+                cgm_diff = pd.Series(np.abs(np.diff(day_data['CGM'])))
+                # Calculate the MAG
+                mag.append(np.sum(np.abs(cgm_diff)) / (timeStamp_diff.dt.total_seconds().sum()/factor))
+            return mag
+        else:
+            # Calculate the difference between consecutive timestamps
+            timeStamp_diff = pd.Series(np.diff(self.data['Timestamp']))
+            # Calculate the difference between consecutive CGM values
+            cgm_diff = pd.Series(np.abs(np.diff(self.data['CGM'])))
+            # Calculate the MAG
+            mag = np.sum(np.abs(cgm_diff)) / (timeStamp_diff.dt.total_seconds().sum()/factor)
+            return mag
+
+
+
+
 
 
     
