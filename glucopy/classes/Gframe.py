@@ -336,17 +336,19 @@ class Gframe:
         day_groups = self.data.groupby('Day')
 
         mage = []
-        lambd = max(self.data['CGM']) - self.mean()
-        std = self.std()
-        mean = self.mean()
 
         # Calculate MAGE for each day
         
-        for _, day_df in day_groups:
-            count = 0
-            for cgm_value in day_df['CGM']:
-                if (abs(cgm_value - mean) >  std):
-                    count += 1
+        for _, day_data in day_groups:
+            day_mean = day_data['CGM'].mean()
+            day_std = day_data['CGM'].std()
+            
+            # Find the index of values that are greater than the mean + std or lower than the mean - std
+            mask = (day_data['CGM'] > day_mean + day_std) | (day_data['CGM'] < day_mean - day_std)
+            # Get the values that meet the condition
+            values = day_data.loc[mask, 'CGM'].values
+            # Calculate the MAGE
+            mage.append(np.mean(np.abs(values - day_mean)))
 
         return mage
 
@@ -421,6 +423,12 @@ class Gframe:
             else:
                 lbgi.append(np.mean(risk))
         return lbgi
+    
+    # BGI Aliases
+    def lbgi(self):
+        return self.bgi(index_type='l')
+    def hbgi(self):
+        return self.bgi(index_type='h')
         
     # Average Daily Risk Range (ADRR)
     def adrr(self):
@@ -439,9 +447,7 @@ class Gframe:
         # Group data by day
         day_groups = self.data.groupby('Day')   
 
-        adrr = []
-        for _, day_data in day_groups:
-            adrr.append(self.bgi(index_type='h',maximum=True) + self.bgi(index_type='l',maximum=True))
+        adrr = self.bgi(index_type='h',maximum=True) + self.bgi(index_type='l',maximum=True)
         
         return np.mean(adrr)
 

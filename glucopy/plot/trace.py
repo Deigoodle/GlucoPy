@@ -1,11 +1,7 @@
 # 3rd party
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import numpy as np
 from scipy.signal import find_peaks
-
-# Built-in
-from datetime import time
 
 # Local
 from .. import Gframe
@@ -187,7 +183,13 @@ def tir_trace(gf: Gframe,
     # Add traces 
     show_first = True
     for day, day_data in day_groups:
-        fig.add_trace(go.Scatter(x=day_data['Time'], y=day_data['CGM'], name=str(day), visible=show_first))
+        out_range = ~day_data['CGM'].between(interval[0], interval[1]) 
+
+        # Add a single trace with all the data
+        fig.add_trace(go.Scatter(x=day_data['Time'], y=day_data['CGM'], name='In range', visible=show_first, mode='lines', line=dict(color='green')))
+
+        # Add a scatter trace with mode='markers' for the out-of-range values
+        fig.add_trace(go.Scatter(x=day_data[out_range]['Time'], y=day_data[out_range]['CGM'], name='Out of range', visible=show_first, mode='markers', marker=dict(color='red', size=6)))
 
         # Add background color for the interval
         fig.add_shape(
@@ -201,6 +203,7 @@ def tir_trace(gf: Gframe,
             layer="below",
             line_width=0,
         )
+
         if show_first:
             show_first = False
             
@@ -221,7 +224,7 @@ def tir_trace(gf: Gframe,
                 buttons=list([
                     dict(
                         args=[
-                            {"visible": [True if i == j else False for j in range(len(day_groups))]},
+                            {"visible": [True if j in [2*i, 2*i+1] else False for j in range(2*len(day_groups))]},
                         ],
                         label=str(day),
                         method="update"
