@@ -77,55 +77,185 @@ class Gframe:
     # 1. Joint data analysis metrics for glycaemia dynamics
 
     # Sample Mean
-    def mean(self, 
-             skipna:bool = True,
-             numeric_only:bool = False,
-             **kwargs) -> float:
-        
-        return self.data['CGM'].mean(skipna=skipna,numeric_only=numeric_only,**kwargs)
+    def mean(self,
+             per_day: bool = False,
+             **kwargs):
+        '''
+        Parameters
+        ----------
+        per_day : bool, default False
+            If True, returns a pandas Series with the mean for each day. If False, returns the mean for all days combined.
+        **kwargs : dict
+            Additional keyword arguments to be passed to the function. For more information view the documentation for
+            pandas.DataFrameGroupBy.mean().
+
+        Returns
+        -------
+        mean : float | pandas.Series
+            Mean of the CGM values.            
+        '''
+
+        if per_day:
+            # Group data by day
+            day_groups = self.data.groupby('Day')
+            mean_per_day = day_groups['CGM'].mean(**kwargs)
+            return mean_per_day
+
+        else:
+            return self.data['CGM'].mean(**kwargs)
     
     # Standard Deviation, by default ddof=1, so its divided by n-1
     def std(self,
-            skipna:bool = True,
-            numeric_only:bool = False,
+            per_day: bool = False,
             ddof:int = 1,
-            **kwargs) -> float:
+            **kwargs):
+        '''
+        Parameters
+        ----------
+        per_day : bool, default False
+            If True, returns a pandas Series with the standard deviation for each day. If False, returns the 
+            standard deviation for all days combined.
+        ddof : int, default 1
+            Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of
+            elements. By default ddof is 1.
+        **kwargs : dict
+            Additional keyword arguments to be passed to the function. For more information view the documentation for
+            pandas.DataFrameGroupBy.std().
+
+        Returns
+        -------
+        std : float | pandas.Series
+            Standard deviation of the CGM values.            
+        '''
+        if per_day:
+            # Group data by day
+            day_groups = self.data.groupby('Day')
+            mean_per_day = day_groups['CGM'].std(ddof=ddof,**kwargs)
+            return mean_per_day
         
-        return self.data['CGM'].std(skipna=skipna,numeric_only=numeric_only,ddof=ddof,**kwargs)
+        else:
+            return self.data['CGM'].std(ddof=ddof,**kwargs)
     
     # Coefficient of Variation
     def cv(self,
-           skipna:bool = True,
-           numeric_only:bool = False,
+           per_day: bool = False,
            ddof:int = 1,
-           **kwargs) -> float:
+           **kwargs):
+        '''
+        Parameters
+        ----------
+        per_day : bool, default False
+            If True, returns the an array with the coefficient of variation for each day. If False, returns
+            the coefficient of variation for all days combined.
+        ddof : int, default 1
+            Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of 
+            elements. By default ddof is 1.
+        **kwargs : dict
+            Additional keyword arguments to be passed to the function. For more information view the documentation for
+            pandas.DataFrameGroupBy.mean() and std().
+
+        Returns
+        -------
+        cv : float | pandas.Series
+            Coefficient of variation of the CGM values.            
+        '''
+        if per_day:
+            return self.std(per_day=True,ddof=ddof,**kwargs)/self.mean(per_day=True,**kwargs)
           
-        return self.std(skipna=skipna,numeric_only=numeric_only,ddof=ddof,**kwargs)/self.mean(skipna=skipna,numeric_only=numeric_only,**kwargs)
+        else:
+            return self.std(ddof=ddof,**kwargs)/self.mean(**kwargs)
             
     # % Coefficient of Variation
     def pcv(self,
-            skipna:bool = True,
-            numeric_only:bool = False,
+            per_day: bool = False,
             ddof:int = 1,
-            **kwargs) -> float:
+            **kwargs):
+        '''
+        Parameters
+        ----------
+        per_day : bool, default False
+            If True, returns the a pandas.Series with the percentage coefficient of variation for each day. If False,
+            returns the percentage coefficient of variation for all days combined.
+        ddof : int, default 1
+            Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of 
+            elements. By default ddof is 1.
+        **kwargs : dict
+            Additional keyword arguments to be passed to the function. For more information view the documentation for
+            pandas.DataFrameGroupBy.mean() and std().
+
+        Returns
+        -------
+        pcv : float | pandas.Series
+            Percentage coefficient of variation of the CGM values.
+        '''
+        if per_day:
+            return self.cv(per_day=True,ddof=ddof,**kwargs)*100
           
-        return self.cv(skipna=skipna,numeric_only=numeric_only,ddof=ddof,**kwargs)*100
+        else:
+            return self.cv(ddof=ddof,**kwargs)*100
     
     # Quantiles
     def quantile(self,
+                 per_day: bool = False,
                  q:float = 0.5,
                  interpolation:str = 'linear',
-                 **kwargs) -> float:
+                 **kwargs):
+        '''
+        Parameters
+        ----------
+        per_day : bool, default False
+            If True, returns a pandas.Series with the quantile for each day. If False, returns the quantile for all
+            days combined.
+        q : float, default 0.5
+            Value between 0 and 1 for the desired quantile.
+        interpolation : str, default 'linear'
+            This optional parameter specifies the interpolation method to use, when the desired quantile lies between 
+            two data points i and j. Default is 'linear'.
+        **kwargs : dict
+            Additional keyword arguments to be passed to the function. For more information view the documentation for
+            pandas.DataFrameGroupBy.quantile().
+
+        Returns
+        -------
+        quantile : float | pandas.Series
+            Quantile of the CGM values.
+        '''
+        if per_day:
+            # Group data by day
+            day_groups = self.data.groupby('Day')
+            quantile_per_day = day_groups['CGM'].quantile(q=q, interpolation=interpolation, **kwargs)
+            return quantile_per_day
         
-        return self.data['CGM'].quantile(q=q, interpolation=interpolation, **kwargs)
+        else:
+            return self.data['CGM'].quantile(q=q, interpolation=interpolation, **kwargs)
     
     # Interquartile Range
     def iqr(self,
+            per_day: bool = False,
             interpolation:str = 'linear',
-            **kwargs) -> float:
+            **kwargs):
+        '''
+        Parameters
+        ----------
+        per_day : bool, default False
+            If True, returns a pandas.Series with the interquartile range for each day. If False, returns the
+            interquartile range for all days combined.
+        interpolation : str, default 'linear'
+            This optional parameter specifies the interpolation method to use, when the desired quantile lies between
+            two data points i and j. Default is 'linear'. 
+        **kwargs : dict
+            Additional keyword arguments to be passed to the function. For more information view the documentation for
+            pandas.DataFrameGroupBy.quantile().
+
+        Returns
+        -------
+        iqr : float | list
+            Interquartile range of the CGM values.
+
+        '''
         
-        q1 = self.quantile(q=0.25, interpolation=interpolation, **kwargs)
-        q3 = self.quantile(q=0.75, interpolation=interpolation, **kwargs)
+        q1 = self.quantile(per_day=per_day,q=0.25, interpolation=interpolation, **kwargs)
+        q3 = self.quantile(per_day=per_day,q=0.75, interpolation=interpolation, **kwargs)
         
         return q3 - q1
     
@@ -200,19 +330,45 @@ class Gframe:
 
     # Time in Range
     def tir(self, 
-            target_range:list= [70,140]):
+            target_range:list= [0,70,140,350]):
         '''
-        Calculates the Time in Range (TIR) for a given target range (CGM) for each day.
+        Calculates the Time in Range (TIR) for a given target range of glucose for each day.
 
         Parameters
         ----------
         target_range : list of int|float, default [0,70,140,350]
-            Target range in CGM unit for low, normal and high glycaemia.
+            Target range in CGM unit for low, normal and high glycaemia. It must have at least 2 values, for the "normal"
+            range, low and high values will be values outside that range.
 
         Returns
         -------
-        tir : list 
-            List of TIR for each day, in format [[low, normal, high], ...].
+        tir : pandas.Series 
+            Series of TIR for each day, indexed by day.
+        '''
+        return self.fd(target_range=target_range)*100
+
+    
+    # 2. Analysis of distribution in the plane for glycaemia dynamics.
+
+    # Frecuency distribution : counts the amount of observations given certain intervals of CGM
+    def fd(self,
+           per_day: bool = True,
+           target_range: list = [0,70,140,350]):
+        '''
+        Calculates the Frequency Distribution (FD) for a given target range of glucose.
+
+        Parameters
+        ----------
+        per_day : bool, default False
+            If True, returns a pandas Series with the FD for each day. If False, returns the FD for all days combined.
+        target_range : list of int|float, default [0,70,140,350]
+            Target range in CGM unit. It must have at least 2 values, for the "normal"
+            range, low and high values will be values outside that range.
+
+        Returns
+        -------
+        tir : pandas.Series 
+            Series of TIR for each day, indexed by day.
         '''
         # Check input, Ensure target_range is a list with 0 and the max value of the data
         if not isinstance(target_range, list) or not all(isinstance(i, (int, float)) for i in target_range):
@@ -222,56 +378,26 @@ class Gframe:
         if max(self.data['CGM']) > target_range[-1]:
             target_range = target_range + [max(self.data['CGM'])]
 
-        # Group data by day
-        day_groups = self.data.groupby('Day')
+        if per_day:
+            day_groups = self.data.groupby('Day')
 
-        tir = []
+            # Initialize fd as an empty Series
+            fd = pd.Series(dtype=float)
 
-        # Calculate TIR for each day
-        for _, day_df in day_groups:
-            day_df['ranges'] = pd.cut(day_df['CGM'], bins=target_range)
-            result = (day_df.groupby([pd.Grouper(key='Timestamp',freq='D'),'ranges'],observed=False)['ranges'].count().unstack(0).T)
-            summed_results = result.sum()
-            tir.append(np.array(summed_results/summed_results.sum()*100))
+            for day, day_df in day_groups:
+                day_df['ranges'] = pd.cut(day_df['CGM'], bins=target_range)
+                result = day_df.groupby('ranges', observed=False)['ranges'].count()
+                fd[day] = np.array(result / result.sum())
 
-        return tir
-
-    
-    # 2. Analysis of distribution in the plane for glycaemia dynamics.
-
-    # Frecuency distribution : counts the amount of observations given certain intervals of CGM
-    def fd(self,
-           intervals: list = [0,70,140,350]):
-        '''
-        Calculates the frequency distribution for a given intervals of CGM for each day.
-
-        Parameters
-        ----------
-        intervals : list of int|float, default [0,70,140,350]
-            Intervals of Glucose concentration.
+            return fd
         
-        Returns
-        -------
-        fd : list 
-            List of frequency distribution for each day.
-        '''
-        # Check input
-        if not isinstance(intervals, list) or not all(isinstance(i, (int, float)) for i in intervals):
-            raise ValueError("intervals must be a list of numbers")
-        
-        # Group data by day
-        day_groups = self.data.groupby('Day')
-
-        fd = []
-
-        # Calculate fd for each day
-        for _, day_df in day_groups:
-            day_df['intervals'] = pd.cut(day_df['CGM'], bins=intervals)
-            result = (day_df.groupby([pd.Grouper(key='Timestamp',freq='D'),'intervals'],observed=False)['intervals'].count().unstack(0).T)
+        else:
+            result = (pd.cut(self.data['CGM'], bins=target_range)
+                    .groupby(pd.cut(self.data['CGM'], bins=target_range), observed=False)
+                    .count())
             summed_results = result.sum()
-            fd.append(np.array(summed_results/summed_results.sum()))
+            return result / summed_results
 
-        return fd
 
     # Ambulatory Glucose Profile (AGP)
     def agp(self):
@@ -305,13 +431,14 @@ class Gframe:
         # Group data by day
         day_groups = self.data.groupby('Day')
 
-        auc = []
+        # Initialize auc as an empty Series
+        auc = pd.Series(dtype=float)
 
         # Calculate AUC for each day
-        for _, day_df in day_groups:
+        for day, day_df in day_groups:
             # Convert timestamps to the specified time unit
             time_values = (day_df['Timestamp'] - day_df['Timestamp'].min()).dt.total_seconds() / factor
-            auc.append(np.trapz(y=day_df['CGM'], x=time_values))
+            auc[day] = np.trapz(y=day_df['CGM'], x=time_values)
 
         return auc
 
@@ -335,11 +462,12 @@ class Gframe:
         # Group data by day
         day_groups = self.data.groupby('Day')
 
-        mage = []
+        # Initialize mage as an empty Series
+        mage = pd.Series(dtype=float)
 
         # Calculate MAGE for each day
         
-        for _, day_data in day_groups:
+        for day, day_data in day_groups:
             day_mean = day_data['CGM'].mean()
             day_std = day_data['CGM'].std()
             
@@ -348,7 +476,7 @@ class Gframe:
             # Get the values that meet the condition
             values = day_data.loc[mask, 'CGM'].values
             # Calculate the MAGE
-            mage.append(np.mean(np.abs(values - day_mean)))
+            mage[day] = np.mean(np.abs(values - day_mean))
 
         return mage
 
@@ -369,11 +497,11 @@ class Gframe:
         # Group data by day
         day_groups = self.data.groupby('Day')
 
-        dt = []
+        dt = pd.Series(dtype=float)
 
         # Calculate DT for each day
-        for _, day_data in day_groups:
-            dt.append(np.sum(np.abs(np.diff(day_data['CGM']))))
+        for day, day_data in day_groups:
+            dt[day] = np.sum(np.abs(np.diff(day_data['CGM'])))
 
         return dt
     
@@ -413,16 +541,17 @@ class Gframe:
         # Group data by day
         day_groups = self.data.groupby('Day')
 
-        lbgi = []
-        for _, day_data in day_groups:
+        bgi = pd.Series(dtype=float)
+        for day, day_data in day_groups:
             values = day_data['CGM'].values
             f_values = np.vectorize(f)(values,index_type)
             risk = 22.77 * np.square(f_values)
             if maximum:
-                lbgi.append(np.max(risk))
+                bgi[day] = np.max(risk)
             else:
-                lbgi.append(np.mean(risk))
-        return lbgi
+                bgi[day] = np.mean(risk)
+
+        return bgi
     
     # BGI Aliases
     def lbgi(self):
@@ -490,13 +619,13 @@ class Gframe:
     # Continuous Overall Net Glycaemic Action (CONGA)
     '''
     def conga(self,
-              separate_days: bool = True):
+              per_day: bool = True):
         
         Calculates the Continuous Overall Net Glycaemic Action (CONGA) for each day.
 
         Parameters
         ----------
-        separate_days : bool, default True
+        per_day : bool, default True
             If True, returns the CONGA for each day separately. If False, returns the CONGA for all days combined.
 
         Returns
@@ -505,7 +634,7 @@ class Gframe:
             List of CONGA for each day.
         
         conga = []
-        if separate_days:
+        if per_day:
             # Group data by day
             day_groups = self.data.groupby('Day')
             for _, day_data in day_groups:
@@ -546,17 +675,17 @@ class Gframe:
     
     # Mean Absolute Glucose Change per unit of time (MAG)
     def mag(self,
-            unit: str = 'm',
-            per_day: bool = False):
+            per_day: bool = False,
+            unit: str = 'm'):
         '''
         Calculates the Mean Absolute Glucose Change per unit of time (MAG).
 
         Parameters
         ----------
-        unit : str, default 'm' (minutes)
-            The time unit for the x-axis. Can be 's (seconds)', 'm (minutes)', or 'h (hours)'.
         per_day : bool, default False
             If True, returns the an array with the MAG for each day. If False, returns the MAG for all days combined.
+        unit : str, default 'm' (minutes)
+            The time unit for the x-axis. Can be 's (seconds)', 'm (minutes)', or 'h (hours)'.
         
         Returns
         -------
@@ -573,18 +702,19 @@ class Gframe:
         else:
             return "Error: Invalid time unit. Must be 's', 'm', or 'h'."
         
-        if(per_day):
+        if per_day:
             # Group data by day
             day_groups = self.data.groupby('Day')
-            mag = []
-            for _, day_data in day_groups:
+            mag = pd.Series(dtype=float)
+            for day, day_data in day_groups:
                 # Calculate the difference between consecutive timestamps
                 timeStamp_diff = pd.Series(np.diff(day_data['Timestamp']))
                 # Calculate the difference between consecutive CGM values
                 cgm_diff = pd.Series(np.abs(np.diff(day_data['CGM'])))
                 # Calculate the MAG
-                mag.append(np.sum(np.abs(cgm_diff)) / (timeStamp_diff.dt.total_seconds().sum()/factor))
+                mag[day] = np.sum(np.abs(cgm_diff)) / (timeStamp_diff.dt.total_seconds().sum()/factor)
             return mag
+        
         else:
             # Calculate the difference between consecutive timestamps
             timeStamp_diff = pd.Series(np.diff(self.data['Timestamp']))

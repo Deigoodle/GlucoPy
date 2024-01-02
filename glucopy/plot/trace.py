@@ -7,7 +7,7 @@ from scipy.signal import find_peaks
 from .. import Gframe
 
 def trace(gf: Gframe,
-          separate_days: bool = True,
+          per_day: bool = True,
           show_interval: bool = True,
           interval: list[int] = [70, 140],
           height: float = None,
@@ -20,7 +20,7 @@ def trace(gf: Gframe,
     ----------
     gf : Gframe
         Gframe object to plot
-    separate_days : bool, optional
+    per_day : bool, optional
         If True, the plot will be separated by days, by default True
     show_interval : bool, optional
         If True, the values in the range will be highlighted, by default True
@@ -40,7 +40,7 @@ def trace(gf: Gframe,
     # broke the line plot. This is a temporary fix until I can figure out a better way to do this.
     fig = go.Figure()
     
-    if separate_days:
+    if per_day:
         day_groups = gf.data.groupby('Day')   
         for day, day_data in day_groups:
             # Convert time to seconds past midnight

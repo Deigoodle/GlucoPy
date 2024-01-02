@@ -5,7 +5,7 @@ import plotly.express as px
 from .. import Gframe
 
 def box(gf: Gframe,
-        separate_days: bool = True,
+        per_day: bool = True,
         height: float = None,
         width: float = None,
         points: str = None
@@ -17,7 +17,7 @@ def box(gf: Gframe,
     ----------
     gf : Gframe
         Gframe object to plot
-    separate_days : bool, optional
+    per_day : bool, optional
         If True, the plot will be separated by days, by default False
     height : float, optional
         Height of the plot, by default None
@@ -31,7 +31,7 @@ def box(gf: Gframe,
     fig : plotly.graph_objects.Figure
         Figure object
     '''
-    if separate_days:
+    if per_day:
         fig = px.box(gf.data, x='Day', y='CGM', points=points, color='Day')
     else:
         fig = px.box(gf.data, x='CGM', points=points)
