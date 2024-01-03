@@ -330,12 +330,15 @@ class Gframe:
 
     # Time in Range
     def tir(self, 
+            per_day: bool = True,
             target_range:list= [0,70,140,350]):
         '''
         Calculates the Time in Range (TIR) for a given target range of glucose for each day.
 
         Parameters
         ----------
+        per_day : bool, default False
+            If True, returns a pandas Series with the TIR for each day. If False, returns the TIR for all days combined.
         target_range : list of int|float, default [0,70,140,350]
             Target range in CGM unit for low, normal and high glycaemia. It must have at least 2 values, for the "normal"
             range, low and high values will be values outside that range.
@@ -345,7 +348,7 @@ class Gframe:
         tir : pandas.Series 
             Series of TIR for each day, indexed by day.
         '''
-        return self.fd(target_range=target_range)*100
+        return self.fd(per_day=per_day,target_range=target_range)*100
 
     
     # 2. Analysis of distribution in the plane for glycaemia dynamics.

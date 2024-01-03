@@ -150,7 +150,7 @@ def freq_hist(gf: Gframe,
     fig.update_layout(
         title=f'Glucose Frequency {first_day}',
         xaxis_title='Glucose (mg/dL)',
-        yaxis_title='Measurements',
+        yaxis_title='Frecuency',
         height=height,
         width=width
     )

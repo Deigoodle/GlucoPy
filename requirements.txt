@@ -1,6 +1,6 @@
 numpy==1.26.2
 pandas==2.1.4
-xlrd==2.0.1 ; extra == "excel"
+xlrd==2.0.1
 plotly==5.18.0
 nbformat>=4.2.0
 scipy==1.11.4

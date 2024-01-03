@@ -182,7 +182,7 @@ def tir_trace(gf: Gframe,
 
     # Add traces 
     show_first = True
-    for day, day_data in day_groups:
+    for _, day_data in day_groups:
         out_range = ~day_data['CGM'].between(interval[0], interval[1]) 
 
         # Add a single trace with all the data
@@ -383,6 +383,7 @@ def mage_trace(gf: Gframe,
                 
         if show_first:
             show_first = False
+            first_day = day
 
     # update layout
     fig.update_layout(
@@ -391,7 +392,8 @@ def mage_trace(gf: Gframe,
         yaxis=dict(range=[0, gf.data['CGM'].max()+10]),  # Set y-axis to start at 0 and end at the max value
         height=height,
         width=width,
-        title_text='CGM values for each day'
+        title=f'MAGE for each day',
+        shapes=shapes[first_day]
     )
 
     # Add dropdown

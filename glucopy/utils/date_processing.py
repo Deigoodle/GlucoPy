@@ -11,9 +11,9 @@ def disjoin_days_and_hours(df,
     disjoined_df = pd.DataFrame(columns=['Timestamp','Day','Time','CGM'])
 
     if isinstance(date_column, int):
-        disjoined_df['Timestamp'] = df.iloc[:, date_column]
+        disjoined_df['Timestamp'] = pd.to_datetime(df.iloc[:, date_column])
     else:
-        disjoined_df['Timestamp'] = df.loc[:, date_column]
+        disjoined_df['Timestamp'] = pd.to_datetime(df.loc[:, date_column])
 
     if isinstance(cgm_column, int):
         disjoined_df['CGM'] = df.iloc[:, cgm_column]
