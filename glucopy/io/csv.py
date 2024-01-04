@@ -1,5 +1,5 @@
 # Local
-from .. import Gframe
+from ..classes import Gframe
 
 # 3rd party
 import pandas as pd
@@ -13,7 +13,8 @@ def load_csv(path,
              date_column: list[str] | str | int = 0,
              cgm_column: str | int = 1,
              skiprows: list[int] | int | Callable[[Hashable], bool] | None = None,
-             nrows: int | None = None):
+             nrows: int | None = None,
+             **kwargs):
     '''
     Use pandas.read_csv to load a csv file into a Gframe object
 
@@ -44,7 +45,10 @@ def load_csv(path,
         For more information view the documentation for pandas.read_csv
 
     nrows : int, default None
-        Number of rows to read.
+        Number of rows to read
+
+    **kwargs : dict, optional
+        Any other arguments accepted by pandas.read_csv    
 
     Returns
     -------
@@ -58,7 +62,7 @@ def load_csv(path,
         cols = date_column + [cgm_column]
 
     # Load the csv file
-    df = pd.read_csv(path, sep=sep, usecols=cols, skiprows=skiprows, nrows=nrows)
+    df = pd.read_csv(path, sep=sep, usecols=cols, skiprows=skiprows, nrows=nrows, **kwargs)
 
     return Gframe(data=df,date_column=date_column,cgm_column=cgm_column)
 

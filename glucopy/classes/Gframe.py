@@ -1,6 +1,7 @@
 #3rd party
 import numpy as np
 import pandas as pd
+from scipy.signal import find_peaks
 
 # Built-in
 from collections.abc import Sequence
@@ -10,7 +11,9 @@ from itertools import islice
 
 # Local
 from glucopy.utils import disjoin_days_and_hours
-from glucopy.utils import str_to_time
+from glucopy.utils import (str_to_time,
+                           mgdl_to_mmoll, 
+                           mmoll_to_mgdl)
 
 class Gframe:
     '''
@@ -31,6 +34,10 @@ class Gframe:
     cgm_column : String, default None
         The name of the column containing the CGM signal information
         If it's None, it will be assumed that the CGM signal information is in the second column
+    dropna : bool, default True
+        If True, removes all rows with NaN values
+    date_format : String, default None
+        Format of the date information, if None, it will be assumed that the date information is in a consistent format
     '''
 
     # Constructor
@@ -262,7 +269,7 @@ class Gframe:
     # Mean of Daily Differences
     def modd(self, 
              target_time: str | datetime.time, 
-             error_range:int = 0, 
+             slack: int = 0, 
              ndays: int = 0) -> float:
         '''
         Calculates the Mean of Daily Differences (MODD) for a given time of day.
@@ -272,7 +279,7 @@ class Gframe:
         target_time : str | datetime.time
             Time of day to calculate the MODD for. If a string is given, it must be in the format 'HH:MM:SS','HH:MM'
             or 'HH'.
-        error_range : int, default 0
+        slack : int, default 0
             Maximum number of minutes that the given time can differ from the actual time in the data.
         ndays : int, default 0
             Number of days to use for the calculation. If 0, all days will be used. There will be used the first ndays
@@ -283,8 +290,8 @@ class Gframe:
         '''
         
         # Check input
-        if error_range < 0:
-            raise ValueError('error_range must be a positive number or 0')
+        if slack < 0:
+            raise ValueError('slack must be a positive number or 0')
     
         # Check input
         if ndays < 0 or ndays == 1:
@@ -302,8 +309,8 @@ class Gframe:
         else: # datetime.time
             target_str = target_time.strftime('%H:%M:%S')
         
-        # convert error_range to timedelta
-        error_range = pd.to_timedelta(error_range, unit='m')
+        # convert slack to timedelta
+        slack = pd.to_timedelta(slack, unit='m')
     
         cgm_values: List[float] = []
 
@@ -314,12 +321,12 @@ class Gframe:
             if mask_exact.any():
                 cgm_values.append(day_data.loc[mask_exact, 'CGM'].values[0])
             # if not, search for closest time within error range
-            elif error_range > pd.Timedelta('0 min'):
+            elif slack > pd.Timedelta('0 min'):
                 # combine "day" and target_time to compare it with Timestamp
                 target_date = str(day) + ' ' + target_str
                 target_datetime = pd.to_datetime(target_date)
                 # search for closest time within error range
-                mask_range = ((day_data['Timestamp'] - target_datetime).abs() <= error_range)
+                mask_range = ((day_data['Timestamp'] - target_datetime).abs() <= slack)
                 if mask_range.any():
                     closest_index = (day_data.loc[mask_range, 'Timestamp'] - target_datetime).abs().idxmin()
                     cgm_values.append(day_data.loc[closest_index, 'CGM'])
@@ -396,8 +403,7 @@ class Gframe:
         
         else:
             result = (pd.cut(self.data['CGM'], bins=target_range)
-                    .groupby(pd.cut(self.data['CGM'], bins=target_range), observed=False)
-                    .count())
+                        .groupby(pd.cut(self.data['CGM'], bins=target_range), observed=False).count())
             summed_results = result.sum()
             return result / summed_results
 
@@ -471,15 +477,23 @@ class Gframe:
         # Calculate MAGE for each day
         
         for day, day_data in day_groups:
-            day_mean = day_data['CGM'].mean()
             day_std = day_data['CGM'].std()
             
-            # Find the index of values that are greater than the mean + std or lower than the mean - std
-            mask = (day_data['CGM'] > day_mean + day_std) | (day_data['CGM'] < day_mean - day_std)
-            # Get the values that meet the condition
-            values = day_data.loc[mask, 'CGM'].values
-            # Calculate the MAGE
-            mage[day] = np.mean(np.abs(values - day_mean))
+            # find peaks and troughs
+            peaks, _ = find_peaks(day_data['CGM'])
+            troughs, _ = find_peaks(-day_data['CGM'])
+
+            if peaks.size > troughs.size:
+                troughs = np.append(troughs, day_data['CGM'].size - 1)
+            elif peaks.size < troughs.size:
+                peaks = np.append(peaks, day_data['CGM'].size - 1)
+            
+            # calculate the difference between the peaks and the troughs
+            differences = np.abs(day_data['CGM'].iloc[peaks].values - day_data['CGM'].iloc[troughs].values)
+            # get differences greater than std
+            differences = differences[differences > day_std]
+            # calculate mage
+            mage[day] = differences.mean()
 
         return mage
 
@@ -547,6 +561,9 @@ class Gframe:
         bgi = pd.Series(dtype=float)
         for day, day_data in day_groups:
             values = day_data['CGM'].values
+            if self.unit == 'mmol/L':
+                values = mmoll_to_mgdl(values)
+
             f_values = np.vectorize(f)(values,index_type)
             risk = 22.77 * np.square(f_values)
             if maximum:
@@ -575,9 +592,7 @@ class Gframe:
         -------
         adrr : list
             List of ADRR for each day.
-        '''
-        # Group data by day
-        day_groups = self.data.groupby('Day')   
+        ''' 
 
         adrr = self.bgi(index_type='h',maximum=True) + self.bgi(index_type='l',maximum=True)
         
@@ -585,31 +600,32 @@ class Gframe:
 
     # Glycaemic Risk Assessment Diabetes Equation (GRADE)
     def grade(self,
-              daily:bool = False):
+              percentage: bool = True):
         '''
         Calculates the Glycaemic Risk Assessment Diabetes Equation (GRADE) for each day. Only works for CGM values in mg/dL.
 
         Parameters
         ----------
-        None
+        percentage : bool, default True
+            If True, returns a pandas.Series of GRADE score contribution percentage for Hypoglycaemia, Euglycaemia and 
+            Hyperglycaemia. If False, returns a list of GRADE scores for each value.
 
         Returns
         -------
         grade : list
             List of GRADE for each day.
         '''
-        if daily:
-            # Group data by day
-            day_groups = self.data.groupby('Day')   
+        values = self.data['CGM'].values
+        if self.unit == 'mg/dL':
+            values = mgdl_to_mmoll(values)
+        grade = np.minimum(425 * np.square( np.log10( np.log10(values) ) + 0.16), 50)
 
-            grade = []
-            for _, day_data in day_groups:
-                values = day_data['CGM'].values
-                grade.append(425 * np.square( np.log10( np.log10(values*18) ) + 0.16))
-
-        else:
-            values = self.data['CGM'].values
-            grade = 425 * np.square( np.log10( np.log10(values*18) ) + 0.16)
+        if percentage:
+            n = grade.shape[0]
+            hypo = np.sum(grade < 3.9) / n 
+            eugly = np.sum((grade >= 3.9) & (grade <= 7.8)) / n
+            hyper = np.sum(grade > 7.8) / n
+            grade = pd.Series([hypo, eugly, hyper], index=['Hypoglycaemia', 'Euglycaemia', 'Hyperglycaemia']) * 100
         
         return grade
 
@@ -620,33 +636,83 @@ class Gframe:
     # 5. Metrics for the analysis of glycaemic dynamics using variability estimation.
 
     # Continuous Overall Net Glycaemic Action (CONGA)
-    '''
     def conga(self,
-              per_day: bool = True):
-        
+              per_day: bool = True,
+              m: int = 1,
+              slack: int = 0,
+              method: str = 'closest'):
+        '''
         Calculates the Continuous Overall Net Glycaemic Action (CONGA) for each day.
 
         Parameters
         ----------
         per_day : bool, default True
             If True, returns the CONGA for each day separately. If False, returns the CONGA for all days combined.
+        m : int, default 1
+            Number of hours to use for the CONGA calculation.
+        slack : int, default 0
+            Maximum number of minutes that the given time can differ from the actual time in the data.
+        method : str, default 'closest'
+            Method to use if there are multiple timestamps that are m hours before the current timestamp and within the
+            slack range. Can be 'closest' or 'mean'.
 
         Returns
         -------
         conga : list
             List of CONGA for each day.
+        '''
+        # Check input
+        if m < 0:
+            raise ValueError('m must be a positive number')
+        if slack < 0:
+            raise ValueError('slack must be a positive number or 0')
+        if method != 'closest' and method != 'mean':
+            raise ValueError('method must be "closest" or "mean"')
         
-        conga = []
+        # Convert m and slack to timedelta
+        m = pd.to_timedelta(m, unit='h')
+        slack = pd.to_timedelta(slack, unit='m')
+
         if per_day:
             # Group data by day
             day_groups = self.data.groupby('Day')
-            for _, day_data in day_groups:
-                # count number of times a measurement has a previous measurement 60 min ago
-                k = 0
+            conga = pd.Series(dtype=float)
+            for day, day_data in day_groups:
+                dt = []
                 for i in range(1, day_data.shape[0]):
-                    if (day_data.iloc[i]['Timestamp'] - day_data.iloc[i-1]['Timestamp']) == pd.Timedelta('60 min'):
-                        k += 1
-    '''
+                    # find a previous timestamp that is m hours before the current timestamp and within the slack range
+                    mask = (day_data['Timestamp'] < day_data['Timestamp'].iloc[i]) \
+                        & (day_data['Timestamp'] >= day_data['Timestamp'].iloc[i] - m - slack) \
+                        & (day_data['Timestamp'] <= day_data['Timestamp'].iloc[i] - m + slack)
+                    if mask.any():
+                        if method == 'mean':
+                            previous_value = day_data.loc[mask, 'CGM'].mean()
+                        elif method == 'closest':
+                            closest_index = (day_data.loc[mask, 'Timestamp'] - day_data['Timestamp'].iloc[i]).abs().idxmin()
+                            previous_value = day_data.loc[closest_index, 'CGM']
+                        # calculate the difference between the current value and the previous value
+                        dt.append(day_data['CGM'].iloc[i] - previous_value)
+                conga[day] = np.std(dt)
+        
+        else:
+            dt = []
+            for i in range(1, self.data.shape[0]):
+                # find a previous timestamp that is m hours before the current timestamp and within the slack range
+                mask = (self.data['Timestamp'] < self.data['Timestamp'].iloc[i]) \
+                        & (self.data['Timestamp'] >= self.data['Timestamp'].iloc[i] - m - slack) \
+                        & (self.data['Timestamp'] <= self.data['Timestamp'].iloc[i] - m + slack)
+                if mask.any():
+                    if method == 'mean':
+                        previous_value = self.data.loc[mask, 'CGM'].mean()
+                    elif method == 'closest':
+                        closest_index = (self.data.loc[mask, 'Timestamp'] - self.data['Timestamp'].iloc[i]).abs().idxmin()
+                        previous_value = self.data.loc[closest_index, 'CGM']
+                    # calculate the difference between the current value and the previous value
+                    dt.append(self.data['CGM'].iloc[i] - previous_value)
+            conga = np.std(dt)
+
+        return conga
+                    
 
     # Glucose Variability Percentage (GVP)
     def gvp(self):

@@ -4,7 +4,7 @@ import numpy as np
 from scipy.signal import find_peaks
 
 # Local
-from .. import Gframe
+from ..classes import Gframe
 
 def trace(gf: Gframe,
           per_day: bool = True,

@@ -2,7 +2,7 @@
 import plotly.express as px
 
 # Local
-from .. import Gframe
+from ..classes import Gframe
 
 def box(gf: Gframe,
         per_day: bool = True,

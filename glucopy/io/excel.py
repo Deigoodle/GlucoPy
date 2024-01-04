@@ -1,5 +1,5 @@
 # Local
-from .. import Gframe
+from ..classes import Gframe
 
 # 3rd party
 import pandas as pd

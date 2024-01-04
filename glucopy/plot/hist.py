@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 import numpy as np
 
 # Local
-from .. import Gframe
+from ..classes import Gframe
 
 def roc_hist(gf: Gframe,
          per_day: bool = True,
