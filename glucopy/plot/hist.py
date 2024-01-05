@@ -97,7 +97,7 @@ def roc_hist(gf: Gframe,
 
 def freq_hist(gf: Gframe,
               per_day: bool = True,
-              target_range: list = [0,70,140,350],
+              target_range: list = [0,70,180,350],
               height: float = None,
               width: float = None):
     '''
@@ -110,7 +110,7 @@ def freq_hist(gf: Gframe,
     per_day : bool, optional
         If True, the plot will be separated by days, by default False
     target_range : list, optional
-        Target range for the glucose, by default [0,70,140,350]
+        Target range for the glucose, by default [0,70,180,350]
     height : float, optional
         Height of the figure, by default None
     width : float, optional

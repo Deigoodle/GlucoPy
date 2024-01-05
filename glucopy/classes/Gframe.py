@@ -12,6 +12,7 @@ from itertools import islice
 # Local
 from glucopy.utils import disjoin_days_and_hours
 from glucopy.utils import (str_to_time,
+                           time_to_str,
                            mgdl_to_mmoll, 
                            mmoll_to_mgdl)
 
@@ -272,77 +273,80 @@ class Gframe:
     
     # Mean of Daily Differences
     def modd(self, 
-             target_time: str | datetime.time, 
-             slack: int = 0, 
-             ndays: int = 0) -> float:
+             target_time: str | datetime.time | None = None, 
+             slack: int = 0,
+             ignore_na: bool = True) -> float:
         '''
         Calculates the Mean of Daily Differences (MODD) for a given time of day.
 
         Parameters
         ----------
-        target_time : str | datetime.time
-            Time of day to calculate the MODD for. If a string is given, it must be in the format 'HH:MM:SS','HH:MM'
-            or 'HH'.
+        target_time : str | datetime.time | None, default None
+            Time of day to calculate the MODD for. If None, calculates the MODD for all available times.
         slack : int, default 0
             Maximum number of minutes that the given time can differ from the actual time in the data.
-        ndays : int, default 0
-            Number of days to use for the calculation. If 0, all days will be used. There will be used the first ndays
+        ignore_na : bool, default True
+            If True, ignores missing values (not found within slack). If False, raises an error 
+            if there are missing values.
 
         Returns
         -------
         modd : float
         '''
-        
+
         # Check input
         if slack < 0:
             raise ValueError('slack must be a positive number or 0')
-    
-        # Check input
-        if ndays < 0 or ndays == 1:
-            raise ValueError('ndays must be a greater than 1 or 0')
-        
-        if ndays == 0: # if ndays is 0, use all days
-            ndays = self.n_days
-    
-        # convert time to same format as self.data['Time']
-        if not isinstance(target_time, str) and not isinstance(target_time, datetime.time):
-            raise TypeError('time must be a string or a datetime.time')
-        elif isinstance(target_time, str):# String -> datetime.time
-            target_str = target_time
-            target_time = str_to_time(target_str)
-        else: # datetime.time
-            target_str = target_time.strftime('%H:%M:%S')
-        
-        # convert slack to timedelta
-        slack = pd.to_timedelta(slack, unit='m')
-    
-        cgm_values: List[float] = []
 
-        # search given time in each day
-        for day, day_data in islice(self.data.groupby('Day'), ndays):
-            mask_exact = day_data['Time'] == target_time
-            # if exact time is found, use it
-            if mask_exact.any():
-                cgm_values.append(day_data.loc[mask_exact, 'CGM'].values[0])
-            # if not, search for closest time within error range
-            elif slack > pd.Timedelta('0 min'):
-                # combine "day" and target_time to compare it with Timestamp
-                target_date = str(day) + ' ' + target_str
-                target_datetime = pd.to_datetime(target_date)
-                # search for closest time within error range
-                mask_range = ((day_data['Timestamp'] - target_datetime).abs() <= slack)
-                if mask_range.any():
-                    closest_index = (day_data.loc[mask_range, 'Timestamp'] - target_datetime).abs().idxmin()
-                    cgm_values.append(day_data.loc[closest_index, 'CGM'])
-                else:
-                    raise ValueError(f"No data found for date {day}")
-    
-        return np.sum(np.abs(np.diff(cgm_values))) / (ndays)
+        if target_time is None: # calculate MODD for all times
+            unique_times = self.data['Time'].unique()
+            modd_values = []
+            for time in unique_times:
+                modd_values.append(self.modd(time, slack))
+            return np.mean(modd_values)
+        
+        else: # calculate MODD for a given time
+            # convert time to same format as self.data['Time']
+            if not isinstance(target_time, str) and not isinstance(target_time, datetime.time):
+                raise TypeError('time must be a string or a datetime.time')
+            elif isinstance(target_time, str):# String -> datetime.time
+                target_str = target_time
+                target_time = str_to_time(target_str)
+            else: # datetime.time
+                target_str = time_to_str(target_time)
+
+            # convert slack to timedelta
+            slack = pd.to_timedelta(slack, unit='m')
+
+            cgm_values: List[float] = []
+
+            # search given time in each day
+            day_groups = self.data.groupby('Day')
+            for day, day_data in day_groups:
+                mask_exact = day_data['Time'] == target_time
+                # if exact time is found, use it
+                if mask_exact.any():
+                    cgm_values.append(day_data.loc[mask_exact, 'CGM'].values[0])
+                # if not, search for closest time within error range
+                elif slack > pd.Timedelta('0 min'):
+                    # combine "day" and target_time to compare it with Timestamp
+                    target_date = str(day) + ' ' + target_str
+                    target_datetime = pd.to_datetime(target_date)
+                    # search for closest time within error range
+                    mask_range = ((day_data['Timestamp'] - target_datetime).abs() <= slack)
+                    if mask_range.any():
+                        closest_index = (day_data.loc[mask_range, 'Timestamp'] - target_datetime).abs().idxmin()
+                        cgm_values.append(day_data.loc[closest_index, 'CGM'])
+                    else:
+                        if not ignore_na:
+                            raise ValueError(f"No data found for date {day}")
+
+            return np.sum(np.abs(np.diff(cgm_values))) / (self.n_days)
 
     # Time in Range
     def tir(self, 
             per_day: bool = True,
-            target_range:list= [0,70,140,350]):
+            target_range:list= [0,70,180,350]):
         '''
         Calculates the Time in Range (TIR) for a given target range of glucose for each day.
 
@@ -350,7 +354,7 @@ class Gframe:
         ----------
         per_day : bool, default False
             If True, returns a pandas Series with the TIR for each day. If False, returns the TIR for all days combined.
-        target_range : list of int|float, default [0,70,140,350]
+        target_range : list of int|float, default [0,70,180,350]
             Target range in CGM unit for low, normal and high glycaemia. It must have at least 2 values, for the "normal"
             range, low and high values will be values outside that range.
 
@@ -367,7 +371,7 @@ class Gframe:
     # Frecuency distribution : counts the amount of observations given certain intervals of CGM
     def fd(self,
            per_day: bool = True,
-           target_range: list = [0,70,140,350]):
+           target_range: list = [0,70,180,350]):
         '''
         Calculates the Frequency Distribution (FD) for a given target range of glucose.
 
@@ -375,7 +379,7 @@ class Gframe:
         ----------
         per_day : bool, default False
             If True, returns a pandas Series with the FD for each day. If False, returns the FD for all days combined.
-        target_range : list of int|float, default [0,70,140,350]
+        target_range : list of int|float, default [0,70,180,350]
             Target range in CGM unit. It must have at least 2 values, for the "normal"
             range, low and high values will be values outside that range.
 
@@ -626,7 +630,7 @@ class Gframe:
 
         if percentage:
             grade_sum = np.sum(grade)
-            hypo = np.sum(grade[values<3.9]) / grade_sum 
+            hypo = np.sum(grade[values < 3.9]) / grade_sum 
             eugly = np.sum(grade[(values >= 3.9) & (values <= 7.8)]) / grade_sum
             hyper = np.sum(grade[values > 7.8]) / grade_sum
             grade = pd.Series([hypo, eugly, hyper], index=['Hypoglycaemia', 'Euglycaemia', 'Hyperglycaemia']) * 100
@@ -646,7 +650,7 @@ class Gframe:
               slack: int = 0,
               method: str = 'closest'):
         '''
-        Calculates the Continuous Overall Net Glycaemic Action (CONGA) for each day.
+        Calculates the Continuous Overall Net Glycaemic Action (CONGA).
 
         Parameters
         ----------

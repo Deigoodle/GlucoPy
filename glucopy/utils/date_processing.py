@@ -40,3 +40,9 @@ def str_to_time(time_string:str) -> datetime.time:
         raise ValueError('time must be a valid time format')
     
     return time_result
+
+def time_to_str(time:datetime.time) -> str:
+    '''
+    Converts a datetime.time object to a string with format 'hh:mm:ss'
+    '''
+    return time.strftime('%H:%M:%S')

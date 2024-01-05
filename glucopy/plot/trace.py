@@ -9,7 +9,7 @@ from ..classes import Gframe
 def trace(gf: Gframe,
           per_day: bool = True,
           show_interval: bool = True,
-          interval: list[int] = [70, 140],
+          interval: list[int] = [70, 180],
           height: float = None,
           width: float = None,
     ):
@@ -25,7 +25,7 @@ def trace(gf: Gframe,
     show_interval : bool, optional
         If True, the values in the range will be highlighted, by default True
     interval : list[int], optional
-        interval to highlight, by default [70, 140]
+        interval to highlight, by default [70, 180]
     height : float, optional
         Height of the plot, by default None
     width : float, optional
@@ -55,7 +55,7 @@ def trace(gf: Gframe,
     fig.update_layout(xaxis_title='Time of day [h]', yaxis_title='CGM (mg/dL)')
     fig.update_layout(height=height, width=width)
 
-    # Add shape for the range 70-140
+    # Add shape for the range 70-180
     if show_interval:
         fig.add_shape(
             type="rect",
@@ -151,7 +151,7 @@ def mean_trace(gf: Gframe,
     return fig
         
 def tir_trace(gf: Gframe,
-              interval: list[int] = [70, 140],
+              interval: list[int] = [70, 180],
               height: float = None,
               width: float = None
     ):
@@ -163,7 +163,7 @@ def tir_trace(gf: Gframe,
     gf : Gframe
         Gframe object to plot
     interval : list[int], optional
-        interval to highlight, by default [70, 140]
+        interval to highlight, by default [70, 180]
     height : float, optional
         Height of the plot, by default None
     width : float, optional
