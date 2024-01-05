@@ -69,10 +69,14 @@ class Gframe:
             
         if dropna: # remove all rows with NaN values
             self.data.dropna(inplace=True)
-        
+
+
+        # atributes
         self.unit = unit
         self.n_samples = self.data.shape[0]
         self.n_days = len(self.data['Day'].unique())
+        self.max = self.data['CGM'].max()
+        self.min = self.data['CGM'].min()
 
 
     # String representation
@@ -621,10 +625,10 @@ class Gframe:
         grade = np.minimum(425 * np.square( np.log10( np.log10(values) ) + 0.16), 50)
 
         if percentage:
-            n = grade.shape[0]
-            hypo = np.sum(grade < 3.9) / n 
-            eugly = np.sum((grade >= 3.9) & (grade <= 7.8)) / n
-            hyper = np.sum(grade > 7.8) / n
+            grade_sum = np.sum(grade)
+            hypo = np.sum(grade[values<3.9]) / grade_sum 
+            eugly = np.sum(grade[(values >= 3.9) & (values <= 7.8)]) / grade_sum
+            hyper = np.sum(grade[values > 7.8]) / grade_sum
             grade = pd.Series([hypo, eugly, hyper], index=['Hypoglycaemia', 'Euglycaemia', 'Hyperglycaemia']) * 100
         
         return grade
