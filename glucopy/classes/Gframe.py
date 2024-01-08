@@ -487,17 +487,17 @@ class Gframe:
         for day, day_data in day_groups:
             day_std = day_data['CGM'].std()
             
-            # find peaks and troughs
+            # find peaks and nadirs
             peaks, _ = find_peaks(day_data['CGM'])
-            troughs, _ = find_peaks(-day_data['CGM'])
+            nadirs, _ = find_peaks(-day_data['CGM'])
 
-            if peaks.size > troughs.size:
-                troughs = np.append(troughs, day_data['CGM'].size - 1)
-            elif peaks.size < troughs.size:
+            if peaks.size > nadirs.size:
+                nadirs = np.append(nadirs, day_data['CGM'].size - 1)
+            elif peaks.size < nadirs.size:
                 peaks = np.append(peaks, day_data['CGM'].size - 1)
             
-            # calculate the difference between the peaks and the troughs
-            differences = np.abs(day_data['CGM'].iloc[peaks].values - day_data['CGM'].iloc[troughs].values)
+            # calculate the difference between the peaks and the nadirs
+            differences = np.abs(day_data['CGM'].iloc[peaks].values - day_data['CGM'].iloc[nadirs].values)
             # get differences greater than std
             differences = differences[differences > day_std]
             # calculate mage
@@ -639,7 +639,30 @@ class Gframe:
 
     # Q-Score Glucose=180.15588[g/mol] | 1 [mg/dL] -> 0.05551 [mmol/L] | 1 [mmol/L] -> 18.0182 [mg/dL]
     def qscore(self):
-        pass
+        '''
+        Calculates the Q-Score for each day.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        qscore : float
+            Q-Score.
+        '''
+        values = self.data['CGM'].values
+        # formula is in mmol/L
+        if self.unit == 'mg/dL':
+            values = mgdl_to_mmoll(values)
+
+        # fractions
+        f1 = (values.mean() - 7.8 ) / 1.7
+
+        f2 = (values.max() - values.min() - 7.5) / 2.9
+
+        f5 = mgdl_to_mmoll(self.modd())
+
 
     # 5. Metrics for the analysis of glycaemic dynamics using variability estimation.
 

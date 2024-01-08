@@ -245,7 +245,7 @@ def tir_trace(gf: Gframe,
             previous_end = end
         
         # Add green rectangle for the last interval
-        if previous_end != len(out_range):
+        if previous_end != len(out_range) and previous_end is not None:
             in_shape = dict(
                 type="rect",
                 x0=day_data['Time'].iloc[previous_end-1],
@@ -257,7 +257,7 @@ def tir_trace(gf: Gframe,
             )
             shapes[day].append(in_shape)
         # Add green rectangle for the first interval
-        if out_starts_ends[0][0] != 0:
+        if (out_starts_ends and out_starts_ends[0][0] != 0) or not out_starts_ends:
             in_shape = dict(
                 type="rect",
                 x0=day_data['Time'].iloc[0],
@@ -313,9 +313,10 @@ def tir_trace(gf: Gframe,
 
 def mage_trace(gf: Gframe,
                height: float = None,
-               width: float = None):
+               width: float = None,
+               smooth: bool = True):
     '''
-    Plots a line plot of the CGM values showing the MAGE for each day
+    Plots a line plot of the CGM values in the Gframe object separated by time in range for each day
 
     Parameters
     ----------
@@ -325,12 +326,15 @@ def mage_trace(gf: Gframe,
         Height of the plot, by default None
     width : float, optional
         Width of the plot, by default None
-        
+    smooth : bool, optional
+        If True, the CGM values will be smoothed, by default True
+
     Returns
     -------
     fig : plotly.graph_objects.Figure
         Figure object
     '''
+    
     # Group the data by day
     day_groups = gf.data.groupby('Day')
 
@@ -342,113 +346,93 @@ def mage_trace(gf: Gframe,
     shapes = {day: [] for day in day_groups.groups.keys()}
     show_first = True
     for day, day_data in day_groups:
-        # get axes values
-        x = np.array(day_data['Time'])
-        y = np.array(day_data['CGM'])
+        day_mean = day_data['CGM'].mean()
+        day_std = day_data['CGM'].std()
 
-        # Initialize the list of traces for this day
+        # Initialize trace_indices[day] as an empty list
         trace_indices[day] = []
 
-        # CGM
-        fig.add_trace(go.Scatter(x=x, y=y, name=str(day), visible=show_first))
+        fig.add_trace(go.Scatter(x=day_data['Time'], y=day_data['CGM'], name=str(day), visible=show_first))
         trace_indices[day].append(len(fig.data) - 1)
 
-        # mean and std
-        mean = y.mean()
-        std = y.std()
-
-        fig.add_trace(go.Scatter(x=x, y=[mean] * len(day_data), name='Mean',line=dict(dash='dot'), line_color='red',visible=show_first))
+        fig.add_trace(go.Scatter(x=day_data['Time'], y=[day_mean] * len(day_data), name='Mean',line=dict(dash='dot'), line_color='red',visible=show_first))
         trace_indices[day].append(len(fig.data) - 1)
 
-        fig.add_trace(go.Scatter(x=x, y=[mean + std] * len(day_data), name='Mean + std',line=dict(dash='dot'),line_color='cyan', visible=show_first))
+        fig.add_trace(go.Scatter(x=day_data['Time'], y=[day_mean + day_std] * len(day_data), name='Mean + std',line=dict(dash='dot'),line_color='cyan', visible=show_first))
         trace_indices[day].append(len(fig.data) - 1)
 
-        fig.add_trace(go.Scatter(x=x, y=[mean - std] * len(day_data), name='Mean - std',line=dict(dash='dot'),line_color='cyan', visible=show_first))
+        fig.add_trace(go.Scatter(x=day_data['Time'], y=[day_mean - day_std] * len(day_data), name='Mean - std',line=dict(dash='dot'),line_color='cyan', visible=show_first))
         trace_indices[day].append(len(fig.data) - 1)
 
-        # Find peaks and nadirs using scipy's find_peaks
-        peaks, _ = find_peaks(y)
-        nadirs, _ = find_peaks(-y)
+        values = day_data['CGM'].values
+        smoothed_values = np.copy(values)
+        if smooth:
+            # First 4 elements are replaced with their arithmetic mean
+            smoothed_values[0:4] = smoothed_values[0:4].mean()
+            # Apply weights
+            for i in range(4, len(smoothed_values)-4):
+                smoothed_values[i] = (values[i-4] + 2*values[i-3] + 4*values[i-2] + 8*values[i-1] + 16*values[i] + \
+                                      8*values[i+1] + 4*values[i+2] + 2*values[i+3] + values[i+4]) / 46
+            # Last 4 elements are replaced with their arithmetic mean
+            smoothed_values[-4:] = smoothed_values[-4:].mean()
 
-        # Determine whether to start with a peak or a nadir
-        first_peak = next((i for i in peaks if y[i] > mean + std), None)
-        first_nadir = next((i for i in nadirs if y[i] < mean - std), None)
-        if first_peak is None:
-            start_with_peak = False
-        elif first_nadir is None:
-            start_with_peak = True
-        else:
-            start_with_peak = first_peak < first_nadir
+        # find peaks and nadirs
+        peaks, _ = find_peaks(smoothed_values)
+        nadirs, _ = find_peaks(-smoothed_values)
 
-        # Initialize variables to keep track of the maximum peak and minimum nadir
-        max_peak = None
-        min_nadir = None
+        # make sure that the peaks and nadirs have the same size
+        if peaks.size > nadirs.size:
+            nadirs = np.append(nadirs, day_data['CGM'].size - 1)
+        elif peaks.size < nadirs.size:
+            peaks = np.append(peaks, day_data['CGM'].size - 1)
+        
+        # calculate the difference between the peaks and the nadirs
+        differences = np.abs(day_data['CGM'].iloc[peaks].values - day_data['CGM'].iloc[nadirs].values)
+        
+        peak_nadir_pairs = np.array(list(zip(peaks, nadirs)))
+        peak_nadir_pairs = peak_nadir_pairs[differences > day_std]
 
-        # Iterate over the peaks and nadirs
-        for peak, nadir in zip(peaks, nadirs):
-            if start_with_peak:
-                # If the current peak is above mean + std and is higher than the current maximum peak, update max_peak
-                if (y[peak] > mean + std) and (max_peak is None or y[peak] > y[max_peak]):
-                    max_peak = peak
-                    min_nadir = None  # Reset min_nadir whenever a new max_peak is found
-            else:
-                # If the current nadir is below mean - std and is lower than the current minimum nadir, update min_nadir
-                if (y[nadir] < mean - std) and (min_nadir is None or y[nadir] < y[min_nadir]):
-                    min_nadir = nadir
-                    max_peak = None  # Reset max_peak whenever a new min_nadir is found
+        # add shapes
+        for peak, nadir in peak_nadir_pairs:
+            shape = dict(
+                type="rect",
+                xref="x",
+                yref="y",
+                x0=day_data['Time'].iloc[peak],
+                y0=day_data['CGM'].iloc[peak],
+                x1=day_data['Time'].iloc[nadir],
+                y1=day_data['CGM'].iloc[nadir],
+                fillcolor="rgba(255, 204, 0, 0.5)",
+                line=dict(width=0),
+            )
+            shapes[day].append(shape)
 
-            # If max_peak is not None, look for a nadir that is below mean - std and is lower than the current minimum nadir
-            if (max_peak is not None) and (y[nadir] < mean - std) and (min_nadir is None or y[nadir] < y[min_nadir]):
-                min_nadir = nadir
-
-            # If min_nadir is not None, look for a peak that is above mean + std and is higher than the current maximum peak
-            if (min_nadir is not None) and (y[peak] > mean + std) and (max_peak is None or y[peak] > y[max_peak]):
-                max_peak = peak
-
-            # If both max_peak and min_nadir have been found, add a rectangle shape between them and reset them to None
-            if max_peak is not None and min_nadir is not None:
-                shape = dict(
-                    type="rect",
-                    xref="x",
-                    yref="y",
-                    x0=x[min(max_peak, min_nadir)],
-                    y0=y[min(max_peak, min_nadir)],
-                    x1=x[max(max_peak, min_nadir)],
-                    y1=y[max(max_peak, min_nadir)],
-                    fillcolor="rgba(255, 0, 0, 0.3)",
-                    line=dict(width=0),
+            # Add annotations for the peak and nadir as scatter traces
+            fig.add_trace(
+                go.Scatter(
+                    x=[day_data['Time'].iloc[peak]],
+                    y=[day_data['CGM'].iloc[peak]],
+                    mode='text',
+                    text=[day_data['CGM'].iloc[peak]],
+                    textposition="top right",
+                    showlegend=False,
+                    visible=show_first
                 )
-                shapes[day].append(shape)
-                
-                # Add annotations for the peak and nadir as scatter traces
-                fig.add_trace(
-                    go.Scatter(
-                        x=[x[max_peak]],
-                        y=[y[max_peak]],
-                        mode='text',
-                        text=[y[max_peak]],
-                        textposition="top right",
-                        showlegend=False,
-                        visible=show_first
-                    )
+            )
+            fig.add_trace(
+                go.Scatter(
+                    x=[day_data['Time'].iloc[nadir]],
+                    y=[day_data['CGM'].iloc[nadir]],
+                    mode='text',
+                    text=[day_data['CGM'].iloc[nadir]],
+                    textposition="bottom left",
+                    showlegend=False,
+                    visible=show_first
                 )
-                fig.add_trace(
-                    go.Scatter(
-                        x=[x[min_nadir]],
-                        y=[y[min_nadir]],
-                        mode='text',
-                        text=[y[min_nadir]],
-                        textposition="bottom right",
-                        showlegend=False,
-                        visible=show_first
-                    )
-                )
-                
-                max_peak = None
-                min_nadir = None
-                trace_indices[day].append(len(fig.data) - 1)
-                trace_indices[day].append(len(fig.data) - 2)  # Add the indices of the annotation traces
-                
+            )
+            trace_indices[day].append(len(fig.data) - 1)
+            trace_indices[day].append(len(fig.data) - 2)
+
         if show_first:
             show_first = False
             first_day = day
@@ -488,8 +472,7 @@ def mage_trace(gf: Gframe,
             ),
         ]
     )
-    
-    return fig
 
+    return fig
 
         
