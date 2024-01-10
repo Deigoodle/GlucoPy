@@ -7,7 +7,6 @@ from scipy.signal import find_peaks
 from collections.abc import Sequence
 import datetime
 from typing import List
-from itertools import islice
 
 # Local
 from glucopy.utils import disjoin_days_and_hours
@@ -346,7 +345,9 @@ class Gframe:
     # Time in Range
     def tir(self, 
             per_day: bool = True,
-            target_range:list= [0,70,180,350]):
+            target_range:list= [0,70,180,350],
+            percentage: bool = True,
+            decimals: int = 2):
         '''
         Calculates the Time in Range (TIR) for a given target range of glucose for each day.
 
@@ -357,13 +358,55 @@ class Gframe:
         target_range : list of int|float, default [0,70,180,350]
             Target range in CGM unit for low, normal and high glycaemia. It must have at least 2 values, for the "normal"
             range, low and high values will be values outside that range.
+        percentage : bool, default True
+            If True, returns the TIR as a percentage. If False, returns the TIR as time.
+        decimals : int, default 2
+            Number of decimal places to round to. Use None for no rounding.
 
         Returns
         -------
         tir : pandas.Series 
             Series of TIR for each day, indexed by day.
         '''
-        return self.fd(per_day=per_day,target_range=target_range)*100
+        # Check input, Ensure target_range is a list with 0 and the max value of the data
+        if not isinstance(target_range, list) or not all(isinstance(i, (int, float)) for i in target_range):
+            raise ValueError("target_range must be a list of numbers")
+        if 0 not in target_range:
+            target_range = [0] + target_range
+        if max(self.data['CGM']) > target_range[-1]:
+            target_range = target_range + [max(self.data['CGM'])]
+
+        if per_day:
+            day_groups = self.data.groupby('Day')
+
+            tir = pd.Series(dtype=float)
+            for day, day_data in day_groups:
+                day_data['Time_Diff'] = day_data['Timestamp'].diff().dt.total_seconds() 
+                day_data['ranges'] = pd.cut(day_data['CGM'], bins=target_range)
+                time_count = day_data.groupby('ranges', observed=False)['Time_Diff'].sum()
+                if percentage:
+                    result = np.array(time_count / time_count.sum()) * 100
+                    if decimals is not None:
+                        result = np.round(result, decimals=decimals)
+                else:
+                    
+                    result = np.array(time_count.apply(lambda x: str(datetime.timedelta(seconds=x))))
+                tir[day] = result
+
+            return tir
+                    
+        else:
+            data_copy = self.data.copy()
+            data_copy['Time_Diff'] = data_copy['Timestamp'].diff().dt.total_seconds()
+            data_copy['ranges'] = pd.cut(data_copy['CGM'], bins=target_range)
+            time_count = data_copy.groupby('ranges', observed=False)['Time_Diff'].sum()
+            if percentage:
+                result = np.array(time_count / time_count.sum()) * 100
+                if decimals is not None:
+                    result = np.round(result, decimals=decimals)
+            else:
+                result = time_count.apply(lambda x: str(datetime.timedelta(seconds=x)))
+            return result
 
     
     # 2. Analysis of distribution in the plane for glycaemia dynamics.
@@ -371,7 +414,8 @@ class Gframe:
     # Frecuency distribution : counts the amount of observations given certain intervals of CGM
     def fd(self,
            per_day: bool = True,
-           target_range: list = [0,70,180,350]):
+           target_range: list = [0,70,180,350],
+           decimals: int = 2):
         '''
         Calculates the Frequency Distribution (FD) for a given target range of glucose.
 
@@ -382,6 +426,8 @@ class Gframe:
         target_range : list of int|float, default [0,70,180,350]
             Target range in CGM unit. It must have at least 2 values, for the "normal"
             range, low and high values will be values outside that range.
+        decimals : int, default 2
+            Number of decimal places to round to. Use None for no rounding.
 
         Returns
         -------
@@ -402,10 +448,13 @@ class Gframe:
             # Initialize fd as an empty Series
             fd = pd.Series(dtype=float)
 
-            for day, day_df in day_groups:
-                day_df['ranges'] = pd.cut(day_df['CGM'], bins=target_range)
-                result = day_df.groupby('ranges', observed=False)['ranges'].count()
-                fd[day] = np.array(result / result.sum())
+            for day, day_data in day_groups:
+                day_data['ranges'] = pd.cut(day_data['CGM'], bins=target_range)
+                result = day_data.groupby('ranges', observed=False)['ranges'].count()
+                if decimals is not None:
+                    fd[day] = np.round(np.array(result / result.sum()), decimals=decimals)
+                else:
+                    fd[day] = np.array(result / result.sum())
 
             return fd
         
@@ -413,7 +462,10 @@ class Gframe:
             result = (pd.cut(self.data['CGM'], bins=target_range)
                         .groupby(pd.cut(self.data['CGM'], bins=target_range), observed=False).count())
             summed_results = result.sum()
-            return result / summed_results
+            if decimals is not None:
+                return (result / summed_results).round(decimals=decimals)
+            else:
+                return result / summed_results
 
 
     # Ambulatory Glucose Profile (AGP)
@@ -452,10 +504,10 @@ class Gframe:
         auc = pd.Series(dtype=float)
 
         # Calculate AUC for each day
-        for day, day_df in day_groups:
+        for day, day_data in day_groups:
             # Convert timestamps to the specified time unit
-            time_values = (day_df['Timestamp'] - day_df['Timestamp'].min()).dt.total_seconds() / factor
-            auc[day] = np.trapz(y=day_df['CGM'], x=time_values)
+            time_values = (day_data['Timestamp'] - day_data['Timestamp'].min()).dt.total_seconds() / factor
+            auc[day] = np.trapz(y=day_data['CGM'], x=time_values)
 
         return auc
 
@@ -637,10 +689,11 @@ class Gframe:
         
         return grade
 
+    # [3.9,8.9] mmol/L -> [70.2,160.2] mg/dL
     # Q-Score Glucose=180.15588[g/mol] | 1 [mg/dL] -> 0.05551 [mmol/L] | 1 [mmol/L] -> 18.0182 [mg/dL]
     def qscore(self):
         '''
-        Calculates the Q-Score for each day.
+        Calculates the Q-Score.
 
         Parameters
         ----------
@@ -652,16 +705,33 @@ class Gframe:
             Q-Score.
         '''
         values = self.data['CGM'].values
+
         # formula is in mmol/L
         if self.unit == 'mg/dL':
             values = mgdl_to_mmoll(values)
+
+        # Time spent under 3.9 mmol/L in minutes
+        time_minus_3_9 = self.tir(target_range=[70.2], percentage=False)\
+                             .apply(lambda x: pd.to_timedelta(x[0]))\
+                             .mean().total_seconds() / 60
+        
+        # Time spent over 8.9 mmol/L in minutes
+        time_plus_8_9 = self.tir(target_range=[160.2], percentage=False)\
+                            .apply(lambda x: pd.to_timedelta(x[1]))\
+                            .mean().total_seconds() / 60
 
         # fractions
         f1 = (values.mean() - 7.8 ) / 1.7
 
         f2 = (values.max() - values.min() - 7.5) / 2.9
 
-        f5 = mgdl_to_mmoll(self.modd())
+        f3 = (time_minus_3_9 - 0.6) / 1.2
+        
+        f4 = (time_plus_8_9 - 6.2) / 5.7
+
+        f5 = (mgdl_to_mmoll(self.modd()) - 1.8) / 0.9
+
+        return 8 + f1 + f2 + f3 + f4 + f5
 
 
     # 5. Metrics for the analysis of glycaemic dynamics using variability estimation.
