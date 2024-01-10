@@ -1,7 +1,8 @@
 # 3rd party
 import plotly.graph_objects as go
 import numpy as np
-from scipy.signal import find_peaks
+#from scipy.ndimage import median_filter
+#from scipy.signal import savgol_filter
 
 # Local
 from ...classes import Gframe
@@ -9,7 +10,7 @@ from ...classes import Gframe
 def agp(gf: Gframe,
         add_quartiles: bool = True,
         add_deciles: bool = True,
-        e: float = 1e-6,
+        e: float = 1.0,
         height: float = None,
         width: float = None,):
     '''
@@ -23,8 +24,8 @@ def agp(gf: Gframe,
         If True, the quartiles (25%, 75%) of the data will be added to the plot, by default True
     add_deciles : bool, optional
         If True, the deciles (10%, 90%) of the data will be added to the plot, by default True
-    e : float, optional
-        Tolerance for negligible change, by default 1e-6
+    e : non negative float, optional
+        Tolerance for negligible change, by default 1.0
     height : float, optional
         Height of the plot, by default None
     width : float, optional
@@ -35,63 +36,115 @@ def agp(gf: Gframe,
     fig : plotly.graph_objects.Figure
         Figure object
     '''
-    # group the data by time
-    time_groups = gf.data.groupby('Time')
+    # Check input
+    if not isinstance(gf, Gframe):
+        raise TypeError('gf must be a Gframe object')
+    if e < 0:
+        raise ValueError('e must be non negative')
+    
+    # group the data by hour
+    time_groups = gf.data.groupby(gf.data['Timestamp'].dt.hour)
 
     # initial data
     median_series = time_groups['CGM'].median()
-    if add_quartiles:
-        q1_series = time_groups['CGM'].quantile(0.25)
-        q3_series = time_groups['CGM'].quantile(0.75)
-    if add_deciles:
-        d1_series = time_groups['CGM'].quantile(0.1)
-        d9_series = time_groups['CGM'].quantile(0.9)
 
     fig = go.Figure()
 
     fig.add_trace(go.Scatter(x=median_series.index, 
                              y=smooth_sequence(median_series.values, e=e), 
-                             name='Smoothed Median',
-                             mode='lines'))
-    fig.add_trace(go.Scatter(x=median_series.index, 
-                             y=median_series.values, 
-                             name='Median',
+                             name='50%',
                              mode='lines',
-                             line=dict(color='rgba(255, 0, 0, 0.3)')))  # 0.5 is the opacity
+                             line_color='blue'
+                             )
+                 )
     
     if add_quartiles:
-        fig.add_trace(go.Scatter(x=q1_series.index, 
-                                 y=smooth_sequence(q1_series.values, e=e), 
-                                 name='25%',
-                                 mode='lines'))
+        q1_series = time_groups['CGM'].quantile(0.25)
+        q3_series = time_groups['CGM'].quantile(0.75)
         fig.add_trace(go.Scatter(x=q3_series.index, 
                                  y=smooth_sequence(q3_series.values, e=e), 
                                  name='75%',
-                                 mode='lines'))
+                                 fill=None,
+                                 mode='lines',
+                                 line_color='lightblue',
+                                 legendgroup='25-75',
+                                 showlegend=False
+                                )
+                     )
+        fig.add_trace(go.Scatter(x=q1_series.index, 
+                                 y=smooth_sequence(q1_series.values, e=e), 
+                                 name='25% - 75%',
+                                 fill='tonexty',
+                                 mode='lines',
+                                 line_color='lightblue',
+                                 fillcolor='rgba(9,174,229,0.5)',
+                                 legendgroup='25-75'
+                                )
+                     )
+        
     if add_deciles:
-        fig.add_trace(go.Scatter(x=d1_series.index, 
-                                 y=smooth_sequence(d1_series.values, e=e), 
-                                 name='10%',
-                                 mode='lines'))
+        d1_series = time_groups['CGM'].quantile(0.1)
+        d9_series = time_groups['CGM'].quantile(0.9)
         fig.add_trace(go.Scatter(x=d9_series.index, 
                                  y=smooth_sequence(d9_series.values, e=e), 
                                  name='90%',
-                                 mode='lines'))
+                                 fill=None,
+                                 line=dict(dash='dot'),
+                                 line_color='lightblue',
+                                 legendgroup='10-90',
+                                 showlegend=False
+                                )
+                     )
+        fig.add_trace(go.Scatter(x=d1_series.index, 
+                                 y=smooth_sequence(d1_series.values, e=e), 
+                                 name='10% - 90%',
+                                 fill='tonexty',
+                                 line=dict(dash='dot'),
+                                 line_color='lightblue',
+                                 fillcolor='rgba(9,174,229,0.2)',
+                                 legendgroup='10-90',
+                                )
+                     )
+        
 
-    fig.update_layout(xaxis_title='Time of day [h]', 
-                      yaxis_title='CGM (mg/dL)',
-                      height=height,
-                      width=width)
+    fig.update_layout(
+        title='Ambulatory Glucose Profile',
+        xaxis_title='Time of day [h]', 
+        yaxis_title='CGM (mg/dL)',
+        height=height,
+        width=width,
+        xaxis=dict(
+            tickmode='array',
+            tickvals=list(range(24))  # list of all hours
+        )
+    )
     
     return fig
 
 def smooth_sequence(y: list,
-                    e: float = 1e-6):
+                    e: float = 1):
+    '''
+    Smooths a sequence of values using the median filter
+
+    Parameters
+    ----------
+    y : list
+        Sequence of values to smooth
+    e : float, optional
+        Tolerance for negligible change, by default 1
+
+    Returns
+    -------
+    smoothed_y : list
+        Smoothed sequence
+    '''
+
     n = len(y)
     smoothed_y = np.copy(y)
     # Perform smoothing until negligible change
     while True:
         previous_smoothed_y = np.copy(smoothed_y)
+
         for i in range(2,n-2):
             u = np.median([smoothed_y[i-1], (3 * smoothed_y[i-1] - smoothed_y[i-2]) / 2, smoothed_y[i]])
             v = np.median([smoothed_y[i-1], smoothed_y[i], smoothed_y[i+1]])
@@ -115,6 +168,6 @@ def smooth_sequence(y: list,
 
         # Check for negligible change
         if np.allclose(smoothed_y, previous_smoothed_y, atol=e):
-            break        
+            break
 
     return smoothed_y

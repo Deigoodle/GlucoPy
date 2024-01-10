@@ -28,6 +28,10 @@ def per_day(gf: Gframe,
     fig : plotly.graph_objects.Figure
         Figure object
     '''
+    # Check input
+    if not isinstance(gf, Gframe):
+        raise TypeError('gf must be a Gframe object')
+    
     fig = go.Figure()
     
     day_groups = gf.data.groupby('Day')

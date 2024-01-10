@@ -28,6 +28,10 @@ def tir(gf: Gframe,
     fig : plotly.graph_objects.Figure
         Figure object
     '''
+    # Check input
+    if not isinstance(gf, Gframe):
+        raise TypeError('gf must be a Gframe object')
+    
     # Group the data by day
     day_groups = gf.data.groupby('Day')
 
@@ -110,13 +114,27 @@ def tir(gf: Gframe,
                 line=dict(width=0),
             )
             shapes[day].append(in_shape)
+
         # Add green rectangle for the first interval
-        if (out_starts_ends and out_starts_ends[0][0] != 0) or not out_starts_ends:
+        if out_starts_ends and out_starts_ends[0][0] != 0:
             in_shape = dict(
                 type="rect",
                 x0=day_data['Time'].iloc[0],
                 y0=interval[0],
                 x1=day_data['Time'].iloc[out_starts_ends[0][0]],
+                y1=interval[1],
+                fillcolor="rgba(0, 255, 0, 0.5)",
+                line=dict(width=0),
+            )
+            shapes[day].append(in_shape)
+
+        # Add green rectangle for the entire day if all values are in range
+        if not out_starts_ends:
+            in_shape = dict(
+                type="rect",
+                x0=day_data['Time'].iloc[0],
+                y0=interval[0],
+                x1=day_data['Time'].iloc[-1],
                 y1=interval[1],
                 fillcolor="rgba(0, 255, 0, 0.5)",
                 line=dict(width=0),

@@ -121,6 +121,9 @@ def freq_hist(gf: Gframe,
     fig : plotly.graph_objects.Figure
         Figure object
     '''
+    # Check input
+    if not isinstance(gf, Gframe):
+        raise TypeError('gf must be a Gframe object')
 
     # Check input, Ensure target_range is a list with 0 and the max value of the data
     if not isinstance(target_range, list) or not all(isinstance(i, (int, float)) for i in target_range):

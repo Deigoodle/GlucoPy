@@ -37,6 +37,10 @@ def mean(gf: Gframe,
     fig : plotly.graph_objects.Figure
         Figure object
     '''
+    # Check input
+    if not isinstance(gf, Gframe):
+        raise TypeError('gf must be a Gframe object')
+    
     # Group the data by time
     time_groups = gf.data.groupby('Time')
 
@@ -47,31 +51,103 @@ def mean(gf: Gframe,
     fig = go.Figure()
 
     # add traces
-    fig.add_trace(go.Scatter(x=mean_list.index, y=mean_list, name='Mean CGM'))
-    fig.add_trace(go.Scatter(x=mean_list.index, y=mean_list + std_list, fill=None, mode='lines', line_color='lightgray', name='+Std'))
-    fig.add_trace(go.Scatter(x=mean_list.index, y=mean_list - std_list, fill='tonexty', mode='lines', line_color='lightgray', name='-Std'))
+    fig.add_trace(go.Scatter(x=mean_list.index, 
+                             y=mean_list, 
+                             name='Mean'
+                            )
+                 )
+    fig.add_trace(go.Scatter(x=mean_list.index, 
+                             y=mean_list + std_list, 
+                             name='Std',
+                             fill=None, 
+                             mode='lines', 
+                             line_color='lightgray',
+                             legendgroup='std',
+                            )
+                 )
+    fig.add_trace(go.Scatter(x=mean_list.index, 
+                             y=mean_list - std_list, 
+                             name='-Std',
+                             fill='tonexty', 
+                             mode='lines', 
+                             line_color='lightgray',
+                             legendgroup='std',
+                             showlegend=False
+                            )
+                 )
     
     # add extra traces
     if(add_all_mean):
         all_mean = np.array([gf.data['CGM'].mean()] * len(mean_list))
-        fig.add_trace(go.Scatter(x=mean_list.index, y=all_mean, name='All mean', line_color='red', line=dict(dash='dot')))
+        fig.add_trace(go.Scatter(x=mean_list.index, 
+                                 y=all_mean, 
+                                 name='All Mean', 
+                                 line_color='red', 
+                                 line=dict(dash='dot')
+                                )
+                     )
     
     if(add_all_std):
         all_std = np.array([gf.data['CGM'].std()] * len(mean_list))
-        fig.add_trace(go.Scatter(x=mean_list.index, y=all_mean+all_std, name='All mean+std', line_color='blue', line=dict(dash='dot')))
-        fig.add_trace(go.Scatter(x=mean_list.index, y=all_mean-all_std, name='All mean-std', line_color='blue', line=dict(dash='dot')))
+        fig.add_trace(go.Scatter(x=mean_list.index, 
+                                 y=all_mean+all_std, 
+                                 name='All Std', 
+                                 line_color='blue', 
+                                 line=dict(dash='dot'),
+                                 legendgroup='all std'
+                                )
+                     )
+        fig.add_trace(go.Scatter(x=mean_list.index, 
+                                 y=all_mean-all_std, 
+                                 name='-All Std', 
+                                 line_color='blue', 
+                                 line=dict(dash='dot'),
+                                 legendgroup='all std',
+                                 showlegend=False
+                                )
+                      )
     
     if(add_std_peak):
         std_max = [max(mean_list+std_list)] * len(mean_list)
         std_min = [min(mean_list-std_list)] * len(mean_list)
-        fig.add_trace(go.Scatter(x=mean_list.index, y=std_max, name='Max std', line_color='green', line=dict(dash='dot')))
-        fig.add_trace(go.Scatter(x=mean_list.index, y=std_min, name='Min std', line_color='green', line=dict(dash='dot')))
+        fig.add_trace(go.Scatter(x=mean_list.index, 
+                                 y=std_max, 
+                                 name='Std peak', 
+                                 line_color='green', 
+                                 line=dict(dash='dot'),
+                                 legendgroup='std peak'
+                                )
+                     )
+        fig.add_trace(go.Scatter(x=mean_list.index, 
+                                 y=std_min, 
+                                 name='Std nadir', 
+                                 line_color='green', 
+                                 line=dict(dash='dot'),
+                                 legendgroup='std peak',
+                                 showlegend=False
+                                )
+                     )
     
     if(add_quartiles):
         q1 = time_groups['CGM'].quantile(0.25)
         q3 = time_groups['CGM'].quantile(0.75)
-        fig.add_trace(go.Scatter(x=mean_list.index, y=q1, name='25%', line_color='orange', line=dict(dash='dot')))
-        fig.add_trace(go.Scatter(x=mean_list.index, y=q3, name='75%', line_color='orange', line=dict(dash='dot')))
+        fig.add_trace(go.Scatter(x=mean_list.index,
+                                 y=q1, 
+                                 name='25% - 75%', 
+                                 line_color='orange', 
+                                 line=dict(dash='dot'),
+                                 legendgroup='quartiles'
+                                )
+                     )
+        fig.add_trace(go.Scatter(x=mean_list.index, 
+                                 y=q3, 
+                                 name='75%', 
+                                 line_color='orange', 
+                                 line=dict(dash='dot'),
+                                 legendgroup='quartiles',
+                                 showlegend=False
+                                 )
+                     )
 
     # update lauyout
     fig.update_layout(title_text='Mean and standard deviation for each time',
