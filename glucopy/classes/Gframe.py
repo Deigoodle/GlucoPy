@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 from scipy.signal import find_peaks
+from scipy.stats import linregress
 
 # Built-in
 from collections.abc import Sequence
@@ -704,26 +705,24 @@ class Gframe:
         qscore : float
             Q-Score.
         '''
-        values = self.data['CGM'].values
-
-        # formula is in mmol/L
-        if self.unit == 'mg/dL':
-            values = mgdl_to_mmoll(values)
-
-        # Time spent under 3.9 mmol/L in minutes
+        # Time spent under 3.9 mmol/L in hours
         time_minus_3_9 = self.tir(target_range=[70.2], percentage=False)\
                              .apply(lambda x: pd.to_timedelta(x[0]))\
-                             .mean().total_seconds() / 60
+                             .mean().total_seconds() / 3600
         
-        # Time spent over 8.9 mmol/L in minutes
+        # Time spent over 8.9 mmol/L in hours
         time_plus_8_9 = self.tir(target_range=[160.2], percentage=False)\
                             .apply(lambda x: pd.to_timedelta(x[1]))\
-                            .mean().total_seconds() / 60
+                            .mean().total_seconds() / 3600
+        
+        # Calculate the difference between max and min for each day (range)
+        differences = self.data.groupby('Day')['CGM'].apply(lambda x: x.max() - x.min())
+        mean_difference = mgdl_to_mmoll(differences.mean())
 
         # fractions
-        f1 = (values.mean() - 7.8 ) / 1.7
+        f1 = (mgdl_to_mmoll(self.mean()) - 7.8 ) / 1.7
 
-        f2 = (values.max() - values.min() - 7.5) / 2.9
+        f2 = (mean_difference - 7.5) / 2.9
 
         f3 = (time_minus_3_9 - 0.6) / 1.2
         
@@ -895,6 +894,87 @@ class Gframe:
             return mag
 
 
+    # 6. Computational methods for the analysis of glycemic dynamics
+        
+    # Detrended fluctuation analysis (DFA)
+    def dfa(self,
+            per_day: bool = False):
+        '''
+        Calculates the Detrended Fluctuation Analysis (DFA).
+
+        Parameters
+        ----------
+        per_day : bool, default False
+            If True, returns the an array with the DFA for each day. If False, returns the DFA for all days combined.
+
+        Returns
+        -------
+        dfa : float
+            Detrended fluctuation analysis.
+        '''
+        if per_day:
+            # Group data by day
+            day_groups = self.data.groupby('Day')
+
+            dfa = pd.Series(dtype=float)
+            for day, day_data in day_groups:
+                # Convert the timestamp values to seconds since the start of the dataset
+                x = (day_data['Timestamp'] - day_data['Timestamp'].min()).dt.total_seconds().values
+
+                # Integrated data
+                y = np.cumsum(day_data['CGM'].values - day_data['CGM'].mean())
+
+                # Generate segment_sizes
+                segment_sizes = np.logspace(start=0, stop=np.log2(x.size), num=int(np.log2(x.size))+1, base=2, dtype=int)
+
+                rms_values = []
+                for segment_size in segment_sizes:
+                    # Divide y into segments
+                    y_segments = np.array_split(y, x.size // segment_size)
+                    x_segments = np.array_split(x, x.size // segment_size)
+
+                    # Perform linear regression on each segment and calculate predicted values
+                    y_predicted = [linregress(x_segment, y_segment).slope * x_segment + linregress(x_segment, y_segment).intercept \
+                                   for x_segment, y_segment in zip(x_segments, y_segments)]
+                    y_predicted = np.concatenate(y_predicted)
+
+                    # Calculate the root mean square of the differences
+                    rms = np.sqrt(np.mean(np.square(y - y_predicted)))
+                    rms_values.append(rms)
+
+                # Perform linear regression between log(segment_sizes) and rms_values
+                dfa[day] = linregress(np.log(segment_sizes), np.log(rms_values)).slope
+
+            return dfa
+
+        else:
+            # Convert the timestamp values to seconds since the start of the dataset
+            x = (self.data['Timestamp'] - self.data['Timestamp'].min()).dt.total_seconds().values
+
+            # Integrated data
+            y = np.cumsum(self.data['CGM'].values - self.data['CGM'].mean())
+
+            # Generate segment_sizes
+            segment_sizes = np.geomspace(1, len(x), num=int(np.log2(len(x))+1), dtype=int)
+
+            rms_values = []
+            for segment_size in segment_sizes:
+                # Divide y into segments
+                y_segments = np.array_split(y, x.size // segment_size)
+                x_segments = np.array_split(x, x.size // segment_size)
+
+                # Perform linear regression on each segment and calculate predicted values
+                y_predicted = [linregress(x_segment, y_segment).slope * x_segment + linregress(x_segment, y_segment).intercept \
+                               for x_segment, y_segment in zip(x_segments, y_segments)]
+                y_predicted = np.concatenate(y_predicted)
+
+                # Calculate the root mean square of the differences
+                rms = np.sqrt(np.mean(np.square(y - y_predicted)))
+                rms_values.append(rms)
+
+            # Perform linear regression between log(segment_sizes) and rms_values
+            return linregress(np.log(segment_sizes), rms_values).slope
+            
 
 
 
