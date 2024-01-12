@@ -1,6 +1,7 @@
 #3rd party
 import numpy as np
 import pandas as pd
+import neurokit2 as nk
 from scipy.signal import find_peaks
 from scipy.stats import linregress
 
@@ -925,7 +926,7 @@ class Gframe:
                 y = np.cumsum(day_data['CGM'].values - day_data['CGM'].mean())
 
                 # Generate segment_sizes
-                segment_sizes = np.logspace(start=0, stop=np.log2(x.size), num=int(np.log2(x.size))+1, base=2, dtype=int)
+                segment_sizes = np.logspace(start=1, stop=np.log2(x.size), num=int(np.log2(x.size))+1, base=2, dtype=int)
 
                 rms_values = []
                 for segment_size in segment_sizes:
@@ -952,10 +953,11 @@ class Gframe:
             x = (self.data['Timestamp'] - self.data['Timestamp'].min()).dt.total_seconds().values
 
             # Integrated data
-            y = np.cumsum(self.data['CGM'].values - self.data['CGM'].mean())
+            y = np.cumsum(self.data['CGM'].values - self.mean())
 
             # Generate segment_sizes
-            segment_sizes = np.geomspace(1, len(x), num=int(np.log2(len(x))+1), dtype=int)
+            # Generate segment_sizes
+            segment_sizes = np.logspace(start=1, stop=np.log2(x.size), num=int(np.log2(x.size))+1, base=2, dtype=int)
 
             rms_values = []
             for segment_size in segment_sizes:
@@ -973,9 +975,76 @@ class Gframe:
                 rms_values.append(rms)
 
             # Perform linear regression between log(segment_sizes) and rms_values
-            return linregress(np.log(segment_sizes), rms_values).slope
+            return linregress(np.log(segment_sizes), np.log(rms_values)).slope
             
+    # Entropy Sample
+    def samp_en(self,
+                per_day: bool = False,
+                delay: int | None = None,
+                dimension: int | None = None,
+                tolerance: float | None = None,
+                **kwargs):
+        '''
+        Calculates the Sample Entropy using neurokit2.entropy_sample()
 
+        Parameters
+        ----------
+        per_day : bool, default False
+            If True, returns the an array with the Sample Entropy for each day. If False, returns the Sample Entropy for
+            all days combined.
+        delay : int, default None
+            Time Delay in samples (often denoted *Tau* :math:`\\tau`, sometimes referred to as *lag*). If None, the optimal 
+            delay will be estimated using neurokit2.complexity_delay().
+        dimension : int, default None
+            Embedding Dimension (*m*, sometimes referred to as *d* or *order*). If None, the optimal dimension will be
+            estimated using neurokit2.complexity_dimension().
+        tolerance : float, default None
+            Tolerance (often denoted as *r*), distance to consider two data points as similar. If None, the optimal tolerance 
+            will be estimated using neurokit2.complexity_tolerance().
+
+        Returns
+        -------
+        samp_en : float | pandas.Series
+            Entropy Sample.
+        '''
+        if per_day:
+            # Group data by day
+            day_groups = self.data.groupby('Day')
+
+            samp_en = pd.Series(dtype=float)
+            for day, day_data in day_groups:
+                # Get glucose values
+                signal = day_data['CGM'].values
+
+                # Estimate optimal parameters for sample entropy
+                if delay is None:
+                    delay, _  = nk.complexity_delay(signal)
+                if dimension is None:
+                    dimension, _ = nk.complexity_dimension(signal,delay=delay)
+                if tolerance is None:
+                    tolerance, _ = nk.complexity_tolerance(signal, delay=delay, dimension=dimension)
+
+                # Calculate sample entropy
+                day_samp_en, _ = nk.entropy_sample(signal, delay=delay, dimension=dimension, tolerance=tolerance)
+                samp_en[day] = day_samp_en                
+            
+            return samp_en
+
+        else:
+            # Get glucose values
+            signal = self.data['CGM'].values
+
+            # Estimate optimal parameters for sample entropy
+            if delay is None:
+                delay, _  = nk.complexity_delay(signal)
+            if dimension is None:
+                dimension, _ = nk.complexity_dimension(signal,delay=delay)
+            if tolerance is None:
+                tolerance, _ = nk.complexity_tolerance(signal, delay=delay, dimension=dimension)
+
+            # Calculate sample entropy
+            samp_en, _ = nk.entropy_sample(signal, delay=delay, dimension=dimension, tolerance=tolerance)
+            return samp_en
 
 
 
