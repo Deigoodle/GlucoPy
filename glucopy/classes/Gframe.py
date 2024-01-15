@@ -111,11 +111,12 @@ class Gframe:
         if per_day:
             # Group data by day
             day_groups = self.data.groupby('Day')
-            mean_per_day = day_groups['CGM'].mean(**kwargs)
-            return mean_per_day
+            mean = day_groups['CGM'].mean(**kwargs)
 
         else:
-            return self.data['CGM'].mean(**kwargs)
+            mean = self.data['CGM'].mean(**kwargs)
+
+        return mean
     
     # Standard Deviation, by default ddof=1, so its divided by n-1
     def std(self,
@@ -143,11 +144,12 @@ class Gframe:
         if per_day:
             # Group data by day
             day_groups = self.data.groupby('Day')
-            mean_per_day = day_groups['CGM'].std(ddof=ddof,**kwargs)
-            return mean_per_day
+            std = day_groups['CGM'].std(ddof=ddof,**kwargs)
         
         else:
-            return self.data['CGM'].std(ddof=ddof,**kwargs)
+            std = self.data['CGM'].std(ddof=ddof,**kwargs)
+
+        return std
     
     # Coefficient of Variation
     def cv(self,
@@ -173,10 +175,12 @@ class Gframe:
             Coefficient of variation of the CGM values.            
         '''
         if per_day:
-            return self.std(per_day=True,ddof=ddof,**kwargs)/self.mean(per_day=True,**kwargs)
+            cv = self.std(per_day=True,ddof=ddof,**kwargs)/self.mean(per_day=True,**kwargs)
           
         else:
-            return self.std(ddof=ddof,**kwargs)/self.mean(**kwargs)
+            cv = self.std(ddof=ddof,**kwargs)/self.mean(**kwargs)
+
+        return cv
             
     # % Coefficient of Variation
     def pcv(self,
@@ -202,10 +206,12 @@ class Gframe:
             Percentage coefficient of variation of the CGM values.
         '''
         if per_day:
-            return self.cv(per_day=True,ddof=ddof,**kwargs)*100
+            pcv = self.cv(per_day=True,ddof=ddof,**kwargs) * 100
           
         else:
-            return self.cv(ddof=ddof,**kwargs)*100
+            pcv = self.cv(ddof=ddof,**kwargs) * 100
+
+        return pcv
     
     # Quantiles
     def quantile(self,
@@ -236,11 +242,12 @@ class Gframe:
         if per_day:
             # Group data by day
             day_groups = self.data.groupby('Day')
-            quantile_per_day = day_groups['CGM'].quantile(q=q, interpolation=interpolation, **kwargs)
-            return quantile_per_day
+            quantile = day_groups['CGM'].quantile(q=q, interpolation=interpolation, **kwargs)
         
         else:
-            return self.data['CGM'].quantile(q=q, interpolation=interpolation, **kwargs)
+            quantile = self.data['CGM'].quantile(q=q, interpolation=interpolation, **kwargs)
+        
+        return quantile
     
     # Interquartile Range
     def iqr(self,
@@ -304,7 +311,8 @@ class Gframe:
             modd_values = []
             for time in unique_times:
                 modd_values.append(self.modd(time, slack))
-            return np.mean(modd_values)
+
+            modd = np.mean(modd_values)
         
         else: # calculate MODD for a given time
             # convert time to same format as self.data['Time']
@@ -324,10 +332,10 @@ class Gframe:
             # search given time in each day
             day_groups = self.data.groupby('Day')
             for day, day_data in day_groups:
-                mask_exact = day_data['Time'] == target_time
+                target_time_index = day_data['Time'] == target_time
                 # if exact time is found, use it
-                if mask_exact.any():
-                    cgm_values.append(day_data.loc[mask_exact, 'CGM'].values[0])
+                if target_time_index.any():
+                    cgm_values.append(day_data.loc[target_time_index, 'CGM'].values[0])
                 # if not, search for closest time within error range
                 elif slack > pd.Timedelta('0 min'):
                     # combine "day" and target_time to compare it with Timestamp
@@ -342,7 +350,9 @@ class Gframe:
                         if not ignore_na:
                             raise ValueError(f"No data found for date {day}")
 
-            return np.sum(np.abs(np.diff(cgm_values))) / (self.n_days)
+            modd = np.sum(np.abs(np.diff(cgm_values))) / (self.n_days)
+        
+        return modd
 
     # Time in Range
     def tir(self, 
@@ -394,8 +404,6 @@ class Gframe:
                     
                     result = np.array(time_count.apply(lambda x: str(datetime.timedelta(seconds=x))))
                 tir[day] = result
-
-            return tir
                     
         else:
             data_copy = self.data.copy()
@@ -405,10 +413,11 @@ class Gframe:
             if percentage:
                 result = np.array(time_count / time_count.sum()) * 100
                 if decimals is not None:
-                    result = np.round(result, decimals=decimals)
+                    tir = np.round(result, decimals=decimals)
             else:
-                result = time_count.apply(lambda x: str(datetime.timedelta(seconds=x)))
-            return result
+                tir = time_count.apply(lambda x: str(datetime.timedelta(seconds=x)))
+        
+        return tir
 
     
     # 2. Analysis of distribution in the plane for glycaemia dynamics.
@@ -458,16 +467,17 @@ class Gframe:
                 else:
                     fd[day] = np.array(result / result.sum())
 
-            return fd
         
         else:
             result = (pd.cut(self.data['CGM'], bins=target_range)
                         .groupby(pd.cut(self.data['CGM'], bins=target_range), observed=False).count())
             summed_results = result.sum()
             if decimals is not None:
-                return (result / summed_results).round(decimals=decimals)
+                fd = (result / summed_results).round(decimals=decimals)
             else:
-                return result / summed_results
+                fd = result / summed_results
+            
+        return fd
 
 
     # Ambulatory Glucose Profile (AGP)
@@ -560,27 +570,33 @@ class Gframe:
         return mage
 
     # Distance Travelled (DT)
-    def dt(self):
+    def dt(self,
+           per_day: bool = True):
         '''
         Calculates the Distance Travelled (DT) for each day.
 
         Parameters
         ----------
-        None
+        per_day : bool, default False
+            If True, returns a pandas Series with the DT for each day. If False, returns the DT for all days combined.
 
         Returns
         -------
         dt : list 
             List of DT for each day.
         '''
-        # Group data by day
-        day_groups = self.data.groupby('Day')
+        if per_day:
+            # Group data by day
+            day_groups = self.data.groupby('Day')
 
-        dt = pd.Series(dtype=float)
+            dt = pd.Series(dtype=float)
 
-        # Calculate DT for each day
-        for day, day_data in day_groups:
-            dt[day] = np.sum(np.abs(np.diff(day_data['CGM'])))
+            # Calculate DT for each day
+            for day, day_data in day_groups:
+                dt[day] = np.sum(np.abs(np.diff(day_data['CGM'])))
+
+        else:
+            dt = np.sum(np.abs(np.diff(self.data['CGM'])))
 
         return dt
     
@@ -588,6 +604,7 @@ class Gframe:
 
     # Low Blood Glucose Index (LBGI) and High Blood Glucose Index (HBGI)
     def bgi(self,
+            per_day: bool = True,
             index_type:str = 'h',
             maximum: bool = False):
         '''
@@ -595,6 +612,8 @@ class Gframe:
 
         Parameters
         ----------
+        per_day : bool, default False
+            If True, returns a pandas Series with the LBGI for each day. If False, returns the BGI for all days combined.
         index_type : str, default 'h'
             Type of index to calculate. Can be 'h' (High Blood Glucose Index) or 'l' (Low Blood Glucose Index).
         maximum : bool, default False
@@ -616,30 +635,48 @@ class Gframe:
             elif result <= 0 and index_type == 'h':
                 result = 0
             return result
+        
+        if per_day:
+            # Group data by day
+            day_groups = self.data.groupby('Day')
 
-        # Group data by day
-        day_groups = self.data.groupby('Day')
+            bgi = pd.Series(dtype=float)
+            for day, day_data in day_groups:
+                values = day_data['CGM'].values
+                if self.unit == 'mmol/L':
+                    values = mmoll_to_mgdl(values)
 
-        bgi = pd.Series(dtype=float)
-        for day, day_data in day_groups:
-            values = day_data['CGM'].values
+                f_values = np.vectorize(f)(values,index_type)
+                risk = 22.77 * np.square(f_values)
+                if maximum:
+                    bgi[day] = np.max(risk)
+                else:
+                    bgi[day] = np.mean(risk)
+
+        else: 
+            values = self.data['CGM'].values
             if self.unit == 'mmol/L':
                 values = mmoll_to_mgdl(values)
 
             f_values = np.vectorize(f)(values,index_type)
             risk = 22.77 * np.square(f_values)
             if maximum:
-                bgi[day] = np.max(risk)
+                bgi = np.max(risk)
             else:
-                bgi[day] = np.mean(risk)
+                bgi = np.mean(risk)
 
         return bgi
     
     # BGI Aliases
-    def lbgi(self):
-        return self.bgi(index_type='l')
-    def hbgi(self):
-        return self.bgi(index_type='h')
+    def lbgi(self, 
+             per_day: bool = True,
+             maximum: bool = False):
+        return self.bgi(per_day=per_day, index_type='l', maximum=maximum)
+    
+    def hbgi(self,
+             per_day: bool = True,
+             maximum: bool = False):
+        return self.bgi(per_day=per_day, index_type='h', maximum=maximum)
         
     # Average Daily Risk Range (ADRR)
     def adrr(self):
@@ -656,7 +693,7 @@ class Gframe:
             List of ADRR for each day.
         ''' 
 
-        adrr = self.bgi(index_type='h',maximum=True) + self.bgi(index_type='l',maximum=True)
+        adrr = self.bgi(index_type='h', maximum=True) + self.bgi(index_type='l', maximum=True)
         
         return np.mean(adrr)
 
@@ -685,8 +722,8 @@ class Gframe:
         if percentage:
             grade_sum = np.sum(grade)
             hypo = np.sum(grade[values < 3.9]) / grade_sum 
-            eugly = np.sum(grade[(values >= 3.9) & (values <= 7.8)]) / grade_sum
             hyper = np.sum(grade[values > 7.8]) / grade_sum
+            eugly = 1 - hypo - hyper
             grade = pd.Series([hypo, eugly, hyper], index=['Hypoglycaemia', 'Euglycaemia', 'Hyperglycaemia']) * 100
         
         return grade
@@ -779,38 +816,37 @@ class Gframe:
             day_groups = self.data.groupby('Day')
             conga = pd.Series(dtype=float)
             for day, day_data in day_groups:
-                dt = []
+                differences = []
                 for i in range(1, day_data.shape[0]):
                     # find a previous timestamp that is m hours before the current timestamp and within the slack range
-                    mask = (day_data['Timestamp'] < day_data['Timestamp'].iloc[i]) \
-                        & (day_data['Timestamp'] >= day_data['Timestamp'].iloc[i] - m - slack) \
-                        & (day_data['Timestamp'] <= day_data['Timestamp'].iloc[i] - m + slack)
-                    if mask.any():
+                    previous_index = (day_data['Timestamp'] >= day_data['Timestamp'].iloc[i] - m - slack) \
+                                    &(day_data['Timestamp'] <= day_data['Timestamp'].iloc[i] - m + slack)
+                    if previous_index.any():
                         if method == 'mean':
-                            previous_value = day_data.loc[mask, 'CGM'].mean()
+                            previous_value = day_data.loc[previous_index, 'CGM'].mean()
                         elif method == 'closest':
-                            closest_index = (day_data.loc[mask, 'Timestamp'] - day_data['Timestamp'].iloc[i]).abs().idxmin()
+                            closest_index = (day_data.loc[previous_index, 'Timestamp'] - day_data['Timestamp'].iloc[i]).abs().idxmin()
                             previous_value = day_data.loc[closest_index, 'CGM']
                         # calculate the difference between the current value and the previous value
-                        dt.append(day_data['CGM'].iloc[i] - previous_value)
-                conga[day] = np.std(dt)
+                        differences.append(day_data['CGM'].iloc[i] - previous_value)
+                conga[day] = np.std(differences)
         
         else:
-            dt = []
+            differences = []
             for i in range(1, self.data.shape[0]):
                 # find a previous timestamp that is m hours before the current timestamp and within the slack range
-                mask = (self.data['Timestamp'] < self.data['Timestamp'].iloc[i]) \
-                        & (self.data['Timestamp'] >= self.data['Timestamp'].iloc[i] - m - slack) \
-                        & (self.data['Timestamp'] <= self.data['Timestamp'].iloc[i] - m + slack)
-                if mask.any():
+                previous_index = (self.data['Timestamp'] >= self.data['Timestamp'].iloc[i] - m - slack) \
+                                &(self.data['Timestamp'] <= self.data['Timestamp'].iloc[i] - m + slack)
+                if previous_index.any():
                     if method == 'mean':
-                        previous_value = self.data.loc[mask, 'CGM'].mean()
+                        previous_value = self.data.loc[previous_index, 'CGM'].mean()
                     elif method == 'closest':
-                        closest_index = (self.data.loc[mask, 'Timestamp'] - self.data['Timestamp'].iloc[i]).abs().idxmin()
+                        closest_index = (self.data.loc[previous_index, 'Timestamp'] - self.data['Timestamp'].iloc[i]).abs().idxmin()
                         previous_value = self.data.loc[closest_index, 'CGM']
                     # calculate the difference between the current value and the previous value
-                    dt.append(self.data['CGM'].iloc[i] - previous_value)
-            conga = np.std(dt)
+                    differences.append(self.data['CGM'].iloc[i] - previous_value)
+
+            conga = np.std(differences)
 
         return conga
                     
@@ -846,7 +882,7 @@ class Gframe:
     # Mean Absolute Glucose Change per unit of time (MAG)
     def mag(self,
             per_day: bool = False,
-            unit: str = 'm'):
+            time_unit: str = 'm'):
         '''
         Calculates the Mean Absolute Glucose Change per unit of time (MAG).
 
@@ -854,8 +890,8 @@ class Gframe:
         ----------
         per_day : bool, default False
             If True, returns the an array with the MAG for each day. If False, returns the MAG for all days combined.
-        unit : str, default 'm' (minutes)
-            The time unit for the x-axis. Can be 's (seconds)', 'm (minutes)', or 'h (hours)'.
+        time_unit : str, default 'm' (minutes)
+            The time time_unit for the x-axis. Can be 's (seconds)', 'm (minutes)', or 'h (hours)'.
         
         Returns
         -------
@@ -863,14 +899,14 @@ class Gframe:
             Mean Absolute Glucose Change per unit of time.
         '''
         # Determine the factor to multiply the total seconds by
-        if unit == 's':
+        if time_unit == 's':
             factor = 1
-        elif unit == 'm':
+        elif time_unit == 'm':
             factor = 60
-        elif unit == 'h':
+        elif time_unit == 'h':
             factor = 3600
         else:
-            return "Error: Invalid time unit. Must be 's', 'm', or 'h'."
+            return "Error: Invalid time_unit. Must be 's', 'm', or 'h'."
         
         if per_day:
             # Group data by day
@@ -883,7 +919,6 @@ class Gframe:
                 cgm_diff = pd.Series(np.abs(np.diff(day_data['CGM'])))
                 # Calculate the MAG
                 mag[day] = np.sum(np.abs(cgm_diff)) / (timeStamp_diff.dt.total_seconds().sum()/factor)
-            return mag
         
         else:
             # Calculate the difference between consecutive timestamps
@@ -892,7 +927,8 @@ class Gframe:
             cgm_diff = pd.Series(np.abs(np.diff(self.data['CGM'])))
             # Calculate the MAG
             mag = np.sum(np.abs(cgm_diff)) / (timeStamp_diff.dt.total_seconds().sum()/factor)
-            return mag
+            
+        return mag
 
 
     # 6. Computational methods for the analysis of glycemic dynamics
@@ -946,8 +982,6 @@ class Gframe:
                 # Perform linear regression between log(segment_sizes) and rms_values
                 dfa[day] = linregress(np.log(segment_sizes), np.log(rms_values)).slope
 
-            return dfa
-
         else:
             # Convert the timestamp values to seconds since the start of the dataset
             x = (self.data['Timestamp'] - self.data['Timestamp'].min()).dt.total_seconds().values
@@ -975,14 +1009,16 @@ class Gframe:
                 rms_values.append(rms)
 
             # Perform linear regression between log(segment_sizes) and rms_values
-            return linregress(np.log(segment_sizes), np.log(rms_values)).slope
+            dfa = linregress(np.log(segment_sizes), np.log(rms_values)).slope
+
+        return dfa
             
-    # Entropy Sample
+    # Entropy Sample (SampEn)
     def samp_en(self,
                 per_day: bool = False,
-                delay: int | None = None,
-                dimension: int | None = None,
-                tolerance: float | None = None,
+                delay: int | None = 1,
+                dimension: int | None = 2,
+                tolerance: float | str | None = 'sd',
                 **kwargs):
         '''
         Calculates the Sample Entropy using neurokit2.entropy_sample()
@@ -992,21 +1028,25 @@ class Gframe:
         per_day : bool, default False
             If True, returns the an array with the Sample Entropy for each day. If False, returns the Sample Entropy for
             all days combined.
-        delay : int, default None
+        delay : int, default 1
             Time Delay in samples (often denoted *Tau* :math:`\\tau`, sometimes referred to as *lag*). If None, the optimal 
             delay will be estimated using neurokit2.complexity_delay().
-        dimension : int, default None
+        dimension : int, default 2
             Embedding Dimension (*m*, sometimes referred to as *d* or *order*). If None, the optimal dimension will be
             estimated using neurokit2.complexity_dimension().
         tolerance : float, default None
-            Tolerance (often denoted as *r*), distance to consider two data points as similar. If None, the optimal tolerance 
-            will be estimated using neurokit2.complexity_tolerance().
-
+            Tolerance (often denoted as *r*), distance to consider two data points as similar. If "sd" (default), will be
+            set to 0.2 * std. If None, the optimal tolerance  will be estimated using neurokit2.complexity_tolerance().
         Returns
         -------
         samp_en : float | pandas.Series
             Entropy Sample.
         '''
+        # Save original input
+        original_delay = delay
+        original_dimension = dimension
+        original_tolerance = tolerance
+
         if per_day:
             # Group data by day
             day_groups = self.data.groupby('Day')
@@ -1020,15 +1060,18 @@ class Gframe:
                 if delay is None:
                     delay, _  = nk.complexity_delay(signal)
                 if dimension is None:
-                    dimension, _ = nk.complexity_dimension(signal,delay=delay)
+                    dimension, _ = nk.complexity_dimension(signal, delay=delay)
                 if tolerance is None:
                     tolerance, _ = nk.complexity_tolerance(signal, delay=delay, dimension=dimension)
 
                 # Calculate sample entropy
                 day_samp_en, _ = nk.entropy_sample(signal, delay=delay, dimension=dimension, tolerance=tolerance)
-                samp_en[day] = day_samp_en                
-            
-            return samp_en
+                samp_en[day] = day_samp_en   
+
+                # reset delay, dimension and tolerance
+                delay = original_delay
+                dimension = original_dimension
+                tolerance = original_tolerance         
 
         else:
             # Get glucose values
@@ -1044,7 +1087,100 @@ class Gframe:
 
             # Calculate sample entropy
             samp_en, _ = nk.entropy_sample(signal, delay=delay, dimension=dimension, tolerance=tolerance)
-            return samp_en
+        
+        return samp_en
+        
+    # Multiscale Sample Entropy (MSE)
+    def mse(self,
+            per_day: bool = False,
+            scale = 'default',
+            dimension = 3,
+            tolerance = 'sd',
+            method = 'MSEn',
+            **kwargs):
+        '''
+        Calculates the Multiscale Sample Entropy using neurokit2.entropy_multiscale()
+
+        Parameters
+        ----------
+        per_day : bool, default False
+            If True, returns the an array with the Multiscale Sample Entropy for each day. If False, returns the 
+            Multiscale Sample Entropy for all days combined.
+        scale : str, int or list, default 'default'
+            A list of scale factors used for coarse graining the time series. If ‘default’, will use 
+            range(len(signal) / (dimension + 10)). If ‘max’, will use all scales until half the 
+            length of the signal. If an integer, will create a range until the specified int. For more information
+            view the documentation for
+            `neurokit2.entropy_multiscale() <https://neuropsychology.github.io/NeuroKit/functions/complexity.html#entropy-multiscale>`_.
+        dimension : int, default 3
+            Embedding Dimension (*m*, sometimes referred to as *d* or *order*). If None, the optimal dimension will be
+            estimated using neurokit2.complexity_dimension().
+        tolerance : float, default None
+            Tolerance (often denoted as *r*), distance to consider two data points as similar. If "sd" (default), will be
+            set to 0.2 * std. If None, the optimal tolerance  will be estimated using neurokit2.complexity_tolerance().
+        method : str, default 'MSEn'
+            Method to use. For more information view the documentation for neurokit2.entropy_multiscale() 
+            `neurokit2.entropy_multiscale() <https://neuropsychology.github.io/NeuroKit/functions/complexity.html#entropy-multiscale>`_.
+        **kwargs : dict
+            Additional keyword arguments to be passed to neurokit2.entropy_multiscale() 
+            
+        Returns
+        -------
+        mse : float | pandas.Series
+            Multiscale Sample Entropy.
+        '''
+        # Save original input
+        original_dimension = dimension
+        original_tolerance = tolerance
+
+        if per_day:
+            # Group data by day
+            day_groups = self.data.groupby('Day')
+
+            mse = pd.Series(dtype=float)
+            for day, day_data in day_groups:
+                # Get glucose values
+                signal = day_data['CGM'].values
+
+                # Estimate optimal parameters for sample entropy
+                if dimension is None:
+                    dimension, _ = nk.complexity_dimension(signal)
+                if tolerance is None:
+                    tolerance, _ = nk.complexity_tolerance(signal, dimension=dimension)
+
+                # Calculate sample entropy
+                day_mse, _ = nk.entropy_multiscale(signal, 
+                                                   scale=scale, 
+                                                   dimension=dimension, 
+                                                   tolerance=tolerance, 
+                                                   method=method, 
+                                                   **kwargs)
+                mse[day] = day_mse   
+
+                # reset dimension and tolerance
+                dimension = original_dimension
+                tolerance = original_tolerance
+
+        else:
+            # Get glucose values
+            signal = self.data['CGM'].values
+
+            # Estimate optimal parameters for sample entropy
+            if dimension is None:
+                dimension, _ = nk.complexity_dimension(signal)
+            if tolerance is None:
+                tolerance, _ = nk.complexity_tolerance(signal, dimension=dimension)
+
+            # Calculate sample entropy
+            mse, _ = nk.entropy_multiscale(signal, 
+                                           scale=scale, 
+                                           dimension=dimension, 
+                                           tolerance=tolerance, 
+                                           method=method, 
+                                           **kwargs)        
+            
+        return mse
+
 
 
 
