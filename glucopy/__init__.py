@@ -1,6 +1,4 @@
-from . import classes
-from . import utils
-from . import io
-from . import plot
-
-__all__ = ['classes', 'utils', 'io', 'plot']
+from .classes import *
+from .io import *
+from .plot import *
+from .utils import *

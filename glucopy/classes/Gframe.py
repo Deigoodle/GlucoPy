@@ -19,7 +19,7 @@ from glucopy.utils import (str_to_time,
 
 class Gframe:
     '''
-    Description
+    Class for the analysis of CGM data. it uses a pandas Dataframe as the main data structure.
 
     Parameters
     -----------
@@ -479,13 +479,9 @@ class Gframe:
             
         return fd
 
-
-    # Ambulatory Glucose Profile (AGP)
-    def agp(self):
-        pass
-
     # Area Under the Curve (AUC)
-    def auc(self, time_unit='m'):
+    def auc(self, 
+            time_unit='m'):
         '''
         Calculates the Area Under the Curve (AUC) for each day.
 
@@ -496,8 +492,8 @@ class Gframe:
 
         Returns
         -------
-        auc : list 
-            List of AUC for each day.
+        auc : Series 
+            Series of AUC for each day.
         '''
         # Determine the factor to multiply the total seconds by
         if time_unit == 's':
