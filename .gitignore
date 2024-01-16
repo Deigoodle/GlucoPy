@@ -2,6 +2,15 @@
 DATASETS/
 #examples.ipynb
 
+# Sphinx
+docs/build/
+docs/source/.doctrees/
+docs/source/_autosummary/
+docs/source/modules.rst
+docs/source/modules.rst.inc
+docs/source/glucopy.rst
+docs/source/glucopy.rst.inc
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
