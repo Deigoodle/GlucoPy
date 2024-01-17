@@ -1,17 +1,14 @@
-# 3rd party
-import pandas as pd
-
 # local
 from ..io import load_csv
 
-def data(dataset : str = 'prueba_1.csv'):
+def data(dataset : str = 'prueba_1'):
     '''
     Glucopy includes a few datasets to test the package, this function downloads
     and returns one of them as a Gframe object.
 
     The following datasets are available:
-    * prueba_1.csv
-    * prueba_2.csv
+    * prueba_1
+    * prueba_2
 
     Parameters
     ----------
@@ -37,4 +34,5 @@ def data(dataset : str = 'prueba_1.csv'):
                     date_column='Sello de tiempo del dispositivo',
                     cgm_column='Historial de glucosa mg/dL',
                     skiprows=2,
+                    date_format='%d-%m-%Y %H:%M',
                     )

@@ -26,20 +26,20 @@ class Gframe:
     data : pandas Dataframe 
         Dataframe containing the CGM signal information, it will be saved into a Dataframe with the columns 
         ['Timestamp','Day','Time','CGM']
-    unit : String, default 'mg/dL'
+    unit : str, default 'mg/dL'
         CGM signal measurement unit.
-    date_column : String or String array, default None
+    date_column : str or str array, default None
         The name or names of the column(s) containing the date information
-        If it's a String, it will be the name of the single column containing the date information
-        If it's a String array, it will be the 2 names of the columns containing the date information, eg. ['Date','Time']
+        If it's a str, it will be the name of the single column containing the date information
+        If it's a str array, it will be the 2 names of the columns containing the date information, eg. ['Date','Time']
         If it's None, it will be assumed that the date information is in the first column
-    cgm_column : String, default None
+    cgm_column : str, default None
         The name of the column containing the CGM signal information
         If it's None, it will be assumed that the CGM signal information is in the second column
+    date_format : str, default None
+        Format of the date information, if None, it will be assumed that the date information is in a consistent format
     dropna : bool, default True
         If True, removes all rows with NaN values
-    date_format : String, default None
-        Format of the date information, if None, it will be assumed that the date information is in a consistent format
     '''
 
     # Constructor
@@ -48,13 +48,14 @@ class Gframe:
                  unit:str = 'mg/dL',
                  date_column: list[str] | str | int = 0,
                  cgm_column: str | int = 1,
+                 date_format: str | None = None,
                  dropna:bool = True):
         
         # Check data is a dataframe
         if isinstance(data, pd.DataFrame):
             # Check date_column
             if isinstance(date_column, str) or isinstance(date_column, int):
-                self.data = disjoin_days_and_hours(data, date_column, cgm_column)
+                self.data = disjoin_days_and_hours(data, date_column, cgm_column, date_format)
 
             # if date_column is a list of 2 strings
             elif isinstance(date_column, Sequence) and len(date_column) == 2:
@@ -109,7 +110,7 @@ class Gframe:
 
         Examples
         --------
-                 
+
         '''
 
         if per_day:
