@@ -1,14 +1,17 @@
 # 3rd party
 import pandas as pd
 
-def data(dataset : str = 'prueba 1.csv'):
+# local
+from ..io import load_csv
+
+def data(dataset : str = 'prueba_1.csv'):
     '''
     Glucopy includes a few datasets to test the package, this function downloads
-    and returns one of them
+    and returns one of them as a Gframe object.
 
     The following datasets are available:
-    * prueba 1.csv
-    * prueba 2.csv
+    * prueba_1.csv
+    * prueba_2.csv
 
     Parameters
     ----------
@@ -24,4 +27,14 @@ def data(dataset : str = 'prueba 1.csv'):
 
     path = 'https://raw.githubusercontent.com/Deigoodle/GlucoPy/main/data/'
 
-    return pd.read_csv(path + dataset)
+    if dataset in ['prueba_1', 'prueba 1', 'prueba1','prueba_1.csv', 'prueba 1.csv', 'prueba1.csv']:
+        path += 'prueba_1.csv'
+
+    elif dataset in ['prueba_2', 'prueba 2', 'prueba2','prueba_2.csv', 'prueba 2.csv', 'prueba2.csv']:
+        path += 'prueba_2.csv'
+
+    return load_csv(path = path,
+                    date_column='Sello de tiempo del dispositivo',
+                    cgm_column='Historial de glucosa mg/dL',
+                    skiprows=2,
+                    )
