@@ -7,7 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   glucopy.classes
+   glucopy.Gframe
    glucopy.io
    glucopy.plot
    glucopy.utils

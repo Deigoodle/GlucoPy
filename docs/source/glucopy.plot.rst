@@ -7,28 +7,8 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   glucopy.plot.hist
    glucopy.plot.trace
-
-Submodules
-----------
-
-glucopy.plot.box module
------------------------
-
-.. automodule:: glucopy.plot.box
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   :no-index:
-
-glucopy.plot.hist module
-------------------------
-
-.. automodule:: glucopy.plot.hist
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   :no-index:
 
 Module contents
 ---------------

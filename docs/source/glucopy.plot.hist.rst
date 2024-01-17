@@ -1,10 +1,10 @@
-glucopy.utils package
-=====================
+glucopy.plot.hist package
+=========================
 
 Module contents
 ---------------
 
-.. automodule:: glucopy.utils
+.. automodule:: glucopy.plot.hist
    :members:
    :undoc-members:
    :show-inheritance:

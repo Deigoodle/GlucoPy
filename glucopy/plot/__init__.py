@@ -1,8 +1,5 @@
 from .box import box
 from .trace import *
-from .hist import (roc_hist,
-                   freq_hist)
+from .hist import *
 
-__all__ = ['box',
-           'roc_hist',
-           'freq_hist'] + trace.__all__
+__all__ = ['box'] + trace.__all__ + hist.__all__
