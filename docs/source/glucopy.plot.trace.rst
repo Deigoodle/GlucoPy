@@ -11,6 +11,7 @@ glucopy.plot.trace.agp module
    :members:
    :undoc-members:
    :show-inheritance:
+   :no-index:
 
 glucopy.plot.trace.mage module
 ------------------------------

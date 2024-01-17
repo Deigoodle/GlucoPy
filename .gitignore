@@ -1,6 +1,7 @@
 # DATASETS
 DATASETS/
-#examples.ipynb
+
+examples.ipynb
 
 # Sphinx
 docs/build/

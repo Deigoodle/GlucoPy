@@ -11,7 +11,7 @@ glucopy.classes.Gframe module
    :members:
    :undoc-members:
    :show-inheritance:
-   :no-index:
+   
 
 Module contents
 ---------------
@@ -20,3 +20,4 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
+   :no-index:

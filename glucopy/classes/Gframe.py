@@ -11,8 +11,8 @@ import datetime
 from typing import List
 
 # Local
-from glucopy.utils import disjoin_days_and_hours
-from glucopy.utils import (str_to_time,
+from glucopy.utils import (disjoin_days_and_hours,
+                           str_to_time,
                            time_to_str,
                            mgdl_to_mmoll, 
                            mmoll_to_mgdl)
@@ -100,12 +100,16 @@ class Gframe:
             If True, returns a pandas Series with the mean for each day. If False, returns the mean for all days combined.
         **kwargs : dict
             Additional keyword arguments to be passed to the function. For more information view the documentation for
-            pandas.DataFrameGroupBy.mean().
+            pandas.DataFrameGroupBy.mean() for per_day=True and pandas.DataFrame.mean() for per_day=False.
 
         Returns
         -------
         mean : float | pandas.Series
-            Mean of the CGM values.            
+            Mean of the CGM values.   
+
+        Examples
+        --------
+                 
         '''
 
         if per_day:
