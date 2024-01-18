@@ -13,12 +13,24 @@ def data(dataset : str = 'prueba_1'):
     Parameters
     ----------
     dataset : str, optional
-        Name of the dataset to download, by default 'prueba 1.csv'
+        Name of the dataset to download, by default 'prueba_1'
 
     Returns
     -------
     Gframe
         Gframe object
+
+    Examples
+    --------
+    >>> import glucopy as gp
+    >>> gf = gp.data('prueba_1')
+    >>> gf.data.head()
+                Timestamp         Day      Time    CGM
+    0 2020-11-27 21:29:00  2020-11-27  21:29:00  235.0
+    1 2020-11-27 21:44:00  2020-11-27  21:44:00  242.0
+    2 2020-11-27 21:59:00  2020-11-27  21:59:00  257.0
+    3 2020-11-27 22:14:00  2020-11-27  22:14:00  277.0
+    4 2020-11-27 22:29:00  2020-11-27  22:29:00  299.0
     '''
     dataset = dataset.lower()
 

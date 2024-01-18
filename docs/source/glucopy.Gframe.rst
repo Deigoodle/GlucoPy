@@ -1,14 +1,5 @@
-glucopy.Gframe package
+glucopy.Gframe
 =======================
-
-Submodules
-----------
-
-glucopy.Gframe module
------------------------------
-
-.. index::
-   pair: glucopy.classes.Gframe; methods
 
 .. automodule:: glucopy.classes.Gframe
    :members:

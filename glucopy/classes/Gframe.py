@@ -83,7 +83,7 @@ class Gframe:
 
 
     # String representation
-    def __str__(self):
+    def __repr__(self):
         return str(self.data)
     
     # Metrics 
@@ -110,7 +110,29 @@ class Gframe:
 
         Examples
         --------
+        Calculating the mean for the entire dataset:
 
+        >>> import glucopy as gp
+        >>> gf = gp.data('prueba_1')
+        >>> gf.mean()
+        144.28068149003755
+
+        Calculating the mean for each day:
+
+        >>> gf.mean(per_day=True)
+        Day
+        2020-11-27    277.636364
+        2020-11-28    138.677083
+        2020-11-29    146.552083
+        2020-11-30    120.052083
+        2020-12-01    139.229167
+                         ...
+        2021-03-14    146.645161
+        2021-03-15    126.593407
+        2021-03-16    161.957895
+        2021-03-17    113.833333
+        2021-03-18    170.000000
+        Name: CGM, Length: 112, dtype: float64        
         '''
 
         if per_day:
@@ -144,7 +166,33 @@ class Gframe:
         Returns
         -------
         std : float | pandas.Series
-            Standard deviation of the CGM values.            
+            Standard deviation of the CGM values.     
+
+        Examples
+        --------
+        Calculating the standard deviation for the entire dataset:
+
+        >>> import glucopy as gp
+        >>> gf = gp.data('prueba_1')
+        >>> gf.std()       
+        64.72869948664865
+
+        Calculating the standard deviation for each day:
+
+        >>> gf.std(per_day=True)
+        Day
+        2020-11-27    24.336280
+        2020-11-28    43.822968
+        2020-11-29    62.984020
+        2020-11-30    30.983992
+        2020-12-01    42.210370
+                        ...
+        2021-03-14    41.304449
+        2021-03-15    76.089418
+        2021-03-16    44.160470
+        2021-03-17    37.014269
+        2021-03-18    50.011934
+        Name: CGM, Length: 112, dtype: float64        
         '''
         if per_day:
             # Group data by day
@@ -177,7 +225,33 @@ class Gframe:
         Returns
         -------
         cv : float | pandas.Series
-            Coefficient of variation of the CGM values.            
+            Coefficient of variation of the CGM values.    
+
+        Examples
+        --------
+        Calculating the coefficient of variation for the entire dataset:
+
+        >>> import glucopy as gp
+        >>> gf = gp.data('prueba_1')
+        >>> gf.cv()
+        0.44863039748753963
+
+        Calculating the coefficient of variation for each day:
+
+        >>> gf.cv(per_day=True)
+        Day
+        2020-11-27    0.087655
+        2020-11-28    0.316007
+        2020-11-29    0.429772
+        2020-11-30    0.258088
+        2020-12-01    0.303172
+                        ...
+        2021-03-14    0.281663
+        2021-03-15    0.601054
+        2021-03-16    0.272666
+        2021-03-17    0.325162
+        2021-03-18    0.294188
+        Name: CGM, Length: 112, dtype: float64        
         '''
         if per_day:
             cv = self.std(per_day=True,ddof=ddof,**kwargs)/self.mean(per_day=True,**kwargs)
@@ -209,6 +283,32 @@ class Gframe:
         -------
         pcv : float | pandas.Series
             Percentage coefficient of variation of the CGM values.
+
+        Examples
+        --------
+        Calculating the percentage coefficient of variation for the entire dataset:
+
+        >>> import glucopy as gp
+        >>> gf = gp.data('prueba_1')
+        >>> gf.pcv()
+        44.86303974875396
+
+        Calculating the percentage coefficient of variation for each day:
+
+        >>> gf.pcv(per_day=True)
+        Day
+        2020-11-27     8.765523
+        2020-11-28    31.600728
+        2020-11-29    42.977226
+        2020-11-30    25.808792
+        2020-12-01    30.317189
+                        ...
+        2021-03-14    28.166254
+        2021-03-15    60.105356
+        2021-03-16    27.266636
+        2021-03-17    32.516196
+        2021-03-18    29.418785
+        Name: CGM, Length: 112, dtype: float64
         '''
         if per_day:
             pcv = self.cv(per_day=True,ddof=ddof,**kwargs) * 100
@@ -243,6 +343,37 @@ class Gframe:
         -------
         quantile : float | pandas.Series
             Quantile of the CGM values.
+
+        Examples
+        --------
+        Calculating the median for the entire dataset:
+
+        >>> import glucopy as gp
+        >>> gf = gp.data('prueba_1')
+        >>> gf.quantile()
+        134.0
+
+        Calculating the first quartile for the entire dataset:
+
+        >>> gf.quantile(q=0.25)
+        93.0
+
+        Calculating the median for each day:
+
+        >>> gf.quantile(per_day=True)
+        Day
+        2020-11-27    279.0
+        2020-11-28    131.5
+        2020-11-29    131.5
+        2020-11-30    122.5
+        2020-12-01    144.0
+                      ...
+        2021-03-14    138.0
+        2021-03-15    100.0
+        2021-03-16    158.0
+        2021-03-17    119.5
+        2021-03-18    182.0
+        Name: CGM, Length: 112, dtype: float64
         '''
         if per_day:
             # Group data by day
@@ -274,9 +405,34 @@ class Gframe:
 
         Returns
         -------
-        iqr : float | list
+        iqr : pandas.Series | float
             Interquartile range of the CGM values.
 
+        Examples
+        --------
+        Calculating the interquartile range for the entire dataset:
+
+        >>> import glucopy as gp
+        >>> gf = gp.data('prueba_1')
+        >>> gf.iqr()
+        95.0
+
+        Calculating the interquartile range for each day:
+
+        >>> gf.iqr(per_day=True)
+        Day
+        2020-11-27     36.00
+        2020-11-28     64.50
+        2020-11-29    109.25
+        2020-11-30     39.25
+        2020-12-01     63.50
+                       ...
+        2021-03-14     71.00
+        2021-03-15    143.50
+        2021-03-16     68.00
+        2021-03-17     60.50
+        2021-03-18     90.50
+        Name: CGM, Length: 112, dtype: float64
         '''
         
         q1 = self.quantile(per_day=per_day,q=0.25, interpolation=interpolation, **kwargs)
@@ -305,6 +461,20 @@ class Gframe:
         Returns
         -------
         modd : float
+
+        Examples
+        --------
+        Calculating the MODD for a target time:
+
+        >>> import glucopy as gp
+        >>> gf = gp.data('prueba_1')
+        >>> gf.modd(target_time='08:00')
+        2.642857142857143
+
+        Calculating the MODD for all times:
+
+        >>> gf.modd()
+        3.9657118055555554
         '''
 
         # Check input
@@ -361,18 +531,18 @@ class Gframe:
 
     # Time in Range
     def tir(self, 
-            per_day: bool = True,
-            target_range:list= [0,70,180,350],
+            per_day: bool = False,
+            target_range:list= [0,70,180],
             percentage: bool = True,
             decimals: int = 2):
         '''
-        Calculates the Time in Range (TIR) for a given target range of glucose for each day.
+        Calculates the Time in Range (TIR) for a given target range of glucose.
 
         Parameters
         ----------
         per_day : bool, default False
             If True, returns a pandas Series with the TIR for each day. If False, returns the TIR for all days combined.
-        target_range : list of int|float, default [0,70,180,350]
+        target_range : list of int|float, default [0,70,180]
             Target range in CGM unit for low, normal and high glycaemia. It must have at least 2 values, for the "normal"
             range, low and high values will be values outside that range.
         percentage : bool, default True
@@ -383,7 +553,39 @@ class Gframe:
         Returns
         -------
         tir : pandas.Series 
-            Series of TIR for each day, indexed by day.
+            Series of TIR for each day.
+
+        Examples
+        --------
+        Calculating the TIR for the entire dataset and the default range (0,70,180), this will return an array with the
+        tir between 0 and 70, between 70 and 180 and above 180:
+
+        >>> import glucopy as gp
+        >>> gf = gp.data('prueba_1')
+        >>> gf.tir()
+        array([11.24, 61.04, 27.72])
+
+        Calculating the TIR for a custom range:
+
+        >>> gf.tir(target_range=[0,70,150,180,230])
+        array([11.24, 47.7 , 13.34, 16.96, 10.75])
+
+        Calculating the TIR for each day and the default range (0,70,180):
+
+        >>> gf.tir(per_day=True)
+        Day
+        2020-11-27        [0.0, 0.0, 100.0]
+        2020-11-28     [3.23, 76.84, 19.93]
+        2020-11-29    [11.66, 56.81, 31.53]
+        2020-11-30      [5.27, 89.47, 5.27]
+        2020-12-01      [8.36, 70.65, 21.0]
+                              ...
+        2021-03-14     [2.16, 71.79, 26.05]
+        2021-03-15    [36.36, 32.73, 30.91]
+        2021-03-16     [2.11, 59.73, 38.16]
+        2021-03-17     [14.74, 81.08, 4.17]
+        2021-03-18      [1.6, 45.04, 53.36]
+        Length: 112, dtype: object
         '''
         # Check input, Ensure target_range is a list with 0 and the max value of the data
         if not isinstance(target_range, list) or not all(isinstance(i, (int, float)) for i in target_range):
@@ -397,6 +599,8 @@ class Gframe:
             day_groups = self.data.groupby('Day')
 
             tir = pd.Series(dtype=float)
+            tir.index.name = 'Day'
+
             for day, day_data in day_groups:
                 day_data['Time_Diff'] = day_data['Timestamp'].diff().dt.total_seconds() 
                 day_data['ranges'] = pd.cut(day_data['CGM'], bins=target_range)
@@ -406,8 +610,7 @@ class Gframe:
                     if decimals is not None:
                         result = np.round(result, decimals=decimals)
                 else:
-                    
-                    result = np.array(time_count.apply(lambda x: str(datetime.timedelta(seconds=x))))
+                    result = list(time_count.apply(lambda x: pd.to_timedelta(x, unit='s')))
                 tir[day] = result
                     
         else:
@@ -420,7 +623,7 @@ class Gframe:
                 if decimals is not None:
                     tir = np.round(result, decimals=decimals)
             else:
-                tir = time_count.apply(lambda x: str(datetime.timedelta(seconds=x)))
+                tir = time_count.apply(lambda x: pd.to_timedelta(x, unit='s'))
         
         return tir
 
@@ -429,8 +632,8 @@ class Gframe:
 
     # Frecuency distribution : counts the amount of observations given certain intervals of CGM
     def fd(self,
-           per_day: bool = True,
-           target_range: list = [0,70,180,350],
+           per_day: bool = False,
+           target_range: list = [0,70,180],
            decimals: int = 2):
         '''
         Calculates the Frequency Distribution (FD) for a given target range of glucose.
@@ -439,7 +642,7 @@ class Gframe:
         ----------
         per_day : bool, default False
             If True, returns a pandas Series with the FD for each day. If False, returns the FD for all days combined.
-        target_range : list of int|float, default [0,70,180,350]
+        target_range : list of int|float, default [0,70,180]
             Target range in CGM unit. It must have at least 2 values, for the "normal"
             range, low and high values will be values outside that range.
         decimals : int, default 2
@@ -447,8 +650,49 @@ class Gframe:
 
         Returns
         -------
-        tir : pandas.Series 
-            Series of TIR for each day, indexed by day.
+        fd : pandas.Series 
+            Series of fd for each day.
+
+        Examples
+        --------
+        Calculating the FD for the entire dataset and the default range (0,70,180):
+
+        >>> import glucopy as gp
+        >>> gf = gp.data('prueba_1')
+        >>> gf.fd()
+        CGM
+        (0.0, 70.0]       0.11
+        (70.0, 180.0]     0.61
+        (180.0, 445.0]    0.28
+        Name: CGM, dtype: float64
+
+        Calculating the FD for a custom range:
+
+        >>> gf.fd(target_range=[0,70,150,180,230])
+        CGM
+        (0.0, 70.0]       0.11
+        (70.0, 150.0]     0.48
+        (150.0, 180.0]    0.13
+        (180.0, 230.0]    0.17
+        (230.0, 445.0]    0.11
+        Name: CGM, dtype: float64
+
+        Calculating the FD for each day and the default range (0,70,180):
+
+        >>> gf.fd(per_day=True)
+        Day
+        2020-11-27       [0.0, 0.0, 1.0]
+        2020-11-28    [0.03, 0.76, 0.21]
+        2020-11-29    [0.11, 0.57, 0.31]
+        2020-11-30     [0.05, 0.9, 0.05]
+        2020-12-01    [0.08, 0.71, 0.21]
+                             ...
+        2021-03-14    [0.02, 0.71, 0.27]
+        2021-03-15    [0.37, 0.32, 0.31]
+        2021-03-16    [0.02, 0.59, 0.39]
+        2021-03-17    [0.15, 0.81, 0.04]
+        2021-03-18    [0.02, 0.46, 0.52]
+        Length: 112, dtype: object
         '''
         # Check input, Ensure target_range is a list with 0 and the max value of the data
         if not isinstance(target_range, list) or not all(isinstance(i, (int, float)) for i in target_range):
@@ -463,6 +707,7 @@ class Gframe:
 
             # Initialize fd as an empty Series
             fd = pd.Series(dtype=float)
+            fd.index.name = 'Day'
 
             for day, day_data in day_groups:
                 day_data['ranges'] = pd.cut(day_data['CGM'], bins=target_range)
@@ -485,20 +730,54 @@ class Gframe:
         return fd
 
     # Area Under the Curve (AUC)
-    def auc(self, 
+    def auc(self,
+            per_day: bool = False,
             time_unit='m'):
         '''
         Calculates the Area Under the Curve (AUC) for each day.
 
         Parameters
         ----------
+        per_day : bool, default False
+            If True, returns a pandas Series with the AUC for each day. If False, returns the AUC for all days combined.
         time_unit : str, default 'm' (minutes)
             The time unit for the x-axis. Can be 's (seconds)', 'm (minutes)', or 'h (hours)'.
 
         Returns
         -------
-        auc : Series 
+        auc : pandas.Series 
             Series of AUC for each day.
+
+        Examples
+        --------
+        Calculating the AUC for the entire dataset and minutes as the time unit (default):
+
+        >>> import glucopy as gp
+        >>> gf = gp.data('prueba_1')
+        >>> gf.auc()
+        23075053.5
+
+        Calculating the AUC for the entire dataset and hours as the time unit:
+
+        >>> gf.auc(time_unit='h')
+        384584.2249999998
+
+        Calculating the AUC for each day and minutes as the time unit (default):
+
+        >>> gf.auc(per_day=True)
+        Day
+        2020-11-27     42030.0
+        2020-11-28    196732.0
+        2020-11-29    208903.5
+        2020-11-30    170577.5
+        2020-12-01    198432.0
+                        ...
+        2021-03-14    203134.5
+        2021-03-15    175091.0
+        2021-03-16    230388.0
+        2021-03-17    163342.0
+        2021-03-18    158780.5
+        Length: 112, dtype: float64
         '''
         # Determine the factor to multiply the total seconds by
         if time_unit == 's':
@@ -510,17 +789,24 @@ class Gframe:
         else:
             return "Error: Invalid time unit. Must be 's', 'm', or 'h'."
 
-        # Group data by day
-        day_groups = self.data.groupby('Day')
+        if per_day:
+            # Group data by day
+            day_groups = self.data.groupby('Day')
 
-        # Initialize auc as an empty Series
-        auc = pd.Series(dtype=float)
+            # Initialize auc as an empty Series
+            auc = pd.Series(dtype=float)
+            auc.index.name = 'Day'
 
-        # Calculate AUC for each day
-        for day, day_data in day_groups:
+            # Calculate AUC for each day
+            for day, day_data in day_groups:
+                # Convert timestamps to the specified time unit
+                time_values = (day_data['Timestamp'] - day_data['Timestamp'].min()).dt.total_seconds() / factor
+                auc[day] = np.trapz(y=day_data['CGM'], x=time_values)
+        
+        else:
             # Convert timestamps to the specified time unit
-            time_values = (day_data['Timestamp'] - day_data['Timestamp'].min()).dt.total_seconds() / factor
-            auc[day] = np.trapz(y=day_data['CGM'], x=time_values)
+            time_values = (self.data['Timestamp'] - self.data['Timestamp'].min()).dt.total_seconds() / factor
+            auc = np.trapz(y=self.data['CGM'], x=time_values)
 
         return auc
 
@@ -538,14 +824,34 @@ class Gframe:
 
         Returns
         -------
-        mage : list 
-            List of MAGE for each day.
+        mage : pd.Series 
+            Series of MAGE for each day.
+
+        Examples
+        --------
+        >>> import glucopy as gp
+        >>> gf = gp.data('prueba_1')
+        >>> gf.mage()
+        Day
+        2020-11-27     35.000000
+        2020-11-28    107.000000
+        2020-11-29    104.666667
+        2020-11-30     52.285714
+        2020-12-01     84.800000
+                         ...
+        2021-03-14     95.333333
+        2021-03-15    170.666667
+        2021-03-16    113.333333
+        2021-03-17     75.750000
+        2021-03-18    141.000000
+        Length: 112, dtype: float64
         '''
         # Group data by day
         day_groups = self.data.groupby('Day')
 
         # Initialize mage as an empty Series
         mage = pd.Series(dtype=float)
+        mage.index.name = 'Day'
 
         # Calculate MAGE for each day
         
@@ -572,7 +878,7 @@ class Gframe:
 
     # Distance Travelled (DT)
     def dt(self,
-           per_day: bool = True):
+           per_day: bool = False):
         '''
         Calculates the Distance Travelled (DT) for each day.
 
@@ -583,14 +889,41 @@ class Gframe:
 
         Returns
         -------
-        dt : list 
-            List of DT for each day.
+        dt : pandas.Series | float
+            DT for each day or for all days combined.
+
+        Examples
+        --------
+        Calculating the DT for the entire dataset:
+
+        >>> import glucopy as gp
+        >>> gf = gp.data('prueba_1')
+        >>> gf.dt()
+        115800.0
+
+        Calculating the DT for each day:
+
+        >>> gf.dt(per_day=True)
+        Day
+        2020-11-27     104.0
+        2020-11-28    1134.0
+        2020-11-29    1104.0
+        2020-11-30     953.0
+        2020-12-01     932.0
+                       ...
+        2021-03-14     877.0
+        2021-03-15    1176.0
+        2021-03-16     934.0
+        2021-03-17     824.0
+        2021-03-18     482.0
+        Length: 112, dtype: float64
         '''
         if per_day:
             # Group data by day
             day_groups = self.data.groupby('Day')
 
             dt = pd.Series(dtype=float)
+            dt.index.name = 'Day'
 
             # Calculate DT for each day
             for day, day_data in day_groups:
@@ -605,11 +938,14 @@ class Gframe:
 
     # Low Blood Glucose Index (LBGI) and High Blood Glucose Index (HBGI)
     def bgi(self,
-            per_day: bool = True,
+            per_day: bool = False,
             index_type:str = 'h',
             maximum: bool = False):
         '''
-        Calculates the Low Blood Glucose Index (LBGI) for each day. Only works for CGM values in mg/dL.
+        Calculates the Low Blood Glucose Index (LBGI).
+
+        * Using lbgi() is equivalent to using bgi(index_type='l').
+        * Using hbgi() is equivalent to using bgi(index_type='h').
 
         Parameters
         ----------
@@ -618,12 +954,38 @@ class Gframe:
         index_type : str, default 'h'
             Type of index to calculate. Can be 'h' (High Blood Glucose Index) or 'l' (Low Blood Glucose Index).
         maximum : bool, default False
-            If True, returns the maximum LBGI or HBGI for each day. If False, returns the mean LBGI or HBGI for each day.
+            If True, returns the maximum LBGI or HBGI. If False, returns the mean LBGI or HBGI.
 
         Returns
         -------
-        bgi : list 
-            List of LBGI or HBGI for each day.
+        bgi : pandas.Series | float
+
+
+        Examples
+        --------
+        Calculating the LBGI for the entire dataset:
+
+        >>> import glucopy as gp
+        >>> gf = gp.data('prueba_1')
+        >>> gf.bgi(index_type='l')
+        0.6005371065550101
+
+        Calculating the HBGI for each day:
+
+        >>> gf.bgi(index_type='h', per_day=True)
+        Day
+        2020-11-27    28.799278
+        2020-11-28     3.661239
+        2020-11-29     6.152449
+        2020-11-30     1.327048
+        2020-12-01     3.615027
+                        ...
+        2021-03-14     4.304307
+        2021-03-15     1.000879
+        2021-03-16     6.395923
+        2021-03-17     1.355991
+        2021-03-18     8.217001
+        Length: 112, dtype: float64
         '''
         index_type.lower()
         if index_type != 'h' and index_type != 'l':
@@ -642,6 +1004,8 @@ class Gframe:
             day_groups = self.data.groupby('Day')
 
             bgi = pd.Series(dtype=float)
+            bgi.index.name = 'Day'
+
             for day, day_data in day_groups:
                 values = day_data['CGM'].values
                 if self.unit == 'mmol/L':
@@ -670,19 +1034,25 @@ class Gframe:
     
     # BGI Aliases
     def lbgi(self, 
-             per_day: bool = True,
+             per_day: bool = False,
              maximum: bool = False):
+        '''
+        This is the same that bgi(index_type='l').
+        '''
         return self.bgi(per_day=per_day, index_type='l', maximum=maximum)
     
     def hbgi(self,
-             per_day: bool = True,
+             per_day: bool = False,
              maximum: bool = False):
+        '''
+        This is the same that bgi(index_type='h').
+        '''
         return self.bgi(per_day=per_day, index_type='h', maximum=maximum)
         
     # Average Daily Risk Range (ADRR)
     def adrr(self):
         '''
-        Calculates the Average Daily Risk Range (ADRR) for each day. Only works for CGM values in mg/dL.
+        Calculates the Average Daily Risk Range (ADRR).
 
         Parameters
         ----------
@@ -690,11 +1060,18 @@ class Gframe:
 
         Returns
         -------
-        adrr : list
-            List of ADRR for each day.
+        adrr : float
+            ADRR.
+
+        Examples
+        --------
+        >>> import glucopy as gp
+        >>> gf = gp.data('prueba_1')
+        >>> gf.adrr()
+        33.43109583737018       
         ''' 
 
-        adrr = self.bgi(index_type='h', maximum=True) + self.bgi(index_type='l', maximum=True)
+        adrr = self.bgi(per_day=True,index_type='h', maximum=True) + self.bgi(per_day=True,index_type='l', maximum=True)
         
         return np.mean(adrr)
 
@@ -702,7 +1079,8 @@ class Gframe:
     def grade(self,
               percentage: bool = True):
         '''
-        Calculates the Glycaemic Risk Assessment Diabetes Equation (GRADE) for each day. Only works for CGM values in mg/dL.
+        Calculates the contributions of the Glycaemic Risk Assessment Diabetes Equation (GRADE) to Hypoglycaemia,
+        Euglycaemia and Hyperglycaemia. Or the GRADE scores for each value.
 
         Parameters
         ----------
@@ -712,8 +1090,26 @@ class Gframe:
 
         Returns
         -------
-        grade : list
-            List of GRADE for each day.
+        grade : pandas.Series
+            Series of GRADE for each day.
+
+        Examples
+        --------
+        Calculating the contributions of GRADE to Hypoglycaemia, Euglycaemia and Hyperglycaemia:
+
+        >>> import glucopy as gp
+        >>> gf = gp.data('prueba_1')
+        >>> gf.grade()
+        Hypoglycaemia     15.998863
+        Euglycaemia        8.048088
+        Hyperglycaemia    75.953049
+        dtype: float64
+
+        Calculating the GRADE scores for each value:
+
+        >>> gf.grade(percentage=False)
+        array([18.31382179, 19.19466807, 21.03152427, ..., 16.11130759,
+        17.80365615, 18.5670411 ])
         '''
         values = self.data['CGM'].values
         if self.unit == 'mg/dL':
@@ -743,16 +1139,26 @@ class Gframe:
         -------
         qscore : float
             Q-Score.
+
+        Examples
+        --------
+        >>> import glucopy as gp
+        >>> gf = gp.data('prueba_1')
+        >>> gf.qscore()
+        9.875365502258244
         '''
-        # Time spent under 3.9 mmol/L in hours
-        time_minus_3_9 = self.tir(target_range=[70.2], percentage=False)\
-                             .apply(lambda x: pd.to_timedelta(x[0]))\
-                             .mean().total_seconds() / 3600
+        # Time in range [70.2,160.2] mg/dL = [3.9,8.9] mmol/L
+        tir_per_day = self.tir(per_day=True, target_range=[70.2,160.2], percentage=False)
+
+        # List with the Timedelta corresponding to the time spent under 3.9 mmol/L for each day
+        tir_per_day_minus_3_9 = [time[0].total_seconds() for time in tir_per_day] 
+        # Mean of the previous list in hours
+        hours_minus_3_9 = np.mean(tir_per_day_minus_3_9) / 3600
         
-        # Time spent over 8.9 mmol/L in hours
-        time_plus_8_9 = self.tir(target_range=[160.2], percentage=False)\
-                            .apply(lambda x: pd.to_timedelta(x[1]))\
-                            .mean().total_seconds() / 3600
+        # List with the Timedelta corresponding to the time spent under 8.9 mmol/L for each day
+        tir_per_day_plus_8_9 = [time[2].total_seconds() for time in tir_per_day] 
+        # Mean of the previous list in hours
+        hours_plus_8_9 = np.mean(tir_per_day_plus_8_9) / 3600
         
         # Calculate the difference between max and min for each day (range)
         differences = self.data.groupby('Day')['CGM'].apply(lambda x: x.max() - x.min())
@@ -763,9 +1169,9 @@ class Gframe:
 
         f2 = (mean_difference - 7.5) / 2.9
 
-        f3 = (time_minus_3_9 - 0.6) / 1.2
+        f3 = (hours_minus_3_9 - 0.6) / 1.2
         
-        f4 = (time_plus_8_9 - 6.2) / 5.7
+        f4 = (hours_plus_8_9 - 6.2) / 5.7
 
         f5 = (mgdl_to_mmoll(self.modd()) - 1.8) / 0.9
 
@@ -776,7 +1182,7 @@ class Gframe:
 
     # Continuous Overall Net Glycaemic Action (CONGA)
     def conga(self,
-              per_day: bool = True,
+              per_day: bool = False,
               m: int = 1,
               slack: int = 0,
               method: str = 'closest'):
@@ -785,7 +1191,7 @@ class Gframe:
 
         Parameters
         ----------
-        per_day : bool, default True
+        per_day : bool, default False
             If True, returns the CONGA for each day separately. If False, returns the CONGA for all days combined.
         m : int, default 1
             Number of hours to use for the CONGA calculation.
@@ -799,6 +1205,32 @@ class Gframe:
         -------
         conga : list
             List of CONGA for each day.
+
+        Examples
+        --------
+        Calculating the CONGA for the entire dataset:
+
+        >>> import glucopy as gp
+        >>> gf = gp.data('prueba_1')
+        >>> gf.conga()
+        45.7152490712806
+
+        Calculating the CONGA for each day with a 5 minutes slack:
+
+        >>> gf.conga(per_day=True, slack=5)
+        Day
+        2020-11-27    36.496016
+        2020-11-28    48.483861
+        2020-11-29    42.308001
+        2020-11-30    38.459285
+        2020-12-01    43.522677
+                        ...
+        2021-03-14    38.941758
+        2021-03-15    54.760036
+        2021-03-16    40.996396
+        2021-03-17    39.864284
+        2021-03-18    38.575042
+        Length: 112, dtype: float64
         '''
         # Check input
         if m < 0:
@@ -816,6 +1248,8 @@ class Gframe:
             # Group data by day
             day_groups = self.data.groupby('Day')
             conga = pd.Series(dtype=float)
+            conga.index.name = 'Day'
+
             for day, day_data in day_groups:
                 differences = []
                 for i in range(1, day_data.shape[0]):
@@ -913,6 +1347,8 @@ class Gframe:
             # Group data by day
             day_groups = self.data.groupby('Day')
             mag = pd.Series(dtype=float)
+            mag.index.name = 'Day'
+
             for day, day_data in day_groups:
                 # Calculate the difference between consecutive timestamps
                 timeStamp_diff = pd.Series(np.diff(day_data['Timestamp']))
@@ -955,6 +1391,8 @@ class Gframe:
             day_groups = self.data.groupby('Day')
 
             dfa = pd.Series(dtype=float)
+            dfa.index.name = 'Day'
+
             for day, day_data in day_groups:
                 # Convert the timestamp values to seconds since the start of the dataset
                 x = (day_data['Timestamp'] - day_data['Timestamp'].min()).dt.total_seconds().values
@@ -1053,6 +1491,8 @@ class Gframe:
             day_groups = self.data.groupby('Day')
 
             samp_en = pd.Series(dtype=float)
+            samp_en.index.name = 'Day'
+
             for day, day_data in day_groups:
                 # Get glucose values
                 signal = day_data['CGM'].values
@@ -1139,6 +1579,8 @@ class Gframe:
             day_groups = self.data.groupby('Day')
 
             mse = pd.Series(dtype=float)
+            mse.index.name = 'Day'
+
             for day, day_data in day_groups:
                 # Get glucose values
                 signal = day_data['CGM'].values

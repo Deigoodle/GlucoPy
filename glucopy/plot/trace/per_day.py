@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 from ...classes import Gframe
 
 def per_day(gf: Gframe,
-            num_days: int = None,
+            num_days: int = 0,
             height: float = None,
             width: float = None,
     ):
@@ -17,7 +17,7 @@ def per_day(gf: Gframe,
     gf : Gframe
         Gframe object to plot
     num_days : int, optional
-        Number of days to plot, by default None
+        Number of days to plot, if 0 all days are plotted, by default 0
     height : float, optional
         Height of the plot, by default None
     width : float, optional
@@ -41,7 +41,7 @@ def per_day(gf: Gframe,
         # Convert time to seconds past midnight
         seconds = day_data['Time'].apply(lambda x: x.hour * 3600 + x.minute * 60 + x.second)
 
-        if trace_count == None or trace_count < num_days:
+        if num_days == 0 or trace_count < num_days:
             visibility = True
         else:
             visibility = 'legendonly'

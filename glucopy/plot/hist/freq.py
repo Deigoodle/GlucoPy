@@ -6,7 +6,7 @@ from ...classes import Gframe
 
 def freq(gf: Gframe,
               per_day: bool = True,
-              target_range: list = [0,70,180,350],
+              target_range: list = [0,70,180],
               height: float = None,
               width: float = None):
     '''
@@ -19,7 +19,7 @@ def freq(gf: Gframe,
     per_day : bool, optional
         If True, the plot will be separated by days, by default False
     target_range : list, optional
-        Target range for the glucose, by default [0,70,180,350]
+        Target range for the glucose, by default [0,70,180]
     height : float, optional
         Height of the figure, by default None
     width : float, optional

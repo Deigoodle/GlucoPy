@@ -23,6 +23,7 @@ author = 'Diego Soto Castillo'
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.napoleon',  # Enables support for NumPy-style docstrings
               'sphinx.ext.viewcode',  # Add links to highlighted source code
+              'sphinx.ext.autosummary'
               ]
 
 templates_path = ['_templates']
@@ -33,3 +34,6 @@ exclude_patterns = []
 
 html_theme = 'pydata_sphinx_theme'
 html_static_path = ['_static']
+
+autosummary_generate = True
+
