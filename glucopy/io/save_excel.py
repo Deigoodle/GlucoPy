@@ -4,7 +4,6 @@ from ..classes import Gframe
 
 def save_excel(gframe: Gframe,
              path: str,
-             sep: str = ',',
              include_index: bool = False,
              include_time_and_day: bool = False,
              **kwargs):
@@ -20,9 +19,6 @@ def save_excel(gframe: Gframe,
         Any valid string path is acceptable. The string could be a URL. Valid
         URL schemes include http, ftp, s3, and file. For more information view
         the documentation for pandas.DataFrame.to_csv
-    sep : str, default None
-        Character to use as delimiter, if None ',' will be used. For more information view the 
-        documentation for pandas.DataFrame.to_csv
     include_index : bool, default False
         Write row names (index). For more information view the documentation for pandas.DataFrame.to_csv
     include_time_and_day : bool, default False
@@ -34,6 +30,13 @@ def save_excel(gframe: Gframe,
     -------
     Nothing
 
+    Examples
+    --------
+    Save a Gframe object into a xlsx file
+
+    >>> import glucopy as gp
+    >>> gf = gp.data()
+    >>> gp.save_excel(gf, 'data.xlsx')
     '''
     # Create a copy of the data
     df = gframe.data.copy()
@@ -43,4 +46,4 @@ def save_excel(gframe: Gframe,
         df.drop(columns=['Day','Time'], inplace=True)
 
     # Save the csv file
-    df.to_excel(path, sep=sep, index=include_index, **kwargs)
+    df.to_excel(path, index=include_index, **kwargs)

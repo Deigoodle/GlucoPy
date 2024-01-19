@@ -23,7 +23,10 @@ author = 'Diego Soto Castillo'
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.napoleon',  # Enables support for NumPy-style docstrings
               'sphinx.ext.viewcode',  # Add links to highlighted source code
-              'sphinx.ext.autosummary'
+              'sphinx.ext.autosummary',
+              'IPython.sphinxext.ipython_console_highlighting',
+              'IPython.sphinxext.ipython_directive',
+              'matplotlib.sphinxext.plot_directive' # Enables plotting in sphinx
               ]
 
 templates_path = ['_templates']
@@ -36,4 +39,8 @@ html_theme = 'pydata_sphinx_theme'
 html_static_path = ['_static']
 
 autosummary_generate = True
+
+# plot configuration
+plot_html_show_source_link = False
+plot_html_show_formats = False
 

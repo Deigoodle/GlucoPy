@@ -34,6 +34,14 @@ def save_csv(gframe: Gframe,
     -------
     Nothing
 
+    Examples
+    --------
+    Save a Gframe object into a csv file
+
+    >>> import glucopy as gp
+    >>> gf = gp.data()
+    >>> gp.save_csv(gf, 'data.csv')
+
     '''
     # Create a copy of the data
     df = gframe.data.copy()

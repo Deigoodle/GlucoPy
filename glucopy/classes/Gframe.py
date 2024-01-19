@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import neurokit2 as nk
 from scipy.signal import find_peaks
-from scipy.stats import linregress
 
 # Built-in
 from collections.abc import Sequence
@@ -15,7 +14,8 @@ from glucopy.utils import (disjoin_days_and_hours,
                            str_to_time,
                            time_to_str,
                            mgdl_to_mmoll, 
-                           mmoll_to_mgdl)
+                           mmoll_to_mgdl,
+                           time_factor)
 
 class Gframe:
     '''
@@ -112,27 +112,17 @@ class Gframe:
         --------
         Calculating the mean for the entire dataset:
 
-        >>> import glucopy as gp
-        >>> gf = gp.data('prueba_1')
-        >>> gf.mean()
-        144.28068149003755
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.mean()
 
         Calculating the mean for each day:
 
-        >>> gf.mean(per_day=True)
-        Day
-        2020-11-27    277.636364
-        2020-11-28    138.677083
-        2020-11-29    146.552083
-        2020-11-30    120.052083
-        2020-12-01    139.229167
-                         ...
-        2021-03-14    146.645161
-        2021-03-15    126.593407
-        2021-03-16    161.957895
-        2021-03-17    113.833333
-        2021-03-18    170.000000
-        Name: CGM, Length: 112, dtype: float64        
+        .. ipython:: python
+
+            gf.mean(per_day=True)     
         '''
 
         if per_day:
@@ -172,27 +162,17 @@ class Gframe:
         --------
         Calculating the standard deviation for the entire dataset:
 
-        >>> import glucopy as gp
-        >>> gf = gp.data('prueba_1')
-        >>> gf.std()       
-        64.72869948664865
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.std()       
 
         Calculating the standard deviation for each day:
 
-        >>> gf.std(per_day=True)
-        Day
-        2020-11-27    24.336280
-        2020-11-28    43.822968
-        2020-11-29    62.984020
-        2020-11-30    30.983992
-        2020-12-01    42.210370
-                        ...
-        2021-03-14    41.304449
-        2021-03-15    76.089418
-        2021-03-16    44.160470
-        2021-03-17    37.014269
-        2021-03-18    50.011934
-        Name: CGM, Length: 112, dtype: float64        
+        .. ipython:: python
+
+            gf.std(per_day=True)
         '''
         if per_day:
             # Group data by day
@@ -231,27 +211,17 @@ class Gframe:
         --------
         Calculating the coefficient of variation for the entire dataset:
 
-        >>> import glucopy as gp
-        >>> gf = gp.data('prueba_1')
-        >>> gf.cv()
-        0.44863039748753963
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.cv()
 
         Calculating the coefficient of variation for each day:
 
-        >>> gf.cv(per_day=True)
-        Day
-        2020-11-27    0.087655
-        2020-11-28    0.316007
-        2020-11-29    0.429772
-        2020-11-30    0.258088
-        2020-12-01    0.303172
-                        ...
-        2021-03-14    0.281663
-        2021-03-15    0.601054
-        2021-03-16    0.272666
-        2021-03-17    0.325162
-        2021-03-18    0.294188
-        Name: CGM, Length: 112, dtype: float64        
+        .. ipython:: python
+
+            gf.cv(per_day=True)       
         '''
         if per_day:
             cv = self.std(per_day=True,ddof=ddof,**kwargs)/self.mean(per_day=True,**kwargs)
@@ -288,27 +258,17 @@ class Gframe:
         --------
         Calculating the percentage coefficient of variation for the entire dataset:
 
-        >>> import glucopy as gp
-        >>> gf = gp.data('prueba_1')
-        >>> gf.pcv()
-        44.86303974875396
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.pcv()
 
         Calculating the percentage coefficient of variation for each day:
 
-        >>> gf.pcv(per_day=True)
-        Day
-        2020-11-27     8.765523
-        2020-11-28    31.600728
-        2020-11-29    42.977226
-        2020-11-30    25.808792
-        2020-12-01    30.317189
-                        ...
-        2021-03-14    28.166254
-        2021-03-15    60.105356
-        2021-03-16    27.266636
-        2021-03-17    32.516196
-        2021-03-18    29.418785
-        Name: CGM, Length: 112, dtype: float64
+        .. ipython:: python
+
+            gf.pcv(per_day=True)
         '''
         if per_day:
             pcv = self.cv(per_day=True,ddof=ddof,**kwargs) * 100
@@ -348,32 +308,23 @@ class Gframe:
         --------
         Calculating the median for the entire dataset:
 
-        >>> import glucopy as gp
-        >>> gf = gp.data('prueba_1')
-        >>> gf.quantile()
-        134.0
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.quantile()
 
         Calculating the first quartile for the entire dataset:
 
-        >>> gf.quantile(q=0.25)
-        93.0
+        .. ipython:: python
+
+            gf.quantile(q=0.25)
 
         Calculating the median for each day:
 
-        >>> gf.quantile(per_day=True)
-        Day
-        2020-11-27    279.0
-        2020-11-28    131.5
-        2020-11-29    131.5
-        2020-11-30    122.5
-        2020-12-01    144.0
-                      ...
-        2021-03-14    138.0
-        2021-03-15    100.0
-        2021-03-16    158.0
-        2021-03-17    119.5
-        2021-03-18    182.0
-        Name: CGM, Length: 112, dtype: float64
+        .. ipython:: python
+
+            gf.quantile(per_day=True)
         '''
         if per_day:
             # Group data by day
@@ -412,27 +363,17 @@ class Gframe:
         --------
         Calculating the interquartile range for the entire dataset:
 
-        >>> import glucopy as gp
-        >>> gf = gp.data('prueba_1')
-        >>> gf.iqr()
-        95.0
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.iqr()
 
         Calculating the interquartile range for each day:
 
-        >>> gf.iqr(per_day=True)
-        Day
-        2020-11-27     36.00
-        2020-11-28     64.50
-        2020-11-29    109.25
-        2020-11-30     39.25
-        2020-12-01     63.50
-                       ...
-        2021-03-14     71.00
-        2021-03-15    143.50
-        2021-03-16     68.00
-        2021-03-17     60.50
-        2021-03-18     90.50
-        Name: CGM, Length: 112, dtype: float64
+        .. ipython:: python
+
+            gf.iqr(per_day=True)
         '''
         
         q1 = self.quantile(per_day=per_day,q=0.25, interpolation=interpolation, **kwargs)
@@ -466,15 +407,17 @@ class Gframe:
         --------
         Calculating the MODD for a target time:
 
-        >>> import glucopy as gp
-        >>> gf = gp.data('prueba_1')
-        >>> gf.modd(target_time='08:00')
-        2.642857142857143
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.modd(target_time='08:00')
 
         Calculating the MODD for all times:
 
-        >>> gf.modd()
-        3.9657118055555554
+        .. ipython:: python
+
+            gf.modd()
         '''
 
         # Check input
@@ -560,32 +503,23 @@ class Gframe:
         Calculating the TIR for the entire dataset and the default range (0,70,180), this will return an array with the
         tir between 0 and 70, between 70 and 180 and above 180:
 
-        >>> import glucopy as gp
-        >>> gf = gp.data('prueba_1')
-        >>> gf.tir()
-        array([11.24, 61.04, 27.72])
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.tir()
 
         Calculating the TIR for a custom range:
 
-        >>> gf.tir(target_range=[0,70,150,180,230])
-        array([11.24, 47.7 , 13.34, 16.96, 10.75])
+        .. ipython:: python
+
+            gf.tir(target_range=[0,70,150,180,230])
 
         Calculating the TIR for each day and the default range (0,70,180):
 
-        >>> gf.tir(per_day=True)
-        Day
-        2020-11-27        [0.0, 0.0, 100.0]
-        2020-11-28     [3.23, 76.84, 19.93]
-        2020-11-29    [11.66, 56.81, 31.53]
-        2020-11-30      [5.27, 89.47, 5.27]
-        2020-12-01      [8.36, 70.65, 21.0]
-                              ...
-        2021-03-14     [2.16, 71.79, 26.05]
-        2021-03-15    [36.36, 32.73, 30.91]
-        2021-03-16     [2.11, 59.73, 38.16]
-        2021-03-17     [14.74, 81.08, 4.17]
-        2021-03-18      [1.6, 45.04, 53.36]
-        Length: 112, dtype: object
+        .. ipython:: python
+
+            gf.tir(per_day=True)
         '''
         # Check input, Ensure target_range is a list with 0 and the max value of the data
         if not isinstance(target_range, list) or not all(isinstance(i, (int, float)) for i in target_range):
@@ -657,42 +591,23 @@ class Gframe:
         --------
         Calculating the FD for the entire dataset and the default range (0,70,180):
 
-        >>> import glucopy as gp
-        >>> gf = gp.data('prueba_1')
-        >>> gf.fd()
-        CGM
-        (0.0, 70.0]       0.11
-        (70.0, 180.0]     0.61
-        (180.0, 445.0]    0.28
-        Name: CGM, dtype: float64
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.fd()
 
         Calculating the FD for a custom range:
 
-        >>> gf.fd(target_range=[0,70,150,180,230])
-        CGM
-        (0.0, 70.0]       0.11
-        (70.0, 150.0]     0.48
-        (150.0, 180.0]    0.13
-        (180.0, 230.0]    0.17
-        (230.0, 445.0]    0.11
-        Name: CGM, dtype: float64
+        .. ipython:: python
 
+            gf.fd(target_range=[0,70,150,180,230])
+        
         Calculating the FD for each day and the default range (0,70,180):
 
-        >>> gf.fd(per_day=True)
-        Day
-        2020-11-27       [0.0, 0.0, 1.0]
-        2020-11-28    [0.03, 0.76, 0.21]
-        2020-11-29    [0.11, 0.57, 0.31]
-        2020-11-30     [0.05, 0.9, 0.05]
-        2020-12-01    [0.08, 0.71, 0.21]
-                             ...
-        2021-03-14    [0.02, 0.71, 0.27]
-        2021-03-15    [0.37, 0.32, 0.31]
-        2021-03-16    [0.02, 0.59, 0.39]
-        2021-03-17    [0.15, 0.81, 0.04]
-        2021-03-18    [0.02, 0.46, 0.52]
-        Length: 112, dtype: object
+        .. ipython:: python
+
+            gf.fd(per_day=True)
         '''
         # Check input, Ensure target_range is a list with 0 and the max value of the data
         if not isinstance(target_range, list) or not all(isinstance(i, (int, float)) for i in target_range):
@@ -752,42 +667,26 @@ class Gframe:
         --------
         Calculating the AUC for the entire dataset and minutes as the time unit (default):
 
-        >>> import glucopy as gp
-        >>> gf = gp.data('prueba_1')
-        >>> gf.auc()
-        23075053.5
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.auc()
 
         Calculating the AUC for the entire dataset and hours as the time unit:
 
-        >>> gf.auc(time_unit='h')
-        384584.2249999998
+        .. ipython:: python
+
+            gf.auc(time_unit='h')
 
         Calculating the AUC for each day and minutes as the time unit (default):
 
-        >>> gf.auc(per_day=True)
-        Day
-        2020-11-27     42030.0
-        2020-11-28    196732.0
-        2020-11-29    208903.5
-        2020-11-30    170577.5
-        2020-12-01    198432.0
-                        ...
-        2021-03-14    203134.5
-        2021-03-15    175091.0
-        2021-03-16    230388.0
-        2021-03-17    163342.0
-        2021-03-18    158780.5
-        Length: 112, dtype: float64
+        .. ipython:: python
+
+            gf.auc(per_day=True)
         '''
         # Determine the factor to multiply the total seconds by
-        if time_unit == 's':
-            factor = 1
-        elif time_unit == 'm':
-            factor = 60
-        elif time_unit == 'h':
-            factor = 3600
-        else:
-            return "Error: Invalid time unit. Must be 's', 'm', or 'h'."
+        factor = time_factor(time_unit)
 
         if per_day:
             # Group data by day
@@ -829,22 +728,11 @@ class Gframe:
 
         Examples
         --------
-        >>> import glucopy as gp
-        >>> gf = gp.data('prueba_1')
-        >>> gf.mage()
-        Day
-        2020-11-27     35.000000
-        2020-11-28    107.000000
-        2020-11-29    104.666667
-        2020-11-30     52.285714
-        2020-12-01     84.800000
-                         ...
-        2021-03-14     95.333333
-        2021-03-15    170.666667
-        2021-03-16    113.333333
-        2021-03-17     75.750000
-        2021-03-18    141.000000
-        Length: 112, dtype: float64
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.mage()
         '''
         # Group data by day
         day_groups = self.data.groupby('Day')
@@ -894,29 +782,19 @@ class Gframe:
 
         Examples
         --------
-        Calculating the DT for the entire dataset:
+        Calculating the DT for the entire dataset (default):
 
-        >>> import glucopy as gp
-        >>> gf = gp.data('prueba_1')
-        >>> gf.dt()
-        115800.0
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.dt()
 
         Calculating the DT for each day:
 
-        >>> gf.dt(per_day=True)
-        Day
-        2020-11-27     104.0
-        2020-11-28    1134.0
-        2020-11-29    1104.0
-        2020-11-30     953.0
-        2020-12-01     932.0
-                       ...
-        2021-03-14     877.0
-        2021-03-15    1176.0
-        2021-03-16     934.0
-        2021-03-17     824.0
-        2021-03-18     482.0
-        Length: 112, dtype: float64
+        .. ipython:: python
+
+            gf.dt(per_day=True)
         '''
         if per_day:
             # Group data by day
@@ -965,27 +843,17 @@ class Gframe:
         --------
         Calculating the LBGI for the entire dataset:
 
-        >>> import glucopy as gp
-        >>> gf = gp.data('prueba_1')
-        >>> gf.bgi(index_type='l')
-        0.6005371065550101
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.bgi(index_type='l')
 
         Calculating the HBGI for each day:
 
-        >>> gf.bgi(index_type='h', per_day=True)
-        Day
-        2020-11-27    28.799278
-        2020-11-28     3.661239
-        2020-11-29     6.152449
-        2020-11-30     1.327048
-        2020-12-01     3.615027
-                        ...
-        2021-03-14     4.304307
-        2021-03-15     1.000879
-        2021-03-16     6.395923
-        2021-03-17     1.355991
-        2021-03-18     8.217001
-        Length: 112, dtype: float64
+        .. ipython:: python
+
+            gf.bgi(index_type='h', per_day=True)
         '''
         index_type.lower()
         if index_type != 'h' and index_type != 'l':
@@ -1065,10 +933,11 @@ class Gframe:
 
         Examples
         --------
-        >>> import glucopy as gp
-        >>> gf = gp.data('prueba_1')
-        >>> gf.adrr()
-        33.43109583737018       
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.adrr()  
         ''' 
 
         adrr = self.bgi(per_day=True,index_type='h', maximum=True) + self.bgi(per_day=True,index_type='l', maximum=True)
@@ -1097,19 +966,17 @@ class Gframe:
         --------
         Calculating the contributions of GRADE to Hypoglycaemia, Euglycaemia and Hyperglycaemia:
 
-        >>> import glucopy as gp
-        >>> gf = gp.data('prueba_1')
-        >>> gf.grade()
-        Hypoglycaemia     15.998863
-        Euglycaemia        8.048088
-        Hyperglycaemia    75.953049
-        dtype: float64
+        .. ipython:: python
 
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.grade()
+        
         Calculating the GRADE scores for each value:
 
-        >>> gf.grade(percentage=False)
-        array([18.31382179, 19.19466807, 21.03152427, ..., 16.11130759,
-        17.80365615, 18.5670411 ])
+        .. ipython:: python
+
+            gf.grade(percentage=False)
         '''
         values = self.data['CGM'].values
         if self.unit == 'mg/dL':
@@ -1142,10 +1009,11 @@ class Gframe:
 
         Examples
         --------
-        >>> import glucopy as gp
-        >>> gf = gp.data('prueba_1')
-        >>> gf.qscore()
-        9.875365502258244
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.qscore()
         '''
         # Time in range [70.2,160.2] mg/dL = [3.9,8.9] mmol/L
         tir_per_day = self.tir(per_day=True, target_range=[70.2,160.2], percentage=False)
@@ -1208,29 +1076,19 @@ class Gframe:
 
         Examples
         --------
-        Calculating the CONGA for the entire dataset:
+        Calculating the CONGA for the entire dataset (default):
 
-        >>> import glucopy as gp
-        >>> gf = gp.data('prueba_1')
-        >>> gf.conga()
-        45.7152490712806
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.conga()
 
         Calculating the CONGA for each day with a 5 minutes slack:
 
-        >>> gf.conga(per_day=True, slack=5)
-        Day
-        2020-11-27    36.496016
-        2020-11-28    48.483861
-        2020-11-29    42.308001
-        2020-11-30    38.459285
-        2020-12-01    43.522677
-                        ...
-        2021-03-14    38.941758
-        2021-03-15    54.760036
-        2021-03-16    40.996396
-        2021-03-17    39.864284
-        2021-03-18    38.575042
-        Length: 112, dtype: float64
+        .. ipython:: python
+
+            gf.conga(per_day=True, slack=5)
         '''
         # Check input
         if m < 0:
@@ -1299,19 +1157,28 @@ class Gframe:
         -------
         gvp : float
             Glucose Variability Percentage.
+
+        Examples
+        --------
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.gvp()
         '''
+
         # Calculate the difference between consecutive timestamps
         timeStamp_diff = pd.Series(np.diff(self.data['Timestamp']))
         # Calculate the difference between consecutive CGM values
         cgm_diff = pd.Series(np.diff(self.data['CGM']))
 
         line_length  = np.sum( np.sqrt( np.square(cgm_diff) \
-                                      + np.square(timeStamp_diff.dt.total_seconds()/60) ) )
+                                      + np.square(timeStamp_diff.dt.total_seconds() / 60) ) )
         
         t0 = pd.Timedelta(self.data['Timestamp'].tail(1).values[0] \
-                         -self.data['Timestamp'].head(1).values[0]).total_seconds()/60
+                         -self.data['Timestamp'].head(1).values[0]).total_seconds() / 60
         
-        gvp = (line_length/t0 - 1) *100
+        gvp = (line_length/t0 - 1) * 100
         return gvp
     
     # Mean Absolute Glucose Change per unit of time (MAG)
@@ -1332,16 +1199,31 @@ class Gframe:
         -------
         mag : float
             Mean Absolute Glucose Change per unit of time.
+
+        Examples
+        --------
+        Calculating the MAG for the entire dataset and minutes as the time unit (default):
+
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.mag()
+
+        Calculating the MAG for the entire dataset and hours as the time unit:
+
+        .. ipython:: python
+
+            gf.mag(time_unit='h')
+
+        Calculating the MAG for each day and minutes as the time unit:
+
+        .. ipython:: python
+
+            gf.mag(per_day=True)
         '''
         # Determine the factor to multiply the total seconds by
-        if time_unit == 's':
-            factor = 1
-        elif time_unit == 'm':
-            factor = 60
-        elif time_unit == 'h':
-            factor = 3600
-        else:
-            return "Error: Invalid time_unit. Must be 's', 'm', or 'h'."
+        factor = time_factor(time_unit)
         
         if per_day:
             # Group data by day
@@ -1372,8 +1254,99 @@ class Gframe:
         
     # Detrended fluctuation analysis (DFA)
     def dfa(self,
-            per_day: bool = False):
+            per_day: bool = False,
+            scale = 'default',
+            overlap: bool = True,
+            integrate: bool = True,
+            order: int = 1,
+            show: bool = False,
+            **kwargs):
         '''
+        Calculates the Detrended Fluctuation Analysis (DFA) using neurokit2.fractal_dfa().
+
+        For more information on the parameters and details of the neurokit2.fractal_dfa() method, 
+        see the neurokit2 documentation: 
+        `neurokit2.fractal_dfa() <https://neuropsychology.github.io/NeuroKit/functions/complexity.html#neurokit2.complexity.fractal_dfa>`_.
+
+        Parameters
+        ----------
+        per_day : bool, default False
+            If True, returns the an array with the DFA for each day. If False, returns the DFA for all days combined. If
+            a day has very few data points, the DFA for that day will be NaN.
+
+        Returns
+        -------
+        dfa : float | pandas.Series
+            Detrended fluctuation analysis.
+
+        Examples
+        --------
+        Calculating the DFA for the entire dataset:
+
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.dfa()
+
+        Calculating the DFA for each day:
+
+        .. ipython:: python
+
+            gf.dfa(per_day=True)
+        
+        Calculating and showing the DFA for the entire dataset:
+
+        .. ipython:: python
+
+            gf.dfa(show=True)
+
+        .. plot::
+           :context: close-figs
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.dfa(show=True)
+        '''
+
+        if per_day:
+            # Group data by day
+            day_groups = self.data.groupby('Day')
+
+            dfa = pd.Series(dtype=float)
+            dfa.index.name = 'Day'
+
+            for day, day_data in day_groups:
+                try:
+                    day_dfa, _ = nk.fractal_dfa(day_data['CGM'].values,
+                                                scale=scale,
+                                                overlap=overlap,
+                                                integrate=integrate,
+                                                order=order,
+                                                show=show,
+                                                **kwargs)
+                except:
+                    day_dfa = np.nan
+                dfa[day] = day_dfa
+        
+        else:
+            try:
+                dfa, _ = nk.fractal_dfa(self.data['CGM'].values,
+                                    scale=scale,
+                                    overlap=overlap,
+                                    integrate=integrate,
+                                    order=order,
+                                    show=show,
+                                    **kwargs)
+            except:
+                dfa = np.nan
+            
+        return dfa
+
+
+    '''def dfa(self,
+            per_day: bool = False):
+        ''
         Calculates the Detrended Fluctuation Analysis (DFA).
 
         Parameters
@@ -1385,7 +1358,7 @@ class Gframe:
         -------
         dfa : float
             Detrended fluctuation analysis.
-        '''
+        ''
         if per_day:
             # Group data by day
             day_groups = self.data.groupby('Day')
@@ -1429,7 +1402,6 @@ class Gframe:
             y = np.cumsum(self.data['CGM'].values - self.mean())
 
             # Generate segment_sizes
-            # Generate segment_sizes
             segment_sizes = np.logspace(start=1, stop=np.log2(x.size), num=int(np.log2(x.size))+1, base=2, dtype=int)
 
             rms_values = []
@@ -1450,7 +1422,7 @@ class Gframe:
             # Perform linear regression between log(segment_sizes) and rms_values
             dfa = linregress(np.log(segment_sizes), np.log(rms_values)).slope
 
-        return dfa
+        return dfa'''
             
     # Entropy Sample (SampEn)
     def samp_en(self,
@@ -1462,24 +1434,35 @@ class Gframe:
         '''
         Calculates the Sample Entropy using neurokit2.entropy_sample()
 
+        For more information on the parameters and details of the neurokit2.entropy_sample() method, 
+        see the `neurokit2 documentation <https://neuropsychology.github.io/NeuroKit/functions/complexity.html#neurokit2.complexity.entropy_sample>`_.
+
         Parameters
         ----------
         per_day : bool, default False
             If True, returns the an array with the Sample Entropy for each day. If False, returns the Sample Entropy for
             all days combined.
-        delay : int, default 1
-            Time Delay in samples (often denoted *Tau* :math:`\\tau`, sometimes referred to as *lag*). If None, the optimal 
-            delay will be estimated using neurokit2.complexity_delay().
-        dimension : int, default 2
-            Embedding Dimension (*m*, sometimes referred to as *d* or *order*). If None, the optimal dimension will be
-            estimated using neurokit2.complexity_dimension().
-        tolerance : float, default None
-            Tolerance (often denoted as *r*), distance to consider two data points as similar. If "sd" (default), will be
-            set to 0.2 * std. If None, the optimal tolerance  will be estimated using neurokit2.complexity_tolerance().
+        
         Returns
         -------
         samp_en : float | pandas.Series
             Entropy Sample.
+
+        Examples
+        --------
+        Calculating the Sample Entropy for the entire dataset:
+
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.samp_en()
+
+        Calculating the Sample Entropy for each day:
+
+        .. ipython:: python
+
+            gf.samp_en(per_day=True)
         '''
         # Save original input
         original_delay = delay
@@ -1506,7 +1489,11 @@ class Gframe:
                     tolerance, _ = nk.complexity_tolerance(signal, delay=delay, dimension=dimension)
 
                 # Calculate sample entropy
-                day_samp_en, _ = nk.entropy_sample(signal, delay=delay, dimension=dimension, tolerance=tolerance)
+                day_samp_en, _ = nk.entropy_sample(signal, 
+                                                   delay=delay, 
+                                                   dimension=dimension, 
+                                                   tolerance=tolerance, 
+                                                   **kwargs)
                 samp_en[day] = day_samp_en   
 
                 # reset delay, dimension and tolerance
@@ -1527,7 +1514,11 @@ class Gframe:
                 tolerance, _ = nk.complexity_tolerance(signal, delay=delay, dimension=dimension)
 
             # Calculate sample entropy
-            samp_en, _ = nk.entropy_sample(signal, delay=delay, dimension=dimension, tolerance=tolerance)
+            samp_en, _ = nk.entropy_sample(signal, 
+                                           delay=delay, 
+                                           dimension=dimension, 
+                                           tolerance=tolerance, 
+                                           **kwargs)
         
         return samp_en
         
@@ -1538,37 +1529,55 @@ class Gframe:
             dimension = 3,
             tolerance = 'sd',
             method = 'MSEn',
+            show = False,
             **kwargs):
         '''
         Calculates the Multiscale Sample Entropy using neurokit2.entropy_multiscale()
+
+        For more information on the parameters and details of the neurokit2.entropy_sample() method, 
+        see the neurokit2 documentation: 
+        `neurokit2.entropy_multiscale() <https://neuropsychology.github.io/NeuroKit/functions/complexity.html#entropy-multiscale>`_.
 
         Parameters
         ----------
         per_day : bool, default False
             If True, returns the an array with the Multiscale Sample Entropy for each day. If False, returns the 
-            Multiscale Sample Entropy for all days combined.
-        scale : str, int or list, default 'default'
-            A list of scale factors used for coarse graining the time series. If ‘default’, will use 
-            range(len(signal) / (dimension + 10)). If ‘max’, will use all scales until half the 
-            length of the signal. If an integer, will create a range until the specified int. For more information
-            view the documentation for
-            `neurokit2.entropy_multiscale() <https://neuropsychology.github.io/NeuroKit/functions/complexity.html#entropy-multiscale>`_.
-        dimension : int, default 3
-            Embedding Dimension (*m*, sometimes referred to as *d* or *order*). If None, the optimal dimension will be
-            estimated using neurokit2.complexity_dimension().
-        tolerance : float, default None
-            Tolerance (often denoted as *r*), distance to consider two data points as similar. If "sd" (default), will be
-            set to 0.2 * std. If None, the optimal tolerance  will be estimated using neurokit2.complexity_tolerance().
-        method : str, default 'MSEn'
-            Method to use. For more information view the documentation for neurokit2.entropy_multiscale() 
-            `neurokit2.entropy_multiscale() <https://neuropsychology.github.io/NeuroKit/functions/complexity.html#entropy-multiscale>`_.
-        **kwargs : dict
-            Additional keyword arguments to be passed to neurokit2.entropy_multiscale() 
+            Multiscale Sample Entropy for all days combined.        
             
         Returns
         -------
         mse : float | pandas.Series
             Multiscale Sample Entropy.
+
+        Examples
+        --------
+        Calculating the Multiscale Sample Entropy for the entire dataset:
+
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.mse()
+
+        Calculating the Multiscale Sample Entropy for each day:
+
+        .. ipython:: python
+
+            gf.mse(per_day=True)
+        
+        Calculating and showing the Multiscale Sample Entropy for the entire dataset:
+
+        .. ipython:: python
+
+            gf.mse(show=True)
+
+        .. plot::
+            :context: close-figs
+
+                import glucopy as gp
+                gf = gp.data('prueba_1')
+                gf.mse(show=True)
+
         '''
         # Save original input
         original_dimension = dimension
@@ -1592,12 +1601,17 @@ class Gframe:
                     tolerance, _ = nk.complexity_tolerance(signal, dimension=dimension)
 
                 # Calculate sample entropy
-                day_mse, _ = nk.entropy_multiscale(signal, 
+                try:
+                    with np.errstate(divide='ignore', invalid='ignore'): # ignore divide by zero warning
+                        day_mse, _ = nk.entropy_multiscale(signal, 
                                                    scale=scale, 
                                                    dimension=dimension, 
                                                    tolerance=tolerance, 
-                                                   method=method, 
+                                                   method=method,
+                                                   show=show,
                                                    **kwargs)
+                except:
+                    day_mse = np.nan
                 mse[day] = day_mse   
 
                 # reset dimension and tolerance
@@ -1615,12 +1629,16 @@ class Gframe:
                 tolerance, _ = nk.complexity_tolerance(signal, dimension=dimension)
 
             # Calculate sample entropy
-            mse, _ = nk.entropy_multiscale(signal, 
+            try:
+                mse, _ = nk.entropy_multiscale(signal, 
                                            scale=scale, 
                                            dimension=dimension, 
                                            tolerance=tolerance, 
                                            method=method, 
-                                           **kwargs)        
+                                           show=show,
+                                           **kwargs)  
+            except:
+                mse = np.nan      
             
         return mse
 

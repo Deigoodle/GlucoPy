@@ -61,6 +61,17 @@ def load_excel(path,
     -------
     Gframe
         Gframe object
+
+    Examples
+    --------
+    Load an excel file with the first column as date and the second as cgm values (default)
+
+    >>> import glucopy as gp
+    >>> gf = gp.load_excel('data.xlsx')
+
+    Load an excel file with the data column named 'Date' and the cgm column named 'CGM'
+
+    >>> gf = gp.load_excel('data.xlsx', date_column='Date', cgm_column='CGM')
     '''
     # Create a list of columns to use
     if isinstance(date_column, (int, str)):

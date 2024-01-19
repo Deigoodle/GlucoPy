@@ -1,9 +1,6 @@
 glucopy.utils package
 =====================
 
-Module contents
----------------
-
 .. automodule:: glucopy.utils
    :members:
    :undoc-members:

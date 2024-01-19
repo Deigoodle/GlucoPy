@@ -5,10 +5,10 @@ import plotly.graph_objects as go
 from ...classes import Gframe
 
 def freq(gf: Gframe,
-              per_day: bool = True,
-              target_range: list = [0,70,180],
-              height: float = None,
-              width: float = None):
+         per_day: bool = True,
+         target_range: list = [0,70,180],
+         height: float = None,
+         width: float = None):
     '''
     Plots a histogram of the Glucose rate of change
 
@@ -29,6 +29,33 @@ def freq(gf: Gframe,
     -------
     fig : plotly.graph_objects.Figure
         Figure object
+
+    Examples
+    --------
+    Plot the frequency of the glucose per day in the target range [0,70,180] (default)
+
+    .. ipython:: python
+
+        import glucopy as gp
+        gf = gp.data()
+        gp.plot.freq(gf)
+
+    .. image:: /../img/freq_plot_1.png
+        :alt: Frequency plot per day
+        :align: center
+    .. raw:: html
+        
+        <br>
+
+    Plot the frequency of the glucose for the entire dataset and the target range [0,100,200,300]
+
+    .. ipython:: python
+
+        fig = gp.plot.freq(gf, per_day=False, target_range=[0,100,200,300])
+
+    .. image:: /../img/freq_plot_2.png
+        :alt: Frequency plot
+        :align: center
     '''
     # Check input
     if not isinstance(gf, Gframe):

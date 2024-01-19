@@ -10,9 +10,6 @@ Subpackages
    glucopy.plot.hist
    glucopy.plot.trace
 
-Module contents
----------------
-
 .. automodule:: glucopy.plot
    :members:
    :undoc-members:

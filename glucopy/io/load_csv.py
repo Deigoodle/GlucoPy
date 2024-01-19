@@ -50,6 +50,17 @@ def load_csv(path,
     -------
     Gframe
         A Gframe object
+
+    Examples
+    --------
+    Load a csv file with the first column as date and the second as cgm values (default)
+
+    >>> import glucopy as gp
+    >>> gf = gp.load_csv('data.csv')
+
+    Load a csv file with the data column named 'Date' and the cgm column named 'CGM'
+
+    >>> gf = gp.load_csv('data.csv', date_column='Date', cgm_column='CGM')
     '''
     # Create a list of columns to use
     if isinstance(date_column, (int, str)):

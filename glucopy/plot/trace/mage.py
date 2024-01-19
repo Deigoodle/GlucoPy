@@ -7,9 +7,8 @@ from scipy.signal import find_peaks
 from ...classes import Gframe 
 
 def mage(gf: Gframe,
-               height: float = None,
-               width: float = None,
-               smooth: bool = True):
+         height: float = None,
+         width: float = None,):
     '''
     Plots a line plot of the CGM values in the Gframe object separated by time in range for each day
 
@@ -21,13 +20,25 @@ def mage(gf: Gframe,
         Height of the plot, by default None
     width : float, optional
         Width of the plot, by default None
-    smooth : bool, optional
-        If True, the CGM values will be smoothed, by default True
 
     Returns
     -------
     fig : plotly.graph_objects.Figure
         Figure object
+
+    Examples
+    --------
+    Plot the MAGE
+
+    .. ipython:: python
+
+        import glucopy as gp
+        gf = gp.data()
+        gp.plot.mage(gf)
+
+    .. image:: /../img/mage_plot.png
+        :alt: MAGE
+        :align: center
     '''
     # Check input
     if not isinstance(gf, Gframe):
@@ -62,21 +73,10 @@ def mage(gf: Gframe,
         fig.add_trace(go.Scatter(x=day_data['Time'], y=[day_mean - day_std] * len(day_data), name='Mean - std',line=dict(dash='dot'),line_color='cyan', visible=show_first))
         trace_indices[day].append(len(fig.data) - 1)
 
-        values = day_data['CGM'].values
-        smoothed_values = np.copy(values)
-        if smooth:
-            # First 4 elements are replaced with their arithmetic mean
-            smoothed_values[0:4] = smoothed_values[0:4].mean()
-            # Apply weights
-            for i in range(4, len(smoothed_values)-4):
-                smoothed_values[i] = (values[i-4] + 2*values[i-3] + 4*values[i-2] + 8*values[i-1] + 16*values[i] + \
-                                      8*values[i+1] + 4*values[i+2] + 2*values[i+3] + values[i+4]) / 46
-            # Last 4 elements are replaced with their arithmetic mean
-            smoothed_values[-4:] = smoothed_values[-4:].mean()
 
         # find peaks and nadirs
-        peaks, _ = find_peaks(smoothed_values)
-        nadirs, _ = find_peaks(-smoothed_values)
+        peaks, _ = find_peaks(day_data['CGM'].values)
+        nadirs, _ = find_peaks(-day_data['CGM'].values)
 
         # make sure that the peaks and nadirs have the same size
         if peaks.size > nadirs.size:

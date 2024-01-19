@@ -35,6 +35,20 @@ def agp(gf: Gframe,
     -------
     fig : plotly.graph_objects.Figure
         Figure object
+
+    Examples
+    --------
+    Plot the Ambulatory Glucose Profile
+
+    .. ipython:: python
+
+        import glucopy as gp
+        gf = gp.data()
+        gp.plot.agp(gf)
+
+    .. image:: /../img/agp_plot.png
+        :alt: Ambulatory Glucose Profile
+        :align: center
     '''
     # Check input
     if not isinstance(gf, Gframe):

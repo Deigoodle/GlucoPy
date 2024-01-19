@@ -3,12 +3,12 @@ import plotly.graph_objects as go
 
 # Local
 from ...classes import Gframe
+from ...utils import time_factor
 
 def roc(gf: Gframe,
-         per_day: bool = True,
-         time_unit: str = 'm',
-         height: float = None,
-         width: float = None):
+        per_day: bool = True,
+        height: float = None,
+        width: float = None):
     '''
     Plots a histogram of the Glucose rate of change
 
@@ -18,8 +18,6 @@ def roc(gf: Gframe,
         Gframe object to plot
     per_day : bool, optional
         If True, the plot will be separated by days, by default False
-    time_unit : str, optional
-        Time unit to use in the x-axis, can be 'm', 'h', 'd', by default 'm'
     height : float, optional
         Height of the figure, by default None
     width : float, optional
@@ -29,15 +27,37 @@ def roc(gf: Gframe,
     -------
     fig : plotly.graph_objects.Figure
         Figure object
+
+    Examples
+    --------
+    Plot the glucose rate of change per day (default)
+
+    .. ipython:: python
+
+        import glucopy as gp
+        gf = gp.data()
+        gp.plot.roc(gf)
+
+    .. image:: /../img/roc_plot_1.png
+        :alt: Rate of change histogram per day
+        :align: center
+    .. raw:: html
+        
+        <br>
+
+    Plot the glucose rate of change for the entire dataset
+
+    .. ipython:: python
+    
+        gp.plot.roc(gf, per_day=False)
+
+    .. image:: /../img/roc_plot_2.png
+        :alt: Rate of change histogram
+        :align: center
     '''
-    if time_unit == 's':
-        factor = 1
-    elif time_unit == 'm':
-        factor = 60
-    elif time_unit == 'h':
-        factor = 3600
-    else:
-        raise ValueError('time_unit must be one of "s", "m", "h"')
+    # Check input
+    if not isinstance(gf, Gframe):
+        raise TypeError('gf must be a Gframe object')
     
     fig = go.Figure()
     
@@ -47,22 +67,22 @@ def roc(gf: Gframe,
         std = []
         show_first = True
         for day, day_data in day_groups:
-            x = day_data['CGM'].diff().abs() / (day_data['Timestamp'].diff().dt.total_seconds() / factor)
+            x = day_data['CGM'].diff().abs() / (day_data['Timestamp'].diff().dt.total_seconds() / 60)
             mean.append(x.mean())
             std.append(x.std())
             fig.add_trace(go.Histogram(x=x, name=str(day), visible=show_first, xbins=dict(size=0.1),
                                        marker=dict(line=dict(color='black', width=1))))
             if show_first:
-                first_day = day
+                fig.update_layout(title=f'Glucose Rate of Change {day}. Mean: {mean[0]:.2f} Std: {std[0]:.2f}')
                 show_first = False
     else:
-        x = gf.data['CGM'].diff().abs() / (gf.data['Timestamp'].diff().dt.total_seconds() / factor)
+        x = gf.data['CGM'].diff().abs() / (gf.data['Timestamp'].diff().dt.total_seconds() / 60)
         fig.add_trace(go.Histogram(x=x, xbins=dict(size=0.1), 
                                    marker=dict(line=dict(color='black', width=1))))
+        fig.update_layout(title=f'Glucose Rate of Change. Mean: {x.mean():.2f} Std: {x.std():.2f}')
 
     fig.update_layout(
-        title=f'Glucose Rate of Change {first_day}. Mean: {mean[0]:.2f} Std: {std[0]:.2f}',
-        xaxis_title=f'Glucose Rate of Change (mg/dL/{time_unit})',
+        xaxis_title=f'Glucose Rate of Change (mg/dL/m)',
         yaxis_title='Measurements',
         height=height,
         width=width

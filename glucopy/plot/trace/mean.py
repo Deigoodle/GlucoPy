@@ -6,12 +6,12 @@ import numpy as np
 from ...classes import Gframe
 
 def mean(gf: Gframe,
-            add_all_mean: bool = True,
-            add_all_std: bool = True,
-            add_std_peak: bool = True,
-            add_quartiles: bool = False,
-            height: float = None,
-            width: float = None):
+         add_all_mean: bool = True,
+         add_all_std: bool = True,
+         add_std_peak: bool = True,
+         add_quartiles: bool = False,
+         height: float = None,
+         width: float = None):
     '''
     Plots a line plot of the CGM values in the Gframe object
 
@@ -36,6 +36,16 @@ def mean(gf: Gframe,
     -------
     fig : plotly.graph_objects.Figure
         Figure object
+
+    Examples
+    --------
+    Plot the mean and standard deviation for each time of day
+
+    .. ipython:: python
+
+        import glucopy as gp
+        gf = gp.data()
+        gp.plot.mean(gf)
     '''
     # Check input
     if not isinstance(gf, Gframe):
@@ -47,6 +57,7 @@ def mean(gf: Gframe,
     # Get the mean and std
     mean_list = time_groups['CGM'].mean()
     std_list = time_groups['CGM'].std()
+    print(len(time_groups))
 
     fig = go.Figure()
 
