@@ -1,5 +1,5 @@
 # local
-from ..io import load_csv
+from ..io import read_csv
 
 def data(dataset : str = 'prueba_1'):
     '''
@@ -42,7 +42,7 @@ def data(dataset : str = 'prueba_1'):
     elif dataset in ['prueba_2', 'prueba 2', 'prueba2','prueba_2.csv', 'prueba 2.csv', 'prueba2.csv']:
         path += 'prueba_2.csv'
 
-    return load_csv(path = path,
+    return read_csv(path = path,
                     date_column='Sello de tiempo del dispositivo',
                     cgm_column='Historial de glucosa mg/dL',
                     skiprows=2,

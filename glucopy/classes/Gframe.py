@@ -832,7 +832,7 @@ class Gframe:
             index_type:str = 'h',
             maximum: bool = False):
         '''
-        Calculates the Low Blood Glucose Index (LBGI).
+        Calculates the Low Blood Glucose Index (LBGI) or the High Blood Glucose Index (LBGI).
 
         * Using lbgi() is equivalent to using bgi(index_type='l').
         * Using hbgi() is equivalent to using bgi(index_type='h').

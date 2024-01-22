@@ -1,16 +1,34 @@
-glucopy.plot package
-====================
+====
+Plot
+====
+.. currentmodule:: glucopy
 
-Subpackages
------------
+Box
+~~~
 
-.. toctree::
-   :maxdepth: 4
+.. autosummary::
+   :toctree: api/
 
-   glucopy.plot.hist
-   glucopy.plot.trace
+   plot.box
 
-.. automodule:: glucopy.plot
-   :members:
-   :undoc-members:
-   :show-inheritance:
+
+Trace
+~~~~~
+
+.. autosummary::
+   :toctree: api/
+
+   plot.agp
+   plot.mage
+   plot.mean
+   plot.per_day
+   plot.tir
+
+Histogram
+~~~~~~~~~
+
+.. autosummary::
+   :toctree: api/
+
+   plot.freq
+   plot.roc 

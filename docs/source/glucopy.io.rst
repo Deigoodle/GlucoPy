@@ -1,7 +1,24 @@
-glucopy.io package
-==================
+============
+Input/Output
+============
+.. currentmodule:: glucopy
 
-.. automodule:: glucopy.io
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Excel
+~~~~~
+
+.. autosummary::
+   :toctree: api/
+
+   read_excel
+   save_excel
+
+CSV
+~~~
+
+.. autosummary::
+   :toctree: api/
+
+   read_csv
+   save_csv
+
+

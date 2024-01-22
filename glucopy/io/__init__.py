@@ -1,6 +1,6 @@
-from .load_excel import load_excel
+from .read_excel import read_excel
 from .save_excel import save_excel
-from .load_csv import load_csv
+from .read_csv import read_csv
 from .save_csv import save_csv
 
-__all__ = ['load_csv', 'save_csv', 'load_excel', 'save_excel']
+__all__ = ['read_csv', 'save_csv', 'read_excel', 'save_excel']

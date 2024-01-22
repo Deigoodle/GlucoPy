@@ -8,14 +8,14 @@ import pandas as pd
 from typing import Callable
 from collections.abc import Sequence
 
-def load_excel(path,
+def read_excel(path,
                sheet_name: str | int | list | None = 0,
                date_column: list[str] | str | int = 0,
                cgm_column: str | int = 1,
                skiprows: Sequence[int] | int | Callable[[int], object] | None = None,
                nrows: int | None = None,):
     '''
-    Use pandas.read_excel to load an excel file into a Gframe object
+    Use pandas.read_excel to read an excel file into a Gframe object
 
     Parameters
     ----------
@@ -64,14 +64,14 @@ def load_excel(path,
 
     Examples
     --------
-    Load an excel file with the first column as date and the second as cgm values (default)
+    Read an excel file with the first column as date and the second as cgm values (default)
 
     >>> import glucopy as gp
-    >>> gf = gp.load_excel('data.xlsx')
+    >>> gf = gp.read_excel('data.xlsx')
 
-    Load an excel file with the data column named 'Date' and the cgm column named 'CGM'
+    Read an excel file with the data column named 'Date' and the cgm column named 'CGM'
 
-    >>> gf = gp.load_excel('data.xlsx', date_column='Date', cgm_column='CGM')
+    >>> gf = gp.read_excel('data.xlsx', date_column='Date', cgm_column='CGM')
     '''
     # Create a list of columns to use
     if isinstance(date_column, (int, str)):
@@ -79,7 +79,7 @@ def load_excel(path,
     else:
         cols = date_column + [cgm_column]
 
-    # Load the excel file
+    # Read the excel file
     df = pd.read_excel(path, sheet_name=sheet_name, usecols=cols, skiprows=skiprows, nrows=nrows)
 
     return Gframe(data=df,date_column=date_column,cgm_column=cgm_column)

@@ -8,7 +8,7 @@ import pandas as pd
 from typing import Callable
 from collections.abc import Hashable
 
-def load_csv(path,
+def read_csv(path,
              sep: str = ',',
              date_column: list[str] | str | int = 0,
              cgm_column: str | int = 1,
@@ -17,7 +17,7 @@ def load_csv(path,
              nrows: int | None = None,
              **kwargs):
     '''
-    Use pandas.read_csv to load a csv file into a Gframe object
+    Use pandas.read_csv to read a csv file into a Gframe object
 
     Parameters
     ----------
@@ -53,14 +53,14 @@ def load_csv(path,
 
     Examples
     --------
-    Load a csv file with the first column as date and the second as cgm values (default)
+    Read a csv file with the first column as date and the second as cgm values (default)
 
     >>> import glucopy as gp
-    >>> gf = gp.load_csv('data.csv')
+    >>> gf = gp.read_csv('data.csv')
 
-    Load a csv file with the data column named 'Date' and the cgm column named 'CGM'
+    Read a csv file with the data column named 'Date' and the cgm column named 'CGM'
 
-    >>> gf = gp.load_csv('data.csv', date_column='Date', cgm_column='CGM')
+    >>> gf = gp.read_csv('data.csv', date_column='Date', cgm_column='CGM')
     '''
     # Create a list of columns to use
     if isinstance(date_column, (int, str)):
@@ -68,7 +68,7 @@ def load_csv(path,
     else:
         cols = date_column + [cgm_column]
 
-    # Load the csv file
+    # Read the csv file
     df = pd.read_csv(path, 
                      sep=sep, 
                      usecols=cols, 
