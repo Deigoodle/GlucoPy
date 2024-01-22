@@ -26,6 +26,18 @@ def disjoin_days_and_hours(df,
     -------
     disjoined_df : pd.DataFrame
         Disjoined dataframe
+
+    Examples
+    --------
+    Disjoin a dataframe
+
+    .. ipython:: python
+
+        import glucopy as gp
+        import pandas as pd
+        df = pd.DataFrame({'Timestamp':['2020-01-01 12:00:00','2020-01-01 12:05:00','2020-01-01 12:10:00'],
+                           'CGM':[100,110,120]})
+        gp.disjoin_days_and_hours(df)
     '''
 
     disjoined_df = pd.DataFrame(columns=['Timestamp','Day','Time','CGM'])

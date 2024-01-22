@@ -14,6 +14,17 @@ def time_factor(t: str) -> int:
     -------
     int
         The time factor of the given time string.
+
+    Examples
+    --------
+    Convert a time string to time factor
+
+    .. ipython:: python
+
+        import glucopy as gp
+        gp.time_factor('s')
+        gp.time_factor('m')
+        gp.time_factor('h')
     '''
     t = t.lower()
 

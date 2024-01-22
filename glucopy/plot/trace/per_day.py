@@ -16,17 +16,45 @@ def per_day(gf: Gframe,
     ----------
     gf : Gframe
         Gframe object to plot
-    num_days : int, optional
-        Number of days to plot, if 0 all days are plotted, by default 0
-    height : float, optional
-        Height of the plot, by default None
-    width : float, optional
-        Width of the plot, by default None
+    num_days : int, default 0
+        Number of days to plot, if 0 all days are plotted. The days that are not plotted can still be shown by clicking on
+        the legend
+    height : float, default None
+        Height of the plot
+    width : float, default None
+        Width of the plot
     
     Returns
     -------
     fig : plotly.graph_objects.Figure
         Figure object
+
+    Examples
+    --------
+    Plot all days in the Gframe object
+
+    .. ipython:: python
+
+        import glucopy as gp
+        gf = gp.data()
+        gp.plot.per_day(gf)
+
+    .. image:: /../img/per_day_plot_1.png
+        :alt: Per day plot
+        :align: center
+    .. raw:: html
+
+        <br>
+
+    Plot only the first 10 days in the Gframe object (the rest of the days still can be shown by clicking on the legend)
+
+    .. ipython:: python
+
+        gp.plot.per_day(gf, num_days=10)
+
+    .. image:: /../img/per_day_plot_2.png
+        :alt: Per day plot 10 days
+        :align: center
     '''
     # Check input
     if not isinstance(gf, Gframe):

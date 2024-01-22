@@ -28,7 +28,7 @@ def mage(gf: Gframe,
 
     Examples
     --------
-    Plot the MAGE
+    Plot the MAGE, and clicking on the second day on the dropdown menu
 
     .. ipython:: python
 

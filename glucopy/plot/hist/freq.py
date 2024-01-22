@@ -32,7 +32,8 @@ def freq(gf: Gframe,
 
     Examples
     --------
-    Plot the frequency of the glucose per day in the target range [0,70,180] (default)
+    Plot the frequency of the glucose per day in the target range [0,70,180] (default), and clicking on the second day on
+    the dropdown menu
 
     .. ipython:: python
 

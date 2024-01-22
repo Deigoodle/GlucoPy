@@ -30,7 +30,7 @@ def roc(gf: Gframe,
 
     Examples
     --------
-    Plot the glucose rate of change per day (default)
+    Plot the glucose rate of change per day (default), and clicking on the second day on the dropdown menu
 
     .. ipython:: python
 

@@ -1,5 +1,17 @@
 from .box import box
-from .trace import *
-from .hist import *
+from .trace import (agp,
+                    mage,
+                    mean,
+                    per_day,
+                    tir)
+from .hist import (freq,
+                   roc)
 
-__all__ = ['box'] + trace.__all__ + hist.__all__
+__all__ = ['box',
+           'agp',
+           'mage',
+           'mean',
+           'per_day',
+           'tir',
+           'freq',
+           'roc']

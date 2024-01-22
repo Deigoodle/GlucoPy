@@ -95,6 +95,8 @@ class Gframe:
              per_day: bool = False,
              **kwargs):
         '''
+        Calculates the mean of the CGM values.
+
         Parameters
         ----------
         per_day : bool, default False
@@ -141,6 +143,8 @@ class Gframe:
             ddof:int = 1,
             **kwargs):
         '''
+        Calculates the standard deviation of the CGM values.
+
         Parameters
         ----------
         per_day : bool, default False
@@ -190,6 +194,8 @@ class Gframe:
            ddof:int = 1,
            **kwargs):
         '''
+        Calculates the Coefficient of Variation (CV) of the CGM values.
+
         Parameters
         ----------
         per_day : bool, default False
@@ -237,6 +243,8 @@ class Gframe:
             ddof:int = 1,
             **kwargs):
         '''
+        Calculates the Percentage Coefficient of Variation (%CV) of the CGM values.
+        
         Parameters
         ----------
         per_day : bool, default False
@@ -285,6 +293,8 @@ class Gframe:
                  interpolation:str = 'linear',
                  **kwargs):
         '''
+        Calculates the quantile of the CGM values.
+
         Parameters
         ----------
         per_day : bool, default False
@@ -342,6 +352,8 @@ class Gframe:
             interpolation:str = 'linear',
             **kwargs):
         '''
+        Calculates the Interquartile Range (IQR) of the CGM values.
+
         Parameters
         ----------
         per_day : bool, default False

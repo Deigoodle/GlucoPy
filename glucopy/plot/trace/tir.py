@@ -5,9 +5,9 @@ import plotly.graph_objects as go
 from ...classes import Gframe
 
 def tir(gf: Gframe,
-              interval: list[int] = [70, 180],
-              height: float = None,
-              width: float = None
+        interval: list[int] = [70, 180],
+        height: float = None,
+        width: float = None
     ):
     '''
     Plots a line plot of the CGM values in the Gframe object separated by time in range for each day
@@ -27,6 +27,35 @@ def tir(gf: Gframe,
     -------
     fig : plotly.graph_objects.Figure
         Figure object
+
+    Examples
+    --------
+    Plot the CGM values for each day in the Gframe object highlighting the values in the interval [70, 180] (default), and
+    clicking on the second day on the dropdown menu
+
+    .. ipython:: python
+
+        import glucopy as gp
+        gf = gp.data()
+        gp.plot.tir(gf)
+
+    .. image:: /../img/tir_plot_1.png
+        :alt: TIR plot
+        :align: center
+    .. raw:: html
+
+        <br>
+
+    Plot the CGM values for each day in the Gframe object highlighting the values in the interval [100, 200], and
+    clicking on the second day on the dropdown menu
+
+    .. ipython:: python
+
+        gp.plot.tir(gf, interval=[100, 200])
+
+    .. image:: /../img/tir_plot_2.png
+        :alt: TIR plot 100-200
+        :align: center
     '''
     # Check input
     if not isinstance(gf, Gframe):
