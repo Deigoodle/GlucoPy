@@ -16,12 +16,12 @@ def tir(gf: Gframe,
     ----------
     gf : Gframe
         Gframe object to plot
-    interval : list[int], optional
-        interval to highlight, by default [70, 180]
-    height : float, optional
-        Height of the plot, by default None
-    width : float, optional
-        Width of the plot, by default None
+    interval : list[int], default [70, 180]
+        interval to highlight
+    height : float, default None
+        Height of the plot
+    width : float, default None
+        Width of the plot
 
     Returns
     -------

@@ -1,21 +1,10 @@
-glucopy package
-===============
-
-Subpackages
------------
+Glucopy
+=======
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 1
 
    glucopy.Gframe
    glucopy.io
    glucopy.plot
    glucopy.utils
-
-Module contents
----------------
-
-.. automodule:: glucopy
-   :members:
-   :undoc-members:
-   :show-inheritance:

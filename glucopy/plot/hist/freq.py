@@ -16,14 +16,14 @@ def freq(gf: Gframe,
     ----------
     gf : Gframe
         Gframe object to plot
-    per_day : bool, optional
-        If True, the plot will be separated by days, by default False
-    target_range : list, optional
-        Target range for the glucose, by default [0,70,180]
-    height : float, optional
-        Height of the figure, by default None
-    width : float, optional
-        Width of the figure, by default None
+    per_day : bool, default True
+        If True, the plot will be separated by days
+    target_range : list, default [0,70,180]
+        Target range for the glucose
+    height : float, default None
+        Height of the figure
+    width : float, default None
+        Width of the figure
 
     Returns
     -------

@@ -20,16 +20,16 @@ def agp(gf: Gframe,
     ----------
     gf : Gframe
         Gframe object to plot
-    add_quartiles : bool, optional
-        If True, the quartiles (25%, 75%) of the data will be added to the plot, by default True
-    add_deciles : bool, optional
-        If True, the deciles (10%, 90%) of the data will be added to the plot, by default True
-    e : non negative float, optional
-        Tolerance for negligible change, by default 1.0
-    height : float, optional
-        Height of the plot, by default None
-    width : float, optional
-        Width of the plot, by default None
+    add_quartiles : bool, default True
+        If True, the quartiles (25%, 75%) of the data will be added to the plot
+    add_deciles : bool, default True
+        If True, the deciles (10%, 90%) of the data will be added to the plot
+    e : non negative float, default 1.0
+        Tolerance for negligible change
+    height : float, default None
+        Height of the plot
+    width : float, default None
+        Width of the plot
     
     Returns
     -------
@@ -144,7 +144,7 @@ def smooth_sequence(y: list,
     ----------
     y : list
         Sequence of values to smooth
-    e : float, optional
+    e : float, default 
         Tolerance for negligible change, by default 1
 
     Returns

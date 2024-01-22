@@ -16,12 +16,12 @@ def roc(gf: Gframe,
     ----------
     gf : Gframe
         Gframe object to plot
-    per_day : bool, optional
-        If True, the plot will be separated by days, by default False
-    height : float, optional
-        Height of the figure, by default None
-    width : float, optional
-        Width of the figure, by default None
+    per_day : bool, default True
+        If True, the plot will be separated by days
+    height : float, default None
+        Height of the figure
+    width : float, default None
+        Width of the figure
 
     Returns
     -------

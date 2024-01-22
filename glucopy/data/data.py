@@ -12,8 +12,8 @@ def data(dataset : str = 'prueba_1'):
 
     Parameters
     ----------
-    dataset : str, optional
-        Name of the dataset to download, by default 'prueba_1'
+    dataset : str, default 'prueba_1'
+        Name of the dataset to download
 
     Returns
     -------

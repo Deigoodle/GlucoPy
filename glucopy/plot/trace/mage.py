@@ -16,10 +16,10 @@ def mage(gf: Gframe,
     ----------
     gf : Gframe
         Gframe object to plot
-    height : float, optional
-        Height of the plot, by default None
-    width : float, optional
-        Width of the plot, by default None
+    height : float, default None
+        Height of the plot
+    width : float, default None
+        Width of the plot
 
     Returns
     -------

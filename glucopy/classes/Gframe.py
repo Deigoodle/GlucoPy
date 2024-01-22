@@ -21,6 +21,9 @@ class Gframe:
     '''
     Class for the analysis of CGM data. it uses a pandas Dataframe as the main data structure.
 
+    To create a Gframe object from a csv file or an excel file, check Input/Output glucopy.read_csv() 
+    and glucopy.read_excel().
+
     Parameters
     -----------
     data : pandas Dataframe 
@@ -40,6 +43,45 @@ class Gframe:
         Format of the date information, if None, it will be assumed that the date information is in a consistent format
     dropna : bool, default True
         If True, removes all rows with NaN values
+
+    Attributes
+    ----------
+    data : pandas Dataframe
+        Dataframe containing the CGM signal information, it will be saved into a Dataframe with the columns
+        ['Timestamp','Day','Time','CGM']
+    unit : str
+        CGM signal measurement unit.
+    n_samples : int
+        Number of samples in the data.
+    n_days : int
+        Number of days in the data.
+    max : float
+        Maximum value of the CGM signal.
+    min : float
+        Minimum value of the CGM signal.
+
+    Examples
+    --------
+    Creating a Gframe object from a pandas Dataframe:
+
+    .. ipython:: python
+
+        import glucopy as gp
+        import pandas as pd
+        df = pd.DataFrame({'Timestamp':['2020-01-01 12:00:00','2020-01-01 12:05:00','2020-01-01 12:10:00'],
+                           'CGM':[100,110,120]})
+        gf = gp.Gframe(df)
+        gf
+
+    Creating a Gframe object from a pandas Dataframe with extra columns:
+
+    .. ipython:: python
+
+        df = pd.DataFrame({'Timestamp':['2020-01-01 12:00:00','2020-01-01 12:05:00','2020-01-01 12:10:00'],
+                            'Extra':[1,2,3],
+                            'CGM':[100,110,120]})
+        gf = gp.Gframe(df, cgm_column='CGM', date_column='Timestamp')
+        gf
     '''
 
     # Constructor
@@ -397,6 +439,7 @@ class Gframe:
     def modd(self, 
              target_time: str | datetime.time | None = None, 
              slack: int = 0,
+             method : str = 'closest',
              ignore_na: bool = True) -> float:
         '''
         Calculates the Mean of Daily Differences (MODD) for a given time of day.
@@ -407,6 +450,9 @@ class Gframe:
             Time of day to calculate the MODD for. If None, calculates the MODD for all available times.
         slack : int, default 0
             Maximum number of minutes that the given time can differ from the actual time in the data.
+        method : str, default 'closest'
+            Method to use if there are multiple timestamps that are 1 day before the current timestamp and within the
+            slack range. Can be 'closest' or 'mean'.
         ignore_na : bool, default True
             If True, ignores missing values (not found within slack). If False, raises an error 
             if there are missing values.
@@ -435,14 +481,28 @@ class Gframe:
         # Check input
         if slack < 0:
             raise ValueError('slack must be a positive number or 0')
+        if method != 'closest' and method != 'mean':
+            raise ValueError('method must be "closest" or "mean"')
+        
+        # convert slack to timedelta
+        slack = pd.to_timedelta(slack, unit='m')
 
         if target_time is None: # calculate MODD for all times
-            unique_times = self.data['Time'].unique()
-            modd_values = []
-            for time in unique_times:
-                modd_values.append(self.modd(time, slack))
-
-            modd = np.mean(modd_values)
+            differences = []
+            for _, row in self.data.iterrows():
+                # Find previous day value
+                minus_24h_index = ( (self.data['Timestamp'] + pd.Timedelta('1 day') - row['Timestamp']) <= slack )
+                if minus_24h_index.any():
+                    if method == 'mean':
+                        minus_24h_value = self.data.loc[minus_24h_index, 'CGM'].mean()
+                    elif method == 'closest':
+                        closest_index = (self.data.loc[minus_24h_index, 'Timestamp'] - row['Timestamp']).abs().idxmin()
+                        minus_24h_value = self.data.loc[closest_index, 'CGM']
+                    differences.append(np.abs(row['CGM'] - minus_24h_value))
+                else:
+                    if not ignore_na:
+                        raise ValueError(f"No previous day data found for {row['Timestamp']}")
+            modd = np.mean(differences)
         
         else: # calculate MODD for a given time
             # convert time to same format as self.data['Time']
@@ -453,9 +513,6 @@ class Gframe:
                 target_time = str_to_time(target_str)
             else: # datetime.time
                 target_str = time_to_str(target_time)
-
-            # convert slack to timedelta
-            slack = pd.to_timedelta(slack, unit='m')
 
             cgm_values: List[float] = []
 
@@ -474,8 +531,11 @@ class Gframe:
                     # search for closest time within error range
                     mask_range = ((day_data['Timestamp'] - target_datetime).abs() <= slack)
                     if mask_range.any():
-                        closest_index = (day_data.loc[mask_range, 'Timestamp'] - target_datetime).abs().idxmin()
-                        cgm_values.append(day_data.loc[closest_index, 'CGM'])
+                        if method == 'mean':
+                            cgm_values.append(day_data.loc[mask_range, 'CGM'].mean())
+                        elif method == 'closest':
+                            closest_index = (day_data.loc[mask_range, 'Timestamp'] - target_datetime).abs().idxmin()
+                            cgm_values.append(day_data.loc[closest_index, 'CGM'])
                     else:
                         if not ignore_na:
                             raise ValueError(f"No data found for date {day}")

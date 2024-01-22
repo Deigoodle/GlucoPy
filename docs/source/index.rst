@@ -10,11 +10,10 @@ Welcome to Glucopy's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   modules
+   glucopy
 
 Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`

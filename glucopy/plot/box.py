@@ -18,17 +18,17 @@ def box(gf: Gframe,
     ----------
     gf : Gframe
         Gframe object to plot
-    per_day : bool, optional
-        If True, the plot will be separated by days, by default False. If the Gframe contains a lot of days, it is
+    per_day : bool, default True
+        If True, the plot will be separated by days. If the Gframe contains a lot of days, it is
         and per_day is True, it is recommended to set group_by_week to True
-    group_by_week : bool, optional
-        If True, the plot will be grouped by week, by default False. Only works if per_day is True
-    height : float, optional
-        Height of the plot, by default None
-    width : float, optional
-        Width of the plot, by default None
-    points : str, optional
-        Show points in the plot, can be 'all', 'outliers', 'suspectedoutliers', False, by default None
+    group_by_week : bool, default False
+        If True, the plot will be grouped by week. Only works if per_day is True
+    height : float, default None
+        Height of the plot
+    width : float, defualt None
+        Width of the plot
+    points : str, default None
+        Show points in the plot, can be 'all', 'outliers', 'suspectedoutliers', False
     
     Returns
     -------
