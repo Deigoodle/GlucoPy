@@ -8,3 +8,4 @@ Glucopy
    glucopy.io
    glucopy.plot
    glucopy.utils
+   glucopy.data
