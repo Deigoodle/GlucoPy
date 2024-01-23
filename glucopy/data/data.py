@@ -7,8 +7,8 @@ def data(dataset : str = 'prueba_1'):
     and returns one of them as a Gframe object.
 
     The following datasets are available:
-    * prueba_1
-    * prueba_2
+    - prueba_1
+    - prueba_2
 
     Parameters
     ----------
@@ -22,15 +22,11 @@ def data(dataset : str = 'prueba_1'):
 
     Examples
     --------
-    >>> import glucopy as gp
-    >>> gf = gp.data('prueba_1')
-    >>> gf.data.head()
-                Timestamp         Day      Time    CGM
-    0 2020-11-27 21:29:00  2020-11-27  21:29:00  235.0
-    1 2020-11-27 21:44:00  2020-11-27  21:44:00  242.0
-    2 2020-11-27 21:59:00  2020-11-27  21:59:00  257.0
-    3 2020-11-27 22:14:00  2020-11-27  22:14:00  277.0
-    4 2020-11-27 22:29:00  2020-11-27  22:29:00  299.0
+    .. ipython:: python
+
+        import glucopy as gp
+        gf = gp.data('prueba_1')
+        gf
     '''
     dataset = dataset.lower()
 
