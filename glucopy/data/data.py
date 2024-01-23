@@ -7,6 +7,7 @@ def data(dataset : str = 'prueba_1'):
     and returns one of them as a Gframe object.
 
     The following datasets are available:
+    
     - prueba_1
     - prueba_2
 
