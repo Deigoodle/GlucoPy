@@ -10,11 +10,10 @@ def mean(gf: Gframe,
          add_all_std: bool = True,
          add_std_peak: bool = True,
          add_quartiles: bool = False,
-         min_time_data: int = 0,
          height: float = None,
          width: float = None):
     '''
-    Plots a line plot of the CGM values in the Gframe object
+    Plots a line plot of the mean and standard deviation of fixed intervals of 15 minutes
 
     Parameters
     ----------
@@ -28,8 +27,6 @@ def mean(gf: Gframe,
         If True, the peaks of standard deviation will be added to the plot
     add_quartiles : bool, default False
         If True, the quartiles of the data will be added to the plot
-    min_time_data : int, default 0
-        Minimum number of data points for each time to be considered in the Gframe, if 0, all the data will be considered
     height : float, default None
         Height of the plot
     width : float, default None
@@ -42,57 +39,51 @@ def mean(gf: Gframe,
 
     Examples
     --------
-    Plot the mean and standard deviation for each time of day, the problem with the example data is that has 112 days
-    and data for every minute of the day, so the plot is not very useful, but after filtering the data, the plot is
-    more useful
+    Plot the mean and standard deviation of each interval of 15 minutes (default)
 
     .. ipython:: python
 
         import glucopy as gp
-        gf = gp.data()
+        gf = gp.data('prueba_1')
         gp.plot.mean(gf)
 
     .. image:: /../img/mean_plot_1.png
-        :alt: Mean plot
+        :alt: Mean and std plot
         :align: center
     .. raw:: html
-        
+
         <br>
 
-    Plot the mean and standard deviation for each time of day, but filtering the data to only include times with at
-    least 10 data points
+    It is posible to add the quartiles of the intervals
 
     .. ipython:: python
-    
-        gp.plot.mean(gf, min_time_data=10)
+
+        gp.plot.mean(gf, add_quartiles=True)
 
     .. image:: /../img/mean_plot_2.png
-        :alt: Mean plot with filtered data
+        :alt: Mean and std plot with quartiles
         :align: center
-    .. raw:: html
-    
-        <br>
-
-    The resulting plot is more useful, but the problem is that the data is not evenly distributed, but it should work
-    fine for Datasets with more evenly distributed data
     '''
     # Check input
     if not isinstance(gf, Gframe):
         raise TypeError('gf must be a Gframe object')
-    if min_time_data is not None:
-        if not isinstance(min_time_data, int):
-            raise TypeError('min_time_data must be an integer')
-        if min_time_data < 0:
-            raise ValueError('min_time_data must be greater than 0')
     
-    # Group the data by time
-    time_groups = gf.data.groupby('Time')
-    # print a list with the len of each group\
+    # Create a copy of the data
+    data_copy = gf.data.copy()
 
-    # Filter the data
-    if min_time_data != 0:
-        time_groups = time_groups.filter(lambda x: len(x) >= min_time_data)
-        time_groups = time_groups.groupby('Time')
+    # Extract the time from the 'Timestamp' column and floor to 15-minute intervals
+    data_copy['Interval'] = data_copy['Timestamp'].dt.floor('15Min').dt.time
+
+    # Group the data by the 15-minute intervals
+    time_groups = data_copy.groupby('Interval')
+
+    # Check if time_groups is empty
+    if len(time_groups) == 0:
+        raise ValueError('All time groups have less than min_time_data data points')
+
+    # Get the mean and std
+    mean_list = time_groups['CGM'].mean()
+    std_list = time_groups['CGM'].std()
 
     # Check if time_groups is empty
     if len(time_groups) == 0:
