@@ -4,7 +4,6 @@ DATASETS/
 examples.ipynb
 
 # Sphinx
-docs/build/
 docs/source/.doctrees/
 docs/source/_autosummary/
 
