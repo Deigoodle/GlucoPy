@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # Dependencies
 requirements = [
@@ -15,5 +15,6 @@ requirements = [
 setup(
     name="glucopy",
     version="0.1",
+    packages=find_packages(),
     install_requires=requirements,
 )
