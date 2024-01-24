@@ -7,6 +7,7 @@ from ...classes import Gframe
 def freq(gf: Gframe,
          per_day: bool = True,
          target_range: list = [0,70,180],
+         count: bool = False,
          height: float = None,
          width: float = None):
     '''
@@ -20,6 +21,9 @@ def freq(gf: Gframe,
         If True, the plot will be separated by days
     target_range : list, default [0,70,180]
         Target range for the glucose
+    count : bool, default False
+        If True, the y axis will be the count of the glucose in the target range. If False, the y axis will be the
+        frequency of the glucose in the target range
     height : float, default None
         Height of the figure
     width : float, default None
@@ -71,7 +75,7 @@ def freq(gf: Gframe,
         target_range = target_range + [max(gf.data['CGM'])]
 
     # Get frequencies
-    frequencies = gf.fd(per_day = per_day, target_range = target_range)
+    frequencies = gf.fd(per_day = per_day, target_range = target_range, count = count)
     range_labels = [f'{target_range[i]}-{target_range[i+1]}' for i in range(len(target_range)-1)]
     
     fig = go.Figure()

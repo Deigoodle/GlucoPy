@@ -625,7 +625,7 @@ class Gframe:
             data_copy['ranges'] = pd.cut(data_copy['CGM'], bins=target_range)
             time_count = data_copy.groupby('ranges', observed=False)['Time_Diff'].sum()
             if percentage:
-                result = np.array(time_count / time_count.sum()) * 100
+                result = time_count / time_count.sum() * 100
                 if decimals is not None:
                     tir = np.round(result, decimals=decimals)
             else:
@@ -640,7 +640,8 @@ class Gframe:
     def fd(self,
            per_day: bool = False,
            target_range: list = [0,70,180],
-           decimals: int = 2):
+           decimals: int = 2,
+           count: bool = False):
         '''
         Calculates the Frequency Distribution (FD) for a given target range of glucose.
 
@@ -653,6 +654,8 @@ class Gframe:
             range, low and high values will be values outside that range.
         decimals : int, default 2
             Number of decimal places to round to. Use None for no rounding.
+        count : bool, default False
+            If True, returns the count of observations for each range. If False, returns the percentage of observations
 
         Returns
         -------
@@ -699,20 +702,23 @@ class Gframe:
             for day, day_data in day_groups:
                 day_data['ranges'] = pd.cut(day_data['CGM'], bins=target_range)
                 result = day_data.groupby('ranges', observed=False)['ranges'].count()
+                if not count:
+                    result = result / result.sum()
                 if decimals is not None:
-                    fd[day] = np.round(np.array(result / result.sum()), decimals=decimals)
+                    fd[day] = np.round(np.array(result), decimals=decimals)
                 else:
-                    fd[day] = np.array(result / result.sum())
+                    fd[day] = np.array(result)
 
         
         else:
             result = (pd.cut(self.data['CGM'], bins=target_range)
                         .groupby(pd.cut(self.data['CGM'], bins=target_range), observed=False).count())
-            summed_results = result.sum()
+            if not count:
+                result = result / result.sum()
             if decimals is not None:
-                fd = (result / summed_results).round(decimals=decimals)
+                fd = (result).round(decimals=decimals)
             else:
-                fd = result / summed_results
+                fd = result
             
         return fd
 
@@ -932,7 +938,7 @@ class Gframe:
             raise ValueError('index_type must be "h" or "l"')
         
         def f(x,index_type):
-            result = np.power(np.log(x), 1.084) - 5.381
+            result = ( np.power(np.log(x), 1.084) - 5.381 ) * 1.509
             if result >= 0 and index_type == 'l':
                 result = 0
             elif result <= 0 and index_type == 'h':
@@ -1713,6 +1719,64 @@ class Gframe:
                 mse = np.nan      
             
         return mse
+
+    # Summary
+    def summary(self,
+                time_unit: str = 'm',
+                decimals: int | None = 2):
+        '''
+        Calculates a summary of the metrics for the entire dataset or for each day separately.
+
+        Parameters
+        ----------
+        time_unit : str, default 'm' (minutes)
+            The time time_unit for the x-axis. Can be 's (seconds)', 'm (minutes)', or 'h (hours)'.
+        decimals : int | None, default 2
+            Number of decimals to round the values to. If None, the values will not be rounded.
+        
+        Returns
+        -------
+        summary : pandas.DataFrame
+            Summary of the metrics.
+
+        Examples
+        --------
+        Calculating the summary for the entire dataset and minutes as the time unit (default):
+
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.summary()
+        '''
+        tir = self.tir()
+        grade = self.grade()
+        summary = [['Mean', self.mean()],
+               ['Standard Deviation', self.std()],
+               ['Coefficient of Variation', self.cv()],
+               ['IQR', self.iqr()],
+               ['MODD', self.modd()],
+               ['% Time below 70 [mg/dL]', tir.iloc[0]],
+               ['% Time in between (70,180] [mg/dL]', tir.iloc[1]],
+               ['% Time above 180 [mg/dL]', tir.iloc[2]],
+               ['AUC', self.auc(time_unit=time_unit)],
+               ['Distance Traveled', self.dt()],
+               ['LBGI', self.lbgi()],
+               ['HBGI', self.hbgi()],
+               ['ADRR', self.adrr()],
+               ['GRADE Hypoglycaemia %', grade.iloc[0]],
+               ['GRADE Euglycaemia %', grade.iloc[1]],
+               ['GRADE Hyperglycaemia %', grade.iloc[2]],
+               ['Q-Score', self.qscore()],
+               ['CONGA', self.conga()],
+               ['GVP', self.gvp()],
+               ['MAG', self.mag(time_unit='h')],
+               ['DFA', self.dfa()],
+               ['SampEn', self.samp_en()],
+               ['MSE', self.mse()]
+            ]
+
+        return pd.DataFrame(data=summary, columns = ['Metric', 'Value']).round(decimals=decimals)
 
 
 

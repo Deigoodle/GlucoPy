@@ -12,6 +12,7 @@ def read_csv(path,
              sep: str = ',',
              date_column: list[str] | str | int = 0,
              cgm_column: str | int = 1,
+             unit: str = 'mg/dL',
              date_format: str | None = None,
              skiprows: list[int] | int | Callable[[Hashable], bool] | None = None,
              nrows: int | None = None,
@@ -36,6 +37,8 @@ def read_csv(path,
         * ``["Date", "Time"]``: columns named "Date" and "Time" will be used as date
     cgm_column : str or None, default None
         Column name of the CGM values, if None, the second column will be used
+    unit : str, default 'mg/dL'
+        Unit of the Glucose values
     date_format : str, default None
         Format of the date information, if None, it will be assumed that the date information is in a consistent format
     skiprows : list-like, int or callable, optional
@@ -77,6 +80,7 @@ def read_csv(path,
                      **kwargs)
 
     return Gframe(data=df,
+                  unit=unit,
                   date_column=date_column,
                   cgm_column=cgm_column,
                   date_format=date_format)

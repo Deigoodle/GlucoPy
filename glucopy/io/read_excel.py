@@ -12,6 +12,7 @@ def read_excel(path,
                sheet_name: str | int | list | None = 0,
                date_column: list[str] | str | int = 0,
                cgm_column: str | int = 1,
+               unit: str = 'mg/dL',
                skiprows: Sequence[int] | int | Callable[[int], object] | None = None,
                nrows: int | None = None,):
     '''
@@ -23,7 +24,6 @@ def read_excel(path,
         Any valid string path is acceptable. The string could be a URL. Valid
         URL schemes include http, ftp, s3, and file. For more information view
         the documentation for pandas.read_excel
-
     sheet_name : str, int, list, or None, default 0
         Strings are used for sheet names. Integers are used in zero-indexed
         sheet positions. Lists of strings/integers are used to request
@@ -38,7 +38,6 @@ def read_excel(path,
         * ``[0, 1, "Sheet5"]``: Load first, second and sheet named "Sheet5"
             as a dict of `GFrame`
         * None: All worksheets.
-
     date_column : str or list of str, default None
         Column name(s) of the date values, max 2 columns, if None, the first
 
@@ -46,14 +45,13 @@ def read_excel(path,
         * Defaults to ``None``: first column will be used as date
         * ``"Date"``: column named "Date" will be used as date
         * ``["Date", "Time"]``: columns named "Date" and "Time" will be used as date
-
     cgm_column : str or None, default None
         Column name of the CGM values, if None, the second column will be used
-    
+    unit : str, default 'mg/dL'
+        Unit of the Glucose values
     skiprows : list-like, int or callable, optional
         Line numbers to skip (0-indexed) or number of lines to skip (int) at the start of the file.
         For more information view the documentation for pandas.read_excel
-    
     nrows : int, default None
         Number of rows to read.
         
