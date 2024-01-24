@@ -725,7 +725,8 @@ class Gframe:
     # Area Under the Curve (AUC)
     def auc(self,
             per_day: bool = False,
-            time_unit='m'):
+            time_unit='m',
+            threshold: int | float = 0):
         '''
         Calculates the Area Under the Curve (AUC) for each day.
 
@@ -735,6 +736,8 @@ class Gframe:
             If True, returns a pandas Series with the AUC for each day. If False, returns the AUC for all days combined.
         time_unit : str, default 'm' (minutes)
             The time unit for the x-axis. Can be 's (seconds)', 'm (minutes)', or 'h (hours)'.
+        threshold : int | float, default 0
+            The threshold value above which the AUC will be calculated.
 
         Returns
         -------
@@ -778,12 +781,12 @@ class Gframe:
             for day, day_data in day_groups:
                 # Convert timestamps to the specified time unit
                 time_values = (day_data['Timestamp'] - day_data['Timestamp'].min()).dt.total_seconds() / factor
-                auc[day] = np.trapz(y=day_data['CGM'], x=time_values)
+                auc[day] = np.trapz(y = day_data['CGM'] - threshold, x = time_values)
         
         else:
             # Convert timestamps to the specified time unit
             time_values = (self.data['Timestamp'] - self.data['Timestamp'].min()).dt.total_seconds() / factor
-            auc = np.trapz(y=self.data['CGM'], x=time_values)
+            auc = np.trapz(y = self.data['CGM'] - threshold, x = time_values)
 
         return auc
 
