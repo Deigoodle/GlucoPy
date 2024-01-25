@@ -10,6 +10,7 @@ requirements = [
         "requests==2.31.0", # neurokit dependency
         "openpyxl==3.1.2", # for excel export
         "xlrd==2.0.1", # for excel import
+        "astropy==6.0.0",
         ]
 
 setup(
