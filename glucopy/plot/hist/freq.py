@@ -11,7 +11,7 @@ def freq(gf: Gframe,
          height: float = None,
          width: float = None):
     '''
-    Plots a histogram of the Glucose rate of change
+    Plots a histogram of the frequency of the glucose in the target range
 
     Parameters
     ----------

@@ -10,6 +10,13 @@ Constructor
 
    Gframe
 
+Summary
+~~~~~~~
+.. autosummary::
+   :toctree: api/
+
+   Gframe.summary
+
 1. Joint data analysis metrics for glycaemia dynamics
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
