@@ -12,7 +12,10 @@ def periodogram(gf: Gframe,
                 height: float = None,
                 width: float = None):
     '''
-    Plots the best-fit curve obtained by a Lomb-Scargle periodogram using astropy.timeseries.LombScargle
+    Plots the best-fit curve obtained by a Lomb-Scargle periodogram using astropy.timeseries.LombScargle.
+
+    For more details on the Lomb-Scargle periodogram implementation of astropy, 
+    see `astropy.timeseries.LombScargle() <https://docs.astropy.org/en/stable/timeseries/lombscargle.html>`_.
 
     Parameters
     ----------
@@ -29,6 +32,33 @@ def periodogram(gf: Gframe,
     -------
     fig : plotly.graph_objects.Figure
         Figure object
+
+    Examples
+    --------
+    Plot the best-fit curve obtained by a Lomb-Scargle periodogram per day
+
+    .. ipython:: python
+
+        import glucopy as gp
+        gf = gp.data()
+        gp.plot.periodogram(gf)
+
+    .. image:: /../img/periodogram_plot_1.png
+        :alt: Periodogram plot per day
+        :align: center
+    .. raw:: html
+
+        <br>
+
+    Plot the best-fit curve obtained by a Lomb-Scargle periodogram for the entire dataset
+
+    .. ipython:: python
+
+        fig = gp.plot.periodogram(gf, per_day=False)
+
+    .. image:: /../img/periodogram_plot_2.png
+        :alt: Periodogram plot
+        :align: center
     '''
     # Check input
     if not isinstance(gf, Gframe):
