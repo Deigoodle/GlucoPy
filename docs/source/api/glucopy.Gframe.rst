@@ -37,6 +37,7 @@
       ~Gframe.quantile
       ~Gframe.samp_en
       ~Gframe.std
+      ~Gframe.summary
       ~Gframe.tir
    
    
