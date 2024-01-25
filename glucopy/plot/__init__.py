@@ -6,6 +6,8 @@ from .trace import (agp,
                     tir)
 from .hist import (freq,
                    roc)
+from .approx import (periodogram,)
+
 
 __all__ = ['box',
            'agp',
