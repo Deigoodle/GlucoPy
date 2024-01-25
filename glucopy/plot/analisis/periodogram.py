@@ -137,10 +137,10 @@ def periodogram(gf: Gframe,
                       width=width)
     
     # Set axis titles
-    fig.update_xaxes(title_text='Time [h]', row=1, col=1)
-    fig.update_yaxes(title_text='Glucose [mg/dL]', row=1, col=1)
-    fig.update_xaxes(title_text='Frequency [1/h]', row=2, col=1)
-    fig.update_yaxes(title_text='Power', row=2, col=1)
+    fig.update_xaxes(title_text='Time [h]', row=2, col=1)
+    fig.update_yaxes(title_text='Glucose [mg/dL]', row=2, col=1)
+    fig.update_xaxes(title_text='Frequency [1/h]', row=1, col=1)
+    fig.update_yaxes(title_text='Power', row=1, col=1)
     
     # Add Dropdown
     if per_day:
