@@ -32,3 +32,11 @@ Histogram
 
    plot.freq
    plot.roc 
+
+Curve Analysis
+~~~~~~~~~~~~~~
+
+.. autosummary::
+   :toctree: api/
+
+   plot.periodogram
