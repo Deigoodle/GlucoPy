@@ -65,7 +65,7 @@ def periodogram(gf: Gframe,
         raise TypeError('gf must be a Gframe object')
     
     # Create subplots
-    fig = make_subplots(rows=2, cols=1, subplot_titles=('Original Data and Periodogram Fit', 'Frequency vs Power'))
+    fig = make_subplots(rows=2, cols=1, subplot_titles=('Power vs Frequency', 'Original Data and Periodogram Fit'))
 
     if per_day:
         day_groups = gf.data.groupby('Day')

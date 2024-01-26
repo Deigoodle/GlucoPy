@@ -940,7 +940,7 @@ class Gframe:
         if index_type != 'h' and index_type != 'l':
             raise ValueError('index_type must be "h" or "l"')
         
-        def f(x,index_type):
+        def f(x):
             result = ( np.power(np.log(x), 1.084) - 5.381 ) * 1.509
             if result >= 0 and index_type == 'l':
                 result = 0
@@ -960,8 +960,10 @@ class Gframe:
                 if self.unit == 'mmol/L':
                     values = mmoll_to_mgdl(values)
 
-                f_values = np.vectorize(f)(values,index_type)
+                f_values = np.vectorize(f,otypes=[float])(values)
+
                 risk = 22.77 * np.square(f_values)
+                
                 if maximum:
                     bgi[day] = np.max(risk)
                 else:
@@ -972,8 +974,10 @@ class Gframe:
             if self.unit == 'mmol/L':
                 values = mmoll_to_mgdl(values)
 
-            f_values = np.vectorize(f)(values,index_type)
+            f_values = np.vectorize(f,otypes=[float])(values)
+
             risk = 22.77 * np.square(f_values)
+            
             if maximum:
                 bgi = np.max(risk)
             else:
