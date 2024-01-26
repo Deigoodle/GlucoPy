@@ -491,17 +491,22 @@ class Gframe:
             differences = []
             for _, row in self.data.iterrows():
                 # Find previous day value
-                minus_24h_index = ( (self.data['Timestamp'] + pd.Timedelta('1 day') - row['Timestamp']) <= slack )
+                minus_24h_index = np.abs(self.data['Timestamp'] + pd.Timedelta('1 day') - row['Timestamp']) <= slack
+
                 if minus_24h_index.any():
                     if method == 'mean':
                         minus_24h_value = self.data.loc[minus_24h_index, 'CGM'].mean()
+
                     elif method == 'closest':
                         closest_index = (self.data.loc[minus_24h_index, 'Timestamp'] - row['Timestamp']).abs().idxmin()
                         minus_24h_value = self.data.loc[closest_index, 'CGM']
+
                     differences.append(np.abs(row['CGM'] - minus_24h_value))
+
                 else:
                     if not ignore_na:
                         raise ValueError(f"No previous day data found for {row['Timestamp']}")
+                    
             modd = np.mean(differences)
         
         else: # calculate MODD for a given time
@@ -520,22 +525,27 @@ class Gframe:
             day_groups = self.data.groupby('Day')
             for day, day_data in day_groups:
                 target_time_index = day_data['Time'] == target_time
+
                 # if exact time is found, use it
                 if target_time_index.any():
                     cgm_values.append(day_data.loc[target_time_index, 'CGM'].values[0])
+
                 # if not, search for closest time within error range
                 elif slack > pd.Timedelta('0 min'):
                     # combine "day" and target_time to compare it with Timestamp
                     target_date = str(day) + ' ' + target_str
                     target_datetime = pd.to_datetime(target_date)
+
                     # search for closest time within error range
                     mask_range = ((day_data['Timestamp'] - target_datetime).abs() <= slack)
                     if mask_range.any():
                         if method == 'mean':
                             cgm_values.append(day_data.loc[mask_range, 'CGM'].mean())
+
                         elif method == 'closest':
                             closest_index = (day_data.loc[mask_range, 'Timestamp'] - target_datetime).abs().idxmin()
                             cgm_values.append(day_data.loc[closest_index, 'CGM'])
+                            
                     else:
                         if not ignore_na:
                             raise ValueError(f"No data found for date {day}")
