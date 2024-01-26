@@ -758,17 +758,17 @@ class Gframe:
             gf = gp.data('prueba_1')
             gf.auc()
 
-        Calculating the AUC for the entire dataset and hours as the time unit:
-
-        .. ipython:: python
-
-            gf.auc(time_unit='h')
-
         Calculating the AUC for each day and minutes as the time unit (default):
 
         .. ipython:: python
 
             gf.auc(per_day=True)
+
+        Calculating the AUC for the entire dataset, hours as the time unit, and below the threshold (100):
+
+        .. ipython:: python
+
+            gf.auc(time_unit='h', threshold=100, above=False)
         '''
         # Determine the factor to multiply the total seconds by
         factor = time_factor(time_unit)
