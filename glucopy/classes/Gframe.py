@@ -16,6 +16,7 @@ from glucopy.utils import (disjoin_days_and_hours,
                            mgdl_to_mmoll, 
                            mmoll_to_mgdl,
                            time_factor)
+import glucopy.metrics as metrics
 
 class Gframe:
     '''
@@ -169,15 +170,7 @@ class Gframe:
             gf.mean(per_day=True)     
         '''
 
-        if per_day:
-            # Group data by day
-            day_groups = self.data.groupby('Day')
-            mean = day_groups['CGM'].mean(**kwargs)
-
-        else:
-            mean = self.data['CGM'].mean(**kwargs)
-
-        return mean
+        return metrics.mean(df=self.data, per_day=per_day, **kwargs)
     
     # Standard Deviation, by default ddof=1, so its divided by n-1
     def std(self,
@@ -220,15 +213,8 @@ class Gframe:
 
             gf.std(per_day=True)
         '''
-        if per_day:
-            # Group data by day
-            day_groups = self.data.groupby('Day')
-            std = day_groups['CGM'].std(ddof=ddof,**kwargs)
         
-        else:
-            std = self.data['CGM'].std(ddof=ddof,**kwargs)
-
-        return std
+        return metrics.std(df=self.data, per_day=per_day, ddof=ddof, **kwargs)
     
     # Coefficient of Variation
     def cv(self,
@@ -271,13 +257,8 @@ class Gframe:
 
             gf.cv(per_day=True)       
         '''
-        if per_day:
-            cv = self.std(per_day=True,ddof=ddof,**kwargs)/self.mean(per_day=True,**kwargs)
-          
-        else:
-            cv = self.std(ddof=ddof,**kwargs)/self.mean(**kwargs)
 
-        return cv
+        return metrics.cv(df=self.data, per_day=per_day, ddof=ddof, **kwargs)
             
     # % Coefficient of Variation
     def pcv(self,

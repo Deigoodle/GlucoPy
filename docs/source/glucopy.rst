@@ -9,3 +9,4 @@ Glucopy
    glucopy.plot
    glucopy.utils
    glucopy.data
+   glucopy.metrics
