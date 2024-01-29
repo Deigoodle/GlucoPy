@@ -490,6 +490,10 @@ class Gframe:
                                         direction='nearest',
                                         tolerance=slack)
             
+            # Drop last day rows because it will never have a next day value
+            last_day = merged_data['Day'].max()
+            merged_data = merged_data.loc[merged_data['Day'] != last_day]
+            
             # Check if there are missing values
             if not ignore_na: 
                 unvalid_data = merged_data['CGM_Next'].isna()
@@ -1106,13 +1110,17 @@ class Gframe:
 
     # [3.9,8.9] mmol/L -> [70.2,160.2] mg/dL
     # Q-Score Glucose=180.15588[g/mol] | 1 [mg/dL] -> 0.05551 [mmol/L] | 1 [mmol/L] -> 18.0182 [mg/dL]
-    def qscore(self):
+    def qscore(self,
+               slack: int = 0):
         '''
         Calculates the Q-Score.
 
         Parameters
         ----------
-        None
+        slack : int, default 0
+            Maximum number of minutes that the given time can differ from the actual time in the data in the calculation
+            of MODD.
+
 
         Returns
         -------
@@ -1121,14 +1129,21 @@ class Gframe:
 
         Examples
         --------
+        Calculating the Q-Score with a 5 minutes slack for MODD:
+
         .. ipython:: python
 
             import glucopy as gp
             gf = gp.data('prueba_1')
-            gf.qscore()
+            gf.qscore(slack=5)
         '''
         # Time in range [70.2,160.2] mg/dL = [3.9,8.9] mmol/L
-        tir_per_day = self.tir(per_day=True, target_range=[70.2,160.2], percentage=False)
+        if self.unit == 'mmol/L':
+            target_range = [3.9,8.9]
+        elif self.unit == 'mg/dL':
+            target_range = [70.2,160.2]
+
+        tir_per_day = self.tir(per_day=True, target_range=target_range, percentage=False)
 
         # List with the Timedelta corresponding to the time spent under 3.9 mmol/L for each day
         tir_per_day_minus_3_9 = [time[0].total_seconds() for time in tir_per_day] 
@@ -1144,8 +1159,18 @@ class Gframe:
         differences = self.data.groupby('Day')['CGM'].apply(lambda x: x.max() - x.min())
         mean_difference = mgdl_to_mmoll(differences.mean())
 
+        # Mean
+        mean = self.mean()
+        if self.unit == 'mg/dL':
+            mean = mgdl_to_mmoll(mean)
+
+        # MODD
+        modd = self.modd(slack=slack)
+        if self.unit == 'mg/dL':
+            modd = mgdl_to_mmoll(modd)
+
         # fractions
-        f1 = (mgdl_to_mmoll(self.mean()) - 7.8 ) / 1.7
+        f1 = (mean - 7.8 ) / 1.7
 
         f2 = (mean_difference - 7.5) / 2.9
 
@@ -1153,19 +1178,19 @@ class Gframe:
         
         f4 = (hours_plus_8_9 - 6.2) / 5.7
 
-        f5 = (mgdl_to_mmoll(self.modd()) - 1.8) / 0.9
+        f5 = (modd - 1.8) / 0.9
 
         return 8 + f1 + f2 + f3 + f4 + f5
 
 
     # 5. Metrics for the analysis of glycaemic dynamics using variability estimation.
 
-    # Continuous Overall Net Glycaemic Action (CONGA)
+    # Continuous Overall Net Glycaemic Action (CONGA)    
     def conga(self,
               per_day: bool = False,
               m: int = 1,
               slack: int = 0,
-              method: str = 'closest'):
+              ignore_na: bool = True):
         '''
         Calculates the Continuous Overall Net Glycaemic Action (CONGA).
 
@@ -1177,9 +1202,9 @@ class Gframe:
             Number of hours to use for the CONGA calculation.
         slack : int, default 0
             Maximum number of minutes that the given time can differ from the actual time in the data.
-        method : str, default 'closest'
-            Method to use if there are multiple timestamps that are m hours before the current timestamp and within the
-            slack range. Can be 'closest' or 'mean'.
+        ignore_na : bool, default True
+            If True, ignores missing values (not found within slack). If False, raises an error 
+            if there are missing values.
 
         Returns
         -------
@@ -1207,12 +1232,10 @@ class Gframe:
             raise ValueError('m must be a positive number')
         if slack < 0:
             raise ValueError('slack must be a positive number or 0')
-        if method != 'closest' and method != 'mean':
-            raise ValueError('method must be "closest" or "mean"')
         
-        # Convert m and slack to timedelta
-        m = pd.to_timedelta(m, unit='h')
+        # Convert slack to timedelta
         slack = pd.to_timedelta(slack, unit='m')
+        m = pd.to_timedelta(m, unit='h')
 
         if per_day:
             # Group data by day
@@ -1221,40 +1244,72 @@ class Gframe:
             conga.index.name = 'Day'
 
             for day, day_data in day_groups:
-                differences = []
-                for i in range(1, day_data.shape[0]):
-                    # find a previous timestamp that is m hours before the current timestamp and within the slack range
-                    previous_index = (day_data['Timestamp'] >= day_data['Timestamp'].iloc[i] - m - slack) \
-                                    &(day_data['Timestamp'] <= day_data['Timestamp'].iloc[i] - m + slack)
-                    if previous_index.any():
-                        if method == 'mean':
-                            previous_value = day_data.loc[previous_index, 'CGM'].mean()
-                        elif method == 'closest':
-                            closest_index = (day_data.loc[previous_index, 'Timestamp'] - day_data['Timestamp'].iloc[i]).abs().idxmin()
-                            previous_value = day_data.loc[closest_index, 'CGM']
-                        # calculate the difference between the current value and the previous value
-                        differences.append(day_data['CGM'].iloc[i] - previous_value)
+                # Add a column with the previous m hours
+                day_data['Prev_Timestamp'] = day_data['Timestamp'] - m
+
+                # Merge the data with itself, matching the previous m hours
+                merged_data = pd.merge_asof(day_data,
+                                            day_data,
+                                            left_on='Timestamp',
+                                            right_on='Prev_Timestamp',
+                                            suffixes=('', '_Next'),
+                                            direction='nearest',
+                                            tolerance=slack)
+                
+                # Drop the rows that have no following m hours
+                last_m_hours = merged_data['Timestamp'].max() - m
+                merged_data = merged_data.loc[merged_data['Timestamp'] <= last_m_hours]
+
+                # Check if there are missing values
+                if not ignore_na:
+                    unvalid_data = merged_data['CGM_Next'].isna()
+                    if unvalid_data.any():
+                        raise ValueError(f"No Next day data found for:\n{merged_data.loc[unvalid_data, 'Timestamp']}")
+                    
+                # Get values that have value in the next m hours and within the slack
+                valid_data = merged_data['CGM_Next'].notna()
+
+                # Calculate the difference between the current value and the previous value
+                differences = merged_data.loc[valid_data, 'CGM'] - merged_data.loc[valid_data, 'CGM_Next']
+
+                # Calculate the standard deviation of the differences
                 conga[day] = np.std(differences)
         
         else:
-            differences = []
-            for i in range(1, self.data.shape[0]):
-                # find a previous timestamp that is m hours before the current timestamp and within the slack range
-                previous_index = (self.data['Timestamp'] >= self.data['Timestamp'].iloc[i] - m - slack) \
-                                &(self.data['Timestamp'] <= self.data['Timestamp'].iloc[i] - m + slack)
-                if previous_index.any():
-                    if method == 'mean':
-                        previous_value = self.data.loc[previous_index, 'CGM'].mean()
-                    elif method == 'closest':
-                        closest_index = (self.data.loc[previous_index, 'Timestamp'] - self.data['Timestamp'].iloc[i]).abs().idxmin()
-                        previous_value = self.data.loc[closest_index, 'CGM']
-                    # calculate the difference between the current value and the previous value
-                    differences.append(self.data['CGM'].iloc[i] - previous_value)
+            # Make a copy and add a column with the previous m hours
+            data_copy = self.data.copy()
+            data_copy['Prev_Timestamp'] = data_copy['Timestamp'] - m
 
+            # Merge the data with itself, matching the previous m hours
+            merged_data = pd.merge_asof(data_copy,
+                                        data_copy,
+                                        left_on='Timestamp',
+                                        right_on='Prev_Timestamp',
+                                        suffixes=('', '_Next'),
+                                        direction='nearest',
+                                        tolerance=slack)
+            
+            # Drop the rows that have no following m hours
+            last_m_hours = merged_data['Timestamp'].max() - m
+            merged_data = merged_data.loc[merged_data['Timestamp'] <= last_m_hours]
+
+            # Check if there are missing values
+            if not ignore_na: 
+                unvalid_data = merged_data['CGM_Next'].isna()
+                if unvalid_data.any():
+                    raise ValueError(f"No Next day data found for:\n{merged_data.loc[unvalid_data, 'Timestamp']}")
+            
+            # Get values that have value in the next m hours and within the slack
+            valid_data = merged_data['CGM_Next'].notna()
+
+            # Calculate the difference between the current value and the previous value
+            differences = merged_data.loc[valid_data, 'CGM'] - merged_data.loc[valid_data, 'CGM_Next']
+
+            # Calculate the standard deviation of the differences
             conga = np.std(differences)
 
         return conga
-                    
+        
 
     # Glucose Variability Percentage (GVP)
     def gvp(self):
