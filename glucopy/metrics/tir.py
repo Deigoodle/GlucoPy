@@ -14,7 +14,7 @@ def tir(df: pd.DataFrame,
     ----------
     df : pandas.DataFrame
         DataFrame containing the CGM values. The dataframe must contain 'CGM' and 'Timestamp' columns present in
-        :class:`glucopy.Gframe.data`.
+        :attr:`glucopy.Gframe.data`.
     target_range : list of int|float, default [0,70,180]
         Target range in CGM unit for low, normal and high glycaemia. It must have at least 2 values, for the "normal"
         range, low and high values will be values outside that range.
@@ -30,7 +30,7 @@ def tir(df: pd.DataFrame,
 
     Notes
     -----
-    This function is meant to be used by :class:`glucopy.Gframe.tir`
+    This function is meant to be used by :meth:`glucopy.Gframe.tir`
     '''
     # Check input, Ensure target_range is a list with 0 and the max value of the data
     if not isinstance(target_range, list) or not all(isinstance(i, (int, float)) for i in target_range):

@@ -16,7 +16,7 @@ def grade(df: pd.DataFrame,
     ----------
     df : pandas.DataFrame
         DataFrame containing the CGM values. The dataframe must contain 'CGM' column present in
-        :class:`glucopy.Gframe.data`.
+        :attr:`glucopy.Gframe.data`.
     percentage : bool, default True
         If True, returns a pandas.Series of GRADE score contribution percentage for Hypoglycaemia, Euglycaemia and 
         Hyperglycaemia. If False, returns a list of GRADE scores for each value.
@@ -32,7 +32,7 @@ def grade(df: pd.DataFrame,
 
     Notes
     -----
-    This function is meant to be used by :class:`glucopy.Gframe.grade`
+    This function is meant to be used by :meth:`glucopy.Gframe.grade`
     '''
     values = df['CGM'].values
     if unit == 'mg/dL':

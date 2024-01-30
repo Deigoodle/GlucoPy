@@ -13,7 +13,7 @@ def std(df: pd.DataFrame,
         ----------
         df : pandas.DataFrame
             DataFrame containing the CGM values. The dataframe must contain 'CGM' and 'Day' columns present in
-            :class:`glucopy.Gframe.data`.
+            :attr:`glucopy.Gframe.data`.
         per_day : bool, default False
             If True, returns a pandas Series with the standard deviation for each day. If False, returns the 
             standard deviation for all days combined.
@@ -31,7 +31,7 @@ def std(df: pd.DataFrame,
 
         Notes
         -----
-        This function is meant to be used by :class:`glucopy.Gframe.std`
+        This function is meant to be used by :meth:`glucopy.Gframe.std`
         '''
         if per_day:
             # Group data by day

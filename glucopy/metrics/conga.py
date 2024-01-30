@@ -14,7 +14,7 @@ def conga(df: pd.DataFrame,
     ----------
     df : pandas.DataFrame
         DataFrame containing the CGM values. The dataframe must contain 'CGM' and 'Timestamp' columns present in
-        :class:`glucopy.Gframe.data`.
+        :attr:`glucopy.Gframe.data`.
     m : int, default 1
         Number of hours to use for the CONGA calculation.
     slack : int, default 0
@@ -30,7 +30,7 @@ def conga(df: pd.DataFrame,
 
     Notes
     -----
-    This function is meant to be used by :class:`glucopy.Gframe.conga`
+    This function is meant to be used by :meth:`glucopy.Gframe.conga`
     '''
     # Check input
     if m < 0:

@@ -17,7 +17,7 @@ def cv(df: pd.DataFrame,
     ----------
     df : pandas.DataFrame
         DataFrame containing the CGM values. The dataframe must contain 'CGM' and 'Day' columns present in
-        :class:`glucopy.Gframe.data`.
+        :attr:`glucopy.Gframe.data`.
     per_day : bool, default False
         If True, returns the an array with the coefficient of variation for each day. If False, returns
         the coefficient of variation for all days combined.
@@ -35,7 +35,7 @@ def cv(df: pd.DataFrame,
 
     Notes
     -----
-    This function is meant to be used by :class:`glucopy.Gframe.cv`
+    This function is meant to be used by :meth:`glucopy.Gframe.cv`
     '''
 
     return std(df=df, per_day=per_day, ddof=ddof, **kwargs) / mean(df=df, per_day=per_day, **kwargs)

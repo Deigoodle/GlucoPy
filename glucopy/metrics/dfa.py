@@ -22,7 +22,7 @@ def dfa(df: pd.DataFrame,
     ----------
     df: pandas.DataFrame
         DataFrame containing the CGM values. The dataframe must contain 'CGM' column present in
-        :class:`glucopy.Gframe.data`.
+        :attr:`glucopy.Gframe.data`.
 
     Returns
     -------
@@ -31,7 +31,7 @@ def dfa(df: pd.DataFrame,
 
     Notes
     -----
-    This function is meant to be used by :class:`glucopy.Gframe.dfa`
+    This function is meant to be used by :meth:`glucopy.Gframe.dfa`
     '''
     try:
         dfa, _ = nk.fractal_dfa(df['CGM'].values,

@@ -20,7 +20,7 @@ def modd(df: pd.DataFrame,
     Parameters
     ----------
     df: pandas.DataFrame
-        DataFrame containing the CGM values. The dataframe must contain all columns present in :class:`glucopy.Gframe.data`.
+        DataFrame containing the CGM values. The dataframe must contain all columns present in :attr:`glucopy.Gframe.data`.
     target_time : str | datetime.time | None, default None
         Time of day to calculate the MODD for. If None, calculates the MODD for all available times.
     slack : int, default 0
@@ -36,7 +36,7 @@ def modd(df: pd.DataFrame,
 
     Notes
     -----
-    This function is meant to be used by :class:`glucopy.Gframe.modd`
+    This function is meant to be used by :meth:`glucopy.Gframe.modd`
     '''
     # Convert slack to timedelta
     slack = pd.to_timedelta(slack, unit='m')

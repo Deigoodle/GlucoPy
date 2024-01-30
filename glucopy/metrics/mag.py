@@ -15,7 +15,7 @@ def mag(df: pd.DataFrame,
     ----------
     df : pandas.DataFrame
         DataFrame containing the CGM values. The dataframe must contain 'CGM' and 'Timestamp' columns present in
-        :class:`glucopy.Gframe.data`.
+        :attr:`glucopy.Gframe.data`.
     time_unit : str, default 'm' (minutes)
         The time time_unit for the x-axis. Can be 's (seconds)', 'm (minutes)', or 'h (hours)'.
     
@@ -26,7 +26,7 @@ def mag(df: pd.DataFrame,
 
     Notes
     -----
-    This function is meant to be used by :class:`glucopy.Gframe.mag`
+    This function is meant to be used by :meth:`glucopy.Gframe.mag`
     '''
     # Determine the factor to multiply the total seconds by
     factor = time_factor(time_unit)

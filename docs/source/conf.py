@@ -40,7 +40,7 @@ html_static_path = ['_static']
 
 autosummary_generate = True
 
-# plot configuration
+# Plot configuration
 plot_html_show_source_link = False
 plot_html_show_formats = False
 

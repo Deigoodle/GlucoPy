@@ -608,8 +608,8 @@ class Gframe:
 
         Returns
         -------
-        auc : pandas.Series 
-            Series of AUC for each day.
+        auc : float | pandas.Series
+            Area Under the Curve (AUC).
 
         Examples
         --------
@@ -666,8 +666,8 @@ class Gframe:
 
         Returns
         -------
-        mage : pd.Series 
-            Series of MAGE for each day.
+        mage : float | pandas.Series
+            Mean Amplitude of Glycaemic Excursions.
 
         Examples
         --------
@@ -708,7 +708,7 @@ class Gframe:
         Returns
         -------
         dt : float | pandas.Series
-            DT for each day or for all days combined.
+            Distance Travelled of Glucose Values.
 
         Examples
         --------
@@ -767,7 +767,7 @@ class Gframe:
         Returns
         -------
         bgi : float | pandas.Series
-
+            Low Blood Glucose Index or High Blood Glucose Index.
 
         Examples
         --------
@@ -805,7 +805,7 @@ class Gframe:
              per_day: bool = False,
              maximum: bool = False):
         '''
-        This is the same that bgi(index_type='l').
+        This is an alias for :meth:`glucopy.Gframe.bgi` with `index_type='l'`.
         '''
         return self.bgi(per_day=per_day, index_type='l', maximum=maximum)
     
@@ -813,7 +813,7 @@ class Gframe:
              per_day: bool = False,
              maximum: bool = False):
         '''
-        This is the same that bgi(index_type='h').
+        This is an alias for :meth:`glucopy.Gframe.bgi` with `index_type='h'`.
         '''
         return self.bgi(per_day=per_day, index_type='h', maximum=maximum)
         

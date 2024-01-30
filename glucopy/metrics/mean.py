@@ -12,7 +12,7 @@ def mean(df : pd.DataFrame,
         ----------
         df : pandas.DataFrame
             DataFrame containing the CGM values. The dataframe must contain 'CGM' and 'Day' columns present in
-            :class:`glucopy.Gframe.data`.
+            :attr:`glucopy.Gframe.data`.
         per_day : bool, default False
             If True, returns a pandas Series with the mean for each day. If False, returns the mean for all days combined.
         **kwargs : dict
@@ -26,7 +26,7 @@ def mean(df : pd.DataFrame,
 
         Notes
         -----
-        This function is meant to be used by :class:`glucopy.Gframe.mean`
+        This function is meant to be used by :meth:`glucopy.Gframe.mean`
         '''
 
         if per_day:

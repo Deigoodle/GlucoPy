@@ -11,7 +11,7 @@ def mage(df: pd.DataFrame) -> float:
     ----------
     df : pandas.DataFrame
         DataFrame containing the CGM values. The dataframe must contain 'CGM' column present in
-        :class:`glucopy.Gframe.data`.
+        :attr:`glucopy.Gframe.data`.
         
     Returns
     -------
@@ -20,7 +20,7 @@ def mage(df: pd.DataFrame) -> float:
 
     Notes
     -----
-    This function is meant to be used by :class:`glucopy.Gframe.mage`
+    This function is meant to be used by :meth:`glucopy.Gframe.mage`
     '''
     day_std = df['CGM'].std()
     
