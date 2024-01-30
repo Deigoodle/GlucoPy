@@ -1,21 +1,14 @@
 #3rd party
 import numpy as np
 import pandas as pd
-import neurokit2 as nk
-from scipy.signal import find_peaks
 
 # Built-in
 from collections.abc import Sequence
 import datetime
-from typing import List
 
 # Local
 from glucopy.utils import (disjoin_days_and_hours,
-                           str_to_time,
-                           time_to_str,
-                           mgdl_to_mmoll, 
-                           mmoll_to_mgdl,
-                           time_factor)
+                           mgdl_to_mmoll)
 import glucopy.metrics as metrics
 
 class Gframe:
@@ -1079,9 +1072,6 @@ class Gframe:
 
             gf.mag(per_day=True)
         '''
-        # Determine the factor to multiply the total seconds by
-        factor = time_factor(time_unit)
-        
         if per_day:
             # Group data by day
             day_groups = self.data.groupby('Day')
