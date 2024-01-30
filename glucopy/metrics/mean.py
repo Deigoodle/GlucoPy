@@ -4,14 +4,15 @@ import pandas as pd
 def mean(df : pd.DataFrame,
          per_day: bool = False,
          **kwargs
-        ) -> float | pd.Series:
+        ):
         '''
         Calculates the mean of the CGM values.
 
         Parameters
         ----------
         df : pandas.DataFrame
-            Dataframe containing the CGM values. The dataframe must contain a column named 'CGM' with the CGM values.
+            DataFrame containing the CGM values. The dataframe must contain 'CGM' and 'Day' columns present in
+            :class:`glucopy.Gframe.data`.
         per_day : bool, default False
             If True, returns a pandas Series with the mean for each day. If False, returns the mean for all days combined.
         **kwargs : dict

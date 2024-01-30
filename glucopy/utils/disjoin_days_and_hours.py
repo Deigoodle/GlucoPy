@@ -14,7 +14,7 @@ def disjoin_days_and_hours(df,
     Parameters
     ----------
     df : pd.DataFrame
-        Dataframe to disjoin
+        DataFrame to disjoin
     date_column : str or int, optional
         Column name or index with datetime objects, by default 0
     cgm_column : str or int, optional

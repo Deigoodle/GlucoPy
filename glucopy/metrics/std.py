@@ -5,14 +5,15 @@ def std(df: pd.DataFrame,
         per_day: bool = False,
         ddof: int = 1,
         **kwargs
-        ) -> float | pd.Series:
+        ):
         '''
         Calculates the standard deviation of the CGM values.
 
         Parameters
         ----------
         df : pandas.DataFrame
-            Dataframe containing the CGM values. The dataframe must contain a column named 'CGM' with the CGM values.
+            DataFrame containing the CGM values. The dataframe must contain 'CGM' and 'Day' columns present in
+            :class:`glucopy.Gframe.data`.
         per_day : bool, default False
             If True, returns a pandas Series with the standard deviation for each day. If False, returns the 
             standard deviation for all days combined.

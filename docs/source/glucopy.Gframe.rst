@@ -82,5 +82,3 @@ Summary
    Gframe.dfa
    Gframe.samp_en
    Gframe.mse
-
-   

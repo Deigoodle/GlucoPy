@@ -20,15 +20,15 @@ import glucopy.metrics as metrics
 
 class Gframe:
     '''
-    Class for the analysis of CGM data. it uses a pandas Dataframe as the main data structure.
+    Class for the analysis of CGM data. it uses a pandas DataFrame as the main data structure.
 
     To create a Gframe object from a csv file or an excel file, check Input/Output glucopy.read_csv() 
     and glucopy.read_excel().
 
     Parameters
     -----------
-    data : pandas Dataframe 
-        Dataframe containing the CGM signal information, it will be saved into a Dataframe with the columns 
+    data : pandas DataFrame 
+        DataFrame containing the CGM signal information, it will be saved into a DataFrame with the columns 
         ['Timestamp','Day','Time','CGM']
     unit : str, default 'mg/dL'
         CGM signal measurement unit.
@@ -47,11 +47,16 @@ class Gframe:
 
     Attributes
     ----------
-    data : pandas Dataframe
-        Dataframe containing the CGM signal information, it will be saved into a Dataframe with the columns
-        ['Timestamp','Day','Time','CGM']
+    data : pandas DataFrame
+        DataFrame containing the CGM signal information, it will be saved into a DataFrame with the columns:
+
+        - 'Timestamp' : datetime64[ns]  # pandas datetime
+        - 'Day' : datetime.date 
+        - 'Time' : datetime.time
+        - 'CGM' : number 
+
     unit : str
-        CGM signal measurement unit.
+        CGM signal measurement unit. Can be 'mg/dL' or 'mmol/L'.
     n_samples : int
         Number of samples in the data.
     n_days : int
@@ -63,7 +68,7 @@ class Gframe:
 
     Examples
     --------
-    Creating a Gframe object from a pandas Dataframe:
+    Creating a Gframe object from a pandas DataFrame:
 
     .. ipython:: python
 
@@ -74,7 +79,7 @@ class Gframe:
         gf = gp.Gframe(df)
         gf
 
-    Creating a Gframe object from a pandas Dataframe with extra columns:
+    Creating a Gframe object from a pandas DataFrame with extra columns:
 
     .. ipython:: python
 
@@ -359,15 +364,8 @@ class Gframe:
 
             gf.quantile(per_day=True)
         '''
-        if per_day:
-            # Group data by day
-            day_groups = self.data.groupby('Day')
-            quantile = day_groups['CGM'].quantile(q=q, interpolation=interpolation, **kwargs)
         
-        else:
-            quantile = self.data['CGM'].quantile(q=q, interpolation=interpolation, **kwargs)
-        
-        return quantile
+        return metrics.quantile(df=self.data, per_day=per_day, q=q, interpolation=interpolation, **kwargs)
     
     # Interquartile Range
     def iqr(self,
@@ -391,7 +389,7 @@ class Gframe:
 
         Returns
         -------
-        iqr : pandas.Series | float
+        iqr : float | pandas.Series
             Interquartile range of the CGM values.
 
         Examples
@@ -411,8 +409,8 @@ class Gframe:
             gf.iqr(per_day=True)
         '''
         
-        q1 = self.quantile(per_day=per_day,q=0.25, interpolation=interpolation, **kwargs)
-        q3 = self.quantile(per_day=per_day,q=0.75, interpolation=interpolation, **kwargs)
+        q1 = metrics.quantile(df=self.data, per_day=per_day, q=0.25, interpolation=interpolation, **kwargs)
+        q3 = metrics.quantile(df=self.data, per_day=per_day, q=0.75, interpolation=interpolation, **kwargs)
         
         return q3 - q1
     
@@ -454,89 +452,7 @@ class Gframe:
 
             gf.modd(slack=10) 
         '''
-        # Convert slack to timedelta
-        slack = pd.to_timedelta(slack, unit='m')
-
-        if target_time is None: # calculate MODD for all times
-            # Make a copy and add a column with the previous day
-            data_copy = self.data.copy()
-            data_copy['Prev_Timestamp'] = data_copy['Timestamp'] - pd.Timedelta('1 day')
-
-            # Merge the data with itself, matching the previous day within the slack
-            merged_data = pd.merge_asof(data_copy, 
-                                        data_copy, 
-                                        left_on='Timestamp', 
-                                        right_on='Prev_Timestamp', 
-                                        suffixes=('', '_Next'),
-                                        direction='nearest',
-                                        tolerance=slack)
-            
-            # Drop last day rows because it will never have a next day value
-            last_day = merged_data['Day'].max()
-            merged_data = merged_data.loc[merged_data['Day'] != last_day]
-            
-            # Check if there are missing values
-            if not ignore_na: 
-                unvalid_data = merged_data['CGM_Next'].isna()
-                if unvalid_data.any():
-                    raise ValueError(f"No Next day data found for:\n{merged_data.loc[unvalid_data, 'Timestamp']}")
-
-            # Get values that have a next day within the slack
-            valid_data = merged_data['CGM_Next'].notna()
-
-            # Calculate the difference between the current day and the previous day
-            differences = np.abs(merged_data.loc[valid_data, 'CGM'] - merged_data.loc[valid_data, 'CGM_Next'])
-
-            # Calculate the mean of the differences
-            modd = differences.mean()
-
-        else: # Calculate MODD for a given time
-            # Convert time to same format as self.data['Time']
-            if not isinstance(target_time, str) and not isinstance(target_time, datetime.time):
-                raise TypeError('time must be a string or a datetime.time')
-            elif isinstance(target_time, str):# String -> datetime.time
-                target_str = target_time
-                target_time = str_to_time(target_str)
-            else: # datetime.time
-                target_str = time_to_str(target_time)
-
-            cgm_values: List[float] = []
-
-            # Search given time in each day
-            day_groups = self.data.groupby('Day')
-            for day, day_data in day_groups:
-                target_time_index = day_data['Time'] == target_time
-
-                # If exact time is found, use it
-                if target_time_index.any():
-                    cgm_values.append(day_data.loc[target_time_index, 'CGM'].values[0])
-
-                # If not, search for closest time within error range
-                elif slack > pd.Timedelta('0 min'):
-                    # Combine "day" and target_time to compare it with Timestamp
-                    target_date = str(day) + ' ' + target_str
-                    target_datetime = pd.to_datetime(target_date)
-
-                    # Search for closest time within error range
-                    mask_range = ((day_data['Timestamp'] - target_datetime).abs() <= slack)
-                    if mask_range.any():
-                        closest_index = (day_data.loc[mask_range, 'Timestamp'] - target_datetime).abs().idxmin()
-                        cgm_values.append(day_data.loc[closest_index, 'CGM'])
-                    else:
-                        if ignore_na:
-                            cgm_values.append(np.nan)
-                        else:
-                            raise ValueError(f"No data found for date {day}")
-                        
-                else:
-                    if ignore_na:
-                        cgm_values.append(np.nan)
-                    else:
-                        raise ValueError(f"No data found for date {day}")
-            
-            modd = np.nanmean(np.abs(np.diff(cgm_values)))
-
-        return modd
+        return metrics.modd(df=self.data, target_time=target_time, slack=slack, ignore_na=ignore_na)
         
     # Time in Range
     def tir(self, 
@@ -587,46 +503,22 @@ class Gframe:
 
             gf.tir(per_day=True)
         '''
-        # Check input, Ensure target_range is a list with 0 and the max value of the data
-        if not isinstance(target_range, list) or not all(isinstance(i, (int, float)) for i in target_range):
-            raise ValueError("target_range must be a list of numbers")
-        if 0 not in target_range:
-            target_range = [0] + target_range
-        if max(self.data['CGM']) > target_range[-1]:
-            target_range = target_range + [max(self.data['CGM'])]
-
         if per_day:
+            # Group data by day
             day_groups = self.data.groupby('Day')
 
+            # Initialize tir as an empty Series
             tir = pd.Series(dtype=float)
             tir.index.name = 'Day'
 
+            # Calculate TIR for each day
             for day, day_data in day_groups:
-                day_data['Time_Diff'] = day_data['Timestamp'].diff().dt.total_seconds() 
-                day_data['ranges'] = pd.cut(day_data['CGM'], bins=target_range)
-                time_count = day_data.groupby('ranges', observed=False)['Time_Diff'].sum()
-                if percentage:
-                    result = np.array(time_count / time_count.sum()) * 100
-                    if decimals is not None:
-                        result = np.round(result, decimals=decimals)
-                else:
-                    result = list(time_count.apply(lambda x: pd.to_timedelta(x, unit='s')))
-                tir[day] = result
-                    
-        else:
-            data_copy = self.data.copy()
-            data_copy['Time_Diff'] = data_copy['Timestamp'].diff().dt.total_seconds()
-            data_copy['ranges'] = pd.cut(data_copy['CGM'], bins=target_range)
-            time_count = data_copy.groupby('ranges', observed=False)['Time_Diff'].sum()
-            if percentage:
-                result = time_count / time_count.sum() * 100
-                if decimals is not None:
-                    tir = np.round(result, decimals=decimals)
-            else:
-                tir = time_count.apply(lambda x: pd.to_timedelta(x, unit='s'))
-        
-        return tir
+                tir[day] = metrics.tir(df=day_data, target_range=target_range, percentage=percentage, decimals=decimals).tolist()
 
+        else: # Calculate TIR for all data
+            tir = metrics.tir(df=self.data, target_range=target_range, percentage=percentage, decimals=decimals)
+
+        return tir
     
     # 2. Analysis of distribution in the plane for glycaemia dynamics.
 
@@ -678,42 +570,19 @@ class Gframe:
 
             gf.fd(per_day=True)
         '''
-        # Check input, Ensure target_range is a list with 0 and the max value of the data
-        if not isinstance(target_range, list) or not all(isinstance(i, (int, float)) for i in target_range):
-            raise ValueError("target_range must be a list of numbers")
-        if 0 not in target_range:
-            target_range = [0] + target_range
-        if max(self.data['CGM']) > target_range[-1]:
-            target_range = target_range + [max(self.data['CGM'])]
-
         if per_day:
+            # Group data by day
             day_groups = self.data.groupby('Day')
 
-            # Initialize fd as an empty Series
             fd = pd.Series(dtype=float)
             fd.index.name = 'Day'
 
             for day, day_data in day_groups:
-                day_data['ranges'] = pd.cut(day_data['CGM'], bins=target_range)
-                result = day_data.groupby('ranges', observed=False)['ranges'].count()
-                if not count:
-                    result = result / result.sum()
-                if decimals is not None:
-                    fd[day] = np.round(np.array(result), decimals=decimals)
-                else:
-                    fd[day] = np.array(result)
-
+                fd[day] = metrics.fd(df=day_data, target_range=target_range, decimals=decimals, count=count).values
         
         else:
-            result = (pd.cut(self.data['CGM'], bins=target_range)
-                        .groupby(pd.cut(self.data['CGM'], bins=target_range), observed=False).count())
-            if not count:
-                result = result / result.sum()
-            if decimals is not None:
-                fd = (result).round(decimals=decimals)
-            else:
-                fd = result
-            
+            fd = metrics.fd(df=self.data, target_range=target_range, decimals=decimals, count=count)
+
         return fd
 
     # Area Under the Curve (AUC)
@@ -723,7 +592,7 @@ class Gframe:
             threshold: int | float = 0,
             above: bool = True):
         '''
-        Calculates the Area Under the Curve (AUC) for each day.
+        Calculates the Area Under the Curve (AUC).
 
         Parameters
         ----------
@@ -764,9 +633,6 @@ class Gframe:
 
             gf.auc(time_unit='h', threshold=100, above=False)
         '''
-        # Determine the factor to multiply the total seconds by
-        factor = time_factor(time_unit)
-
         if per_day:
             # Group data by day
             day_groups = self.data.groupby('Day')
@@ -777,28 +643,10 @@ class Gframe:
 
             # Calculate AUC for each day
             for day, day_data in day_groups:
-                # Convert timestamps to the specified time unit
-                time_values = (day_data['Timestamp'] - day_data['Timestamp'].min()).dt.total_seconds() / factor
-
-                # Get the CGM values and set all values below or above the threshold to the threshold
-                if above:
-                    cgm_values = np.maximum(day_data['CGM'], threshold) - threshold
-                else:
-                    cgm_values = threshold - np.minimum(day_data['CGM'], threshold)
-
-                auc[day] = np.trapz(y = cgm_values, x = time_values)
+                auc[day] = metrics.auc(df=day_data, time_unit=time_unit, threshold=threshold, above=above)
 
         else:
-            # Convert timestamps to the specified time unit
-            time_values = (self.data['Timestamp'] - self.data['Timestamp'].min()).dt.total_seconds() / factor
-
-            # Get the CGM values and set all values below or above the threshold to the threshold
-            if above:
-                cgm_values = np.maximum(self.data['CGM'], threshold) - threshold
-            else:
-                cgm_values = threshold - np.minimum(self.data['CGM'], threshold)
-
-            auc = np.trapz(y = cgm_values, x = time_values)
+            auc = metrics.auc(df=self.data, time_unit=time_unit, threshold=threshold, above=above)
 
         return auc
 
@@ -806,13 +654,15 @@ class Gframe:
     # 3. Amplitude and distribution of frequencies metrics for glycaemia dynamics.
 
     # Mean Amplitude of Glycaemic Excursions (MAGE)
-    def mage(self):
+    def mage(self,
+             per_day: bool = False):
         '''
         Calculates the Mean Amplitude of Glycaemic Excursions (MAGE) for each day.
 
         Parameters
         ----------
-        None
+        per_day : bool, default False
+            If True, returns a pandas Series with the MAGE for each day. If False, returns the MAGE for all days combined.
 
         Returns
         -------
@@ -827,33 +677,20 @@ class Gframe:
             gf = gp.data('prueba_1')
             gf.mage()
         '''
-        # Group data by day
-        day_groups = self.data.groupby('Day')
+        if per_day:
+            # Group data by day
+            day_groups = self.data.groupby('Day')
 
-        # Initialize mage as an empty Series
-        mage = pd.Series(dtype=float)
-        mage.index.name = 'Day'
+            # Initialize mage as an empty Series
+            mage = pd.Series(dtype=float)
+            mage.index.name = 'Day'
 
-        # Calculate MAGE for each day
+            # Calculate MAGE for each day
+            for day, day_data in day_groups:
+                mage[day] = metrics.mage(df=day_data)
         
-        for day, day_data in day_groups:
-            day_std = day_data['CGM'].std()
-            
-            # find peaks and nadirs
-            peaks, _ = find_peaks(day_data['CGM'])
-            nadirs, _ = find_peaks(-day_data['CGM'])
-
-            if peaks.size > nadirs.size:
-                nadirs = np.append(nadirs, day_data['CGM'].size - 1)
-            elif peaks.size < nadirs.size:
-                peaks = np.append(peaks, day_data['CGM'].size - 1)
-            
-            # calculate the difference between the peaks and the nadirs
-            differences = np.abs(day_data['CGM'].iloc[peaks].values - day_data['CGM'].iloc[nadirs].values)
-            # get differences greater than std
-            differences = differences[differences > day_std]
-            # calculate mage
-            mage[day] = differences.mean()
+        else:
+            mage = metrics.mage(df=self.data)
 
         return mage
 
@@ -870,7 +707,7 @@ class Gframe:
 
         Returns
         -------
-        dt : pandas.Series | float
+        dt : float | pandas.Series
             DT for each day or for all days combined.
 
         Examples
@@ -898,10 +735,10 @@ class Gframe:
 
             # Calculate DT for each day
             for day, day_data in day_groups:
-                dt[day] = np.sum(np.abs(np.diff(day_data['CGM'])))
+                dt[day] = metrics.dt(df=day_data)
 
         else:
-            dt = np.sum(np.abs(np.diff(self.data['CGM'])))
+            dt = metrics.dt(df=self.data)
 
         return dt
     
@@ -929,7 +766,7 @@ class Gframe:
 
         Returns
         -------
-        bgi : pandas.Series | float
+        bgi : float | pandas.Series
 
 
         Examples
@@ -947,19 +784,7 @@ class Gframe:
         .. ipython:: python
 
             gf.bgi(index_type='h', per_day=True)
-        '''
-        index_type.lower()
-        if index_type != 'h' and index_type != 'l':
-            raise ValueError('index_type must be "h" or "l"')
-        
-        def f(x):
-            result = ( np.power(np.log(x), 1.084) - 5.381 ) * 1.509
-            if result >= 0 and index_type == 'l':
-                result = 0
-            elif result <= 0 and index_type == 'h':
-                result = 0
-            return result
-        
+        '''        
         if per_day:
             # Group data by day
             day_groups = self.data.groupby('Day')
@@ -968,32 +793,10 @@ class Gframe:
             bgi.index.name = 'Day'
 
             for day, day_data in day_groups:
-                values = day_data['CGM'].values
-                if self.unit == 'mmol/L':
-                    values = mmoll_to_mgdl(values)
-
-                f_values = np.vectorize(f,otypes=[float])(values)
-
-                risk = 22.77 * np.square(f_values)
-
-                if maximum:
-                    bgi[day] = np.max(risk)
-                else:
-                    bgi[day] = np.mean(risk)
+                bgi[day] = metrics.bgi(df=day_data, unit=self.unit, index_type=index_type, maximum=maximum)
 
         else: 
-            values = self.data['CGM'].values
-            if self.unit == 'mmol/L':
-                values = mmoll_to_mgdl(values)
-
-            f_values = np.vectorize(f,otypes=[float])(values)
-
-            risk = 22.77 * np.square(f_values)
-            
-            if maximum:
-                bgi = np.max(risk)
-            else:
-                bgi = np.mean(risk)
+            bgi = metrics.bgi(df=self.data, unit=self.unit, index_type=index_type, maximum=maximum)
 
         return bgi
     
@@ -1037,7 +840,8 @@ class Gframe:
             gf.adrr()  
         ''' 
 
-        adrr = self.bgi(per_day=True,index_type='h', maximum=True) + self.bgi(per_day=True,index_type='l', maximum=True)
+        adrr = self.bgi(per_day=True,index_type='h', maximum=True) \
+             + self.bgi(per_day=True, index_type='l', maximum=True)
         
         return np.mean(adrr)
 
@@ -1075,19 +879,7 @@ class Gframe:
 
             gf.grade(percentage=False)
         '''
-        values = self.data['CGM'].values
-        if self.unit == 'mg/dL':
-            values = mgdl_to_mmoll(values)
-        grade = np.minimum(425 * np.square( np.log10( np.log10(values) ) + 0.16), 50)
-
-        if percentage:
-            grade_sum = np.sum(grade)
-            hypo = np.sum(grade[values < 3.9]) / grade_sum 
-            hyper = np.sum(grade[values > 7.8]) / grade_sum
-            eugly = 1 - hypo - hyper
-            grade = pd.Series([hypo, eugly, hyper], index=['Hypoglycaemia', 'Euglycaemia', 'Hyperglycaemia']) * 100
-        
-        return grade
+        return metrics.grade(df=self.data, percentage=percentage, unit=self.unit)
 
     # [3.9,8.9] mmol/L -> [70.2,160.2] mg/dL
     # Q-Score Glucose=180.15588[g/mol] | 1 [mg/dL] -> 0.05551 [mmol/L] | 1 [mmol/L] -> 18.0182 [mg/dL]
@@ -1208,16 +1000,6 @@ class Gframe:
 
             gf.conga(per_day=True, slack=5)
         '''
-        # Check input
-        if m < 0:
-            raise ValueError('m must be a positive number')
-        if slack < 0:
-            raise ValueError('slack must be a positive number or 0')
-        
-        # Convert slack to timedelta
-        slack = pd.to_timedelta(slack, unit='m')
-        m = pd.to_timedelta(m, unit='h')
-
         if per_day:
             # Group data by day
             day_groups = self.data.groupby('Day')
@@ -1225,72 +1007,12 @@ class Gframe:
             conga.index.name = 'Day'
 
             for day, day_data in day_groups:
-                # Add a column with the previous m hours
-                day_data['Prev_Timestamp'] = day_data['Timestamp'] - m
-
-                # Merge the data with itself, matching the previous m hours
-                merged_data = pd.merge_asof(day_data,
-                                            day_data,
-                                            left_on='Timestamp',
-                                            right_on='Prev_Timestamp',
-                                            suffixes=('', '_Next'),
-                                            direction='nearest',
-                                            tolerance=slack)
-                
-                # Drop the rows that have no following m hours
-                last_m_hours = merged_data['Timestamp'].max() - m
-                merged_data = merged_data.loc[merged_data['Timestamp'] <= last_m_hours]
-
-                # Check if there are missing values
-                if not ignore_na:
-                    unvalid_data = merged_data['CGM_Next'].isna()
-                    if unvalid_data.any():
-                        raise ValueError(f"No Next day data found for:\n{merged_data.loc[unvalid_data, 'Timestamp']}")
-                    
-                # Get values that have value in the next m hours and within the slack
-                valid_data = merged_data['CGM_Next'].notna()
-
-                # Calculate the difference between the current value and the previous value
-                differences = merged_data.loc[valid_data, 'CGM'] - merged_data.loc[valid_data, 'CGM_Next']
-
-                # Calculate the standard deviation of the differences
-                conga[day] = np.std(differences)
+                conga[day] = metrics.conga(df=day_data, m=m, slack=slack, ignore_na=ignore_na)
         
         else:
-            # Make a copy and add a column with the previous m hours
-            data_copy = self.data.copy()
-            data_copy['Prev_Timestamp'] = data_copy['Timestamp'] - m
-
-            # Merge the data with itself, matching the previous m hours
-            merged_data = pd.merge_asof(data_copy,
-                                        data_copy,
-                                        left_on='Timestamp',
-                                        right_on='Prev_Timestamp',
-                                        suffixes=('', '_Next'),
-                                        direction='nearest',
-                                        tolerance=slack)
-            
-            # Drop the rows that have no following m hours
-            last_m_hours = merged_data['Timestamp'].max() - m
-            merged_data = merged_data.loc[merged_data['Timestamp'] <= last_m_hours]
-
-            # Check if there are missing values
-            if not ignore_na: 
-                unvalid_data = merged_data['CGM_Next'].isna()
-                if unvalid_data.any():
-                    raise ValueError(f"No Next day data found for:\n{merged_data.loc[unvalid_data, 'Timestamp']}")
-            
-            # Get values that have value in the next m hours and within the slack
-            valid_data = merged_data['CGM_Next'].notna()
-
-            # Calculate the difference between the current value and the previous value
-            differences = merged_data.loc[valid_data, 'CGM'] - merged_data.loc[valid_data, 'CGM_Next']
-
-            # Calculate the standard deviation of the differences
-            conga = np.std(differences)
+            conga = metrics.conga(df=self.data, m=m, slack=slack, ignore_na=ignore_na)
 
         return conga
-        
 
     # Glucose Variability Percentage (GVP)
     def gvp(self):
@@ -1314,20 +1036,7 @@ class Gframe:
             gf = gp.data('prueba_1')
             gf.gvp()
         '''
-
-        # Calculate the difference between consecutive timestamps
-        timeStamp_diff = pd.Series(np.diff(self.data['Timestamp']))
-        # Calculate the difference between consecutive CGM values
-        cgm_diff = pd.Series(np.diff(self.data['CGM']))
-
-        line_length  = np.sum( np.sqrt( np.square(cgm_diff) \
-                                      + np.square(timeStamp_diff.dt.total_seconds() / 60) ) )
-        
-        t0 = pd.Timedelta(self.data['Timestamp'].tail(1).values[0] \
-                         -self.data['Timestamp'].head(1).values[0]).total_seconds() / 60
-        
-        gvp = (line_length/t0 - 1) * 100
-        return gvp
+        return metrics.gvp(df=self.data)
     
     # Mean Absolute Glucose Change per unit of time (MAG)
     def mag(self,
@@ -1380,20 +1089,10 @@ class Gframe:
             mag.index.name = 'Day'
 
             for day, day_data in day_groups:
-                # Calculate the difference between consecutive timestamps
-                timeStamp_diff = pd.Series(np.diff(day_data['Timestamp']))
-                # Calculate the difference between consecutive CGM values
-                cgm_diff = pd.Series(np.abs(np.diff(day_data['CGM'])))
-                # Calculate the MAG
-                mag[day] = np.sum(np.abs(cgm_diff)) / (timeStamp_diff.dt.total_seconds().sum()/factor)
+                mag[day] = metrics.mag(df=day_data, time_unit=time_unit)
         
         else:
-            # Calculate the difference between consecutive timestamps
-            timeStamp_diff = pd.Series(np.diff(self.data['Timestamp']))
-            # Calculate the difference between consecutive CGM values
-            cgm_diff = pd.Series(np.abs(np.diff(self.data['CGM'])))
-            # Calculate the MAG
-            mag = np.sum(np.abs(cgm_diff)) / (timeStamp_diff.dt.total_seconds().sum()/factor)
+            mag = metrics.mag(df=self.data, time_unit=time_unit)
             
         return mag
 
@@ -1465,112 +1164,24 @@ class Gframe:
             dfa.index.name = 'Day'
 
             for day, day_data in day_groups:
-                try:
-                    day_dfa, _ = nk.fractal_dfa(day_data['CGM'].values,
-                                                scale=scale,
-                                                overlap=overlap,
-                                                integrate=integrate,
-                                                order=order,
-                                                show=show,
-                                                **kwargs)
-                except:
-                    day_dfa = np.nan
-                dfa[day] = day_dfa
+                dfa[day] = metrics.dfa(df=day_data,
+                                       scale=scale,
+                                       overlap=overlap,
+                                       integrate=integrate,
+                                       order=order,
+                                       show=show,
+                                       **kwargs)
         
         else:
-            try:
-                dfa, _ = nk.fractal_dfa(self.data['CGM'].values,
-                                    scale=scale,
-                                    overlap=overlap,
-                                    integrate=integrate,
-                                    order=order,
-                                    show=show,
-                                    **kwargs)
-            except:
-                dfa = np.nan
+            dfa = metrics.dfa(df=self.data,
+                              scale=scale,
+                              overlap=overlap,
+                              integrate=integrate,
+                              order=order,
+                              show=show,
+                              **kwargs)
             
         return dfa
-
-
-    '''def dfa(self,
-            per_day: bool = False):
-        ''
-        Calculates the Detrended Fluctuation Analysis (DFA).
-
-        Parameters
-        ----------
-        per_day : bool, default False
-            If True, returns the an array with the DFA for each day. If False, returns the DFA for all days combined.
-
-        Returns
-        -------
-        dfa : float
-            Detrended fluctuation analysis.
-        ''
-        if per_day:
-            # Group data by day
-            day_groups = self.data.groupby('Day')
-
-            dfa = pd.Series(dtype=float)
-            dfa.index.name = 'Day'
-
-            for day, day_data in day_groups:
-                # Convert the timestamp values to seconds since the start of the dataset
-                x = (day_data['Timestamp'] - day_data['Timestamp'].min()).dt.total_seconds().values
-
-                # Integrated data
-                y = np.cumsum(day_data['CGM'].values - day_data['CGM'].mean())
-
-                # Generate segment_sizes
-                segment_sizes = np.logspace(start=1, stop=np.log2(x.size), num=int(np.log2(x.size))+1, base=2, dtype=int)
-
-                rms_values = []
-                for segment_size in segment_sizes:
-                    # Divide y into segments
-                    y_segments = np.array_split(y, x.size // segment_size)
-                    x_segments = np.array_split(x, x.size // segment_size)
-
-                    # Perform linear regression on each segment and calculate predicted values
-                    y_predicted = [linregress(x_segment, y_segment).slope * x_segment + linregress(x_segment, y_segment).intercept \
-                                   for x_segment, y_segment in zip(x_segments, y_segments)]
-                    y_predicted = np.concatenate(y_predicted)
-
-                    # Calculate the root mean square of the differences
-                    rms = np.sqrt(np.mean(np.square(y - y_predicted)))
-                    rms_values.append(rms)
-
-                # Perform linear regression between log(segment_sizes) and rms_values
-                dfa[day] = linregress(np.log(segment_sizes), np.log(rms_values)).slope
-
-        else:
-            # Convert the timestamp values to seconds since the start of the dataset
-            x = (self.data['Timestamp'] - self.data['Timestamp'].min()).dt.total_seconds().values
-
-            # Integrated data
-            y = np.cumsum(self.data['CGM'].values - self.mean())
-
-            # Generate segment_sizes
-            segment_sizes = np.logspace(start=1, stop=np.log2(x.size), num=int(np.log2(x.size))+1, base=2, dtype=int)
-
-            rms_values = []
-            for segment_size in segment_sizes:
-                # Divide y into segments
-                y_segments = np.array_split(y, x.size // segment_size)
-                x_segments = np.array_split(x, x.size // segment_size)
-
-                # Perform linear regression on each segment and calculate predicted values
-                y_predicted = [linregress(x_segment, y_segment).slope * x_segment + linregress(x_segment, y_segment).intercept \
-                               for x_segment, y_segment in zip(x_segments, y_segments)]
-                y_predicted = np.concatenate(y_predicted)
-
-                # Calculate the root mean square of the differences
-                rms = np.sqrt(np.mean(np.square(y - y_predicted)))
-                rms_values.append(rms)
-
-            # Perform linear regression between log(segment_sizes) and rms_values
-            dfa = linregress(np.log(segment_sizes), np.log(rms_values)).slope
-
-        return dfa'''
             
     # Entropy Sample (SampEn)
     def samp_en(self,
@@ -1612,11 +1223,6 @@ class Gframe:
 
             gf.samp_en(per_day=True)
         '''
-        # Save original input
-        original_delay = delay
-        original_dimension = dimension
-        original_tolerance = tolerance
-
         if per_day:
             # Group data by day
             day_groups = self.data.groupby('Day')
@@ -1625,48 +1231,18 @@ class Gframe:
             samp_en.index.name = 'Day'
 
             for day, day_data in day_groups:
-                # Get glucose values
-                signal = day_data['CGM'].values
-
-                # Estimate optimal parameters for sample entropy
-                if delay is None:
-                    delay, _  = nk.complexity_delay(signal)
-                if dimension is None:
-                    dimension, _ = nk.complexity_dimension(signal, delay=delay)
-                if tolerance is None:
-                    tolerance, _ = nk.complexity_tolerance(signal, delay=delay, dimension=dimension)
-
-                # Calculate sample entropy
-                day_samp_en, _ = nk.entropy_sample(signal, 
-                                                   delay=delay, 
-                                                   dimension=dimension, 
-                                                   tolerance=tolerance, 
-                                                   **kwargs)
-                samp_en[day] = day_samp_en   
-
-                # reset delay, dimension and tolerance
-                delay = original_delay
-                dimension = original_dimension
-                tolerance = original_tolerance         
+                samp_en[day] = metrics.samp_en(df=day_data,
+                                               delay=delay,
+                                               dimension=dimension,
+                                               tolerance=tolerance,
+                                               **kwargs)   
 
         else:
-            # Get glucose values
-            signal = self.data['CGM'].values
-
-            # Estimate optimal parameters for sample entropy
-            if delay is None:
-                delay, _  = nk.complexity_delay(signal)
-            if dimension is None:
-                dimension, _ = nk.complexity_dimension(signal,delay=delay)
-            if tolerance is None:
-                tolerance, _ = nk.complexity_tolerance(signal, delay=delay, dimension=dimension)
-
-            # Calculate sample entropy
-            samp_en, _ = nk.entropy_sample(signal, 
-                                           delay=delay, 
-                                           dimension=dimension, 
-                                           tolerance=tolerance, 
-                                           **kwargs)
+            samp_en = metrics.samp_en(df=self.data,
+                                      delay=delay,
+                                      dimension=dimension,
+                                      tolerance=tolerance,
+                                      **kwargs)
         
         return samp_en
         
@@ -1727,10 +1303,6 @@ class Gframe:
                 gf.mse(show=True)
 
         '''
-        # Save original input
-        original_dimension = dimension
-        original_tolerance = tolerance
-
         if per_day:
             # Group data by day
             day_groups = self.data.groupby('Day')
@@ -1739,68 +1311,44 @@ class Gframe:
             mse.index.name = 'Day'
 
             for day, day_data in day_groups:
-                # Get glucose values
-                signal = day_data['CGM'].values
-
-                # Estimate optimal parameters for sample entropy
-                if dimension is None:
-                    dimension, _ = nk.complexity_dimension(signal)
-                if tolerance is None:
-                    tolerance, _ = nk.complexity_tolerance(signal, dimension=dimension)
-
-                # Calculate sample entropy
-                try:
-                    with np.errstate(divide='ignore', invalid='ignore'): # ignore divide by zero warning
-                        day_mse, _ = nk.entropy_multiscale(signal, 
-                                                   scale=scale, 
-                                                   dimension=dimension, 
-                                                   tolerance=tolerance, 
-                                                   method=method,
-                                                   show=show,
-                                                   **kwargs)
-                except:
-                    day_mse = np.nan
-                mse[day] = day_mse   
-
-                # reset dimension and tolerance
-                dimension = original_dimension
-                tolerance = original_tolerance
+                mse[day] = metrics.mse(df=day_data,
+                                       scale=scale,
+                                       dimension=dimension,
+                                       tolerance=tolerance,
+                                       method=method,
+                                       show=show,
+                                       **kwargs)
 
         else:
-            # Get glucose values
-            signal = self.data['CGM'].values
-
-            # Estimate optimal parameters for sample entropy
-            if dimension is None:
-                dimension, _ = nk.complexity_dimension(signal)
-            if tolerance is None:
-                tolerance, _ = nk.complexity_tolerance(signal, dimension=dimension)
-
-            # Calculate sample entropy
-            try:
-                mse, _ = nk.entropy_multiscale(signal, 
-                                           scale=scale, 
-                                           dimension=dimension, 
-                                           tolerance=tolerance, 
-                                           method=method, 
-                                           show=show,
-                                           **kwargs)  
-            except:
-                mse = np.nan      
+            mse = metrics.mse(df=self.data,
+                              scale=scale,
+                              dimension=dimension,
+                              tolerance=tolerance,
+                              method=method,
+                              show=show,
+                              **kwargs)
             
         return mse
 
     # Summary
     def summary(self,
-                time_unit: str = 'm',
+                auc_time_unit: str = 'm',
+                mag_time_unit: str = 'h',
+                slack: int = 0,
                 decimals: int | None = 2):
         '''
         Calculates a summary of the metrics for the entire dataset or for each day separately.
 
         Parameters
         ----------
-        time_unit : str, default 'm' (minutes)
-            The time time_unit for the x-axis. Can be 's (seconds)', 'm (minutes)', or 'h (hours)'.
+        auc_time_unit : str, default 'm' (minutes)
+            The time unit for the calculation of AUC. Can be 's (seconds)', 'm (minutes)', or 'h (hours)'.
+        mag_time_unit : str, default 'h' (hours)
+            The time unit for the calculation of MAG. Can be 's (seconds)', 'm (minutes)', or 'h (hours)'.
+        slack : int, default 0
+            Maximum number of minutes that the given time can differ from the actual time in the data in the calculation
+            of MODD, CONGA and Q-Score (uses MODD).
+        
         decimals : int | None, default 2
             Number of decimals to round the values to. If None, the values will not be rounded.
         
@@ -1819,32 +1367,36 @@ class Gframe:
             gf = gp.data('prueba_1')
             gf.summary()
         '''
+        # Metrics that return Series
         tir = self.tir()
         grade = self.grade()
+
+        # Summary
         summary = [['Mean', self.mean()],
-               ['Standard Deviation', self.std()],
-               ['Coefficient of Variation', self.cv()],
-               ['IQR', self.iqr()],
-               ['MODD', self.modd()],
-               ['% Time below 70 [mg/dL]', tir.iloc[0]],
-               ['% Time in between (70,180] [mg/dL]', tir.iloc[1]],
-               ['% Time above 180 [mg/dL]', tir.iloc[2]],
-               ['AUC', self.auc(time_unit=time_unit)],
-               ['Distance Traveled', self.dt()],
-               ['LBGI', self.lbgi()],
-               ['HBGI', self.hbgi()],
-               ['ADRR', self.adrr()],
-               ['GRADE Hypoglycaemia %', grade.iloc[0]],
-               ['GRADE Euglycaemia %', grade.iloc[1]],
-               ['GRADE Hyperglycaemia %', grade.iloc[2]],
-               ['Q-Score', self.qscore()],
-               ['CONGA', self.conga()],
-               ['GVP', self.gvp()],
-               ['MAG', self.mag(time_unit='h')],
-               ['DFA', self.dfa()],
-               ['SampEn', self.samp_en()],
-               ['MSE', self.mse()]
-            ]
+                   ['Standard Deviation', self.std()],
+                   ['Coefficient of Variation', self.cv()],
+                   ['IQR', self.iqr()],
+                   ['MODD', self.modd(slack=slack)],
+                   ['% Time below 70 [mg/dL]', tir.iloc[0]],
+                   ['% Time in between (70,180] [mg/dL]', tir.iloc[1]],
+                   ['% Time above 180 [mg/dL]', tir.iloc[2]],
+                   ['AUC', self.auc(time_unit=auc_time_unit)],
+                   ['MAGE', self.mage()],
+                   ['Distance Traveled', self.dt()],
+                   ['LBGI', self.lbgi()],
+                   ['HBGI', self.hbgi()],
+                   ['ADRR', self.adrr()],
+                   ['GRADE Hypoglycaemia %', grade.iloc[0]],
+                   ['GRADE Euglycaemia %', grade.iloc[1]],
+                   ['GRADE Hyperglycaemia %', grade.iloc[2]],
+                   ['Q-Score', self.qscore(slack=slack)],
+                   ['CONGA', self.conga(slack=slack)],
+                   ['GVP', self.gvp()],
+                   ['MAG', self.mag(time_unit=mag_time_unit)],
+                   ['DFA', self.dfa()],
+                   ['SampEn', self.samp_en()],
+                   ['MSE', self.mse()]
+                ]
 
         return pd.DataFrame(data=summary, columns = ['Metric', 'Value']).round(decimals=decimals)
 
