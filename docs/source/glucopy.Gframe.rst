@@ -69,6 +69,7 @@ Summary
 .. autosummary::
    :toctree: api/
 
+   Gframe.mard
    Gframe.conga
    Gframe.gvp
    Gframe.mag

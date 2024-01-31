@@ -20,6 +20,7 @@ from .bgi import bgi
 from .grade import grade
 
 # 5. Metrics for the analysis of glycaemic dynamics using variability estimation
+from .mard import mard
 from .conga import conga
 from .gvp import gvp
 from .mag import mag

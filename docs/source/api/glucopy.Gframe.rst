@@ -29,6 +29,7 @@
       ~Gframe.lbgi
       ~Gframe.mag
       ~Gframe.mage
+      ~Gframe.mard
       ~Gframe.mean
       ~Gframe.modd
       ~Gframe.mse

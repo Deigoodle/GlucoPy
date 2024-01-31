@@ -58,6 +58,7 @@ by the :class:`glucopy.Gframe` class, but can be used independently as well as l
 .. autosummary::
    :toctree: api/
 
+   metrics.mard
    metrics.conga
    metrics.gvp
    metrics.mag

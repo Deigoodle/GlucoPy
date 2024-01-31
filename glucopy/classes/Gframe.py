@@ -951,6 +951,53 @@ class Gframe:
 
     # 5. Metrics for the analysis of glycaemic dynamics using variability estimation.
 
+    # Mean absolute relative deviation (MARD)
+    def mard(self,
+             smbg_df: pd.DataFrame,
+             slack: int = 0,
+             interpolate: bool = False):
+        '''
+        Calculates the Mean Absolute Relative Difference (MARD).
+
+        Parameters
+        ----------
+        smbg_df : pandas.DataFrame
+            DataFrame containing the SMBG values. The dataframe must contain 'SMBG' and 'Timestamp' columns present in
+            :attr:`glucopy.Gframe.data`.
+        slack : int, default 0
+            Maximum number of minutes that a given CGM value can be from an SMBG value and still be considered a match.
+        interpolate : bool, default True
+            If True, the SMBG values will be interpolated to the CGM timestamps. If False, Only CGM values that have
+            corresponding SMBG values will be used.
+
+        Returns
+        -------
+        mard : float
+            Mean Absolute Relative Difference (MARD).
+
+        Examples
+        --------
+        Calculating the MARD with a 5 minutes slack and without interpolation:
+
+        .. ipython:: python
+
+            import glucopy as gp
+            import pandas as pd
+            gf = gp.data('prueba_1')
+            smbg_timestamps = pd.to_datetime(['2020-11-27 22:00:00', '2020-11-28 01:00:00', '2020-11-28 04:00:00'])
+            smbg_df = pd.DataFrame({'Timestamp': smbg_timestamps,
+                                    'SMBG': [260, 239, 135]})
+            gf.mard(smbg_df=smbg_df, slack=5, interpolate=False)
+
+        Calculating the MARD with a 5 minutes slack and with interpolation:
+
+        .. ipython:: python
+
+            gf.mard(smbg_df=smbg_df, slack=5, interpolate=True)
+        '''
+        return metrics.mard(cgm_df=self.data, smbg_df=smbg_df, slack=slack, interpolate=interpolate)
+
+
     # Continuous Overall Net Glycaemic Action (CONGA)    
     def conga(self,
               per_day: bool = False,
