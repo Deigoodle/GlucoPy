@@ -64,12 +64,12 @@ def per_day(gf: Gframe,
     
     day_groups = gf.data.groupby('Day')
     
-    trace_count = 0
+    day_count = 0
     for day, day_data in day_groups:
         # Convert time to seconds past midnight
         seconds = day_data['Time'].apply(lambda x: x.hour * 3600 + x.minute * 60 + x.second)
 
-        if num_days == 0 or trace_count < num_days:
+        if num_days == 0 or day_count < num_days:
             visibility = True
         else:
             visibility = 'legendonly'
@@ -81,7 +81,7 @@ def per_day(gf: Gframe,
                                  mode='lines',
                                  visible = visibility))
         
-        trace_count += 1
+        day_count += 1
 
     # Convert the x-axis labels back to time format
     fig.update_xaxes(tickvals=list(range(0, 24*3600, 1*3600)), ticktext=[f'{h}' for h in range(0, 24, 1)])

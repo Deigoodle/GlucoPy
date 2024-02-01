@@ -39,4 +39,5 @@ Curve Analysis
 .. autosummary::
    :toctree: api/
 
+   plot.fourier
    plot.periodogram

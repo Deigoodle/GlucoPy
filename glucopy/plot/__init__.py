@@ -6,7 +6,8 @@ from .trace import (agp,
                     tir)
 from .hist import (freq,
                    roc)
-from .analisis import (periodogram,)
+from .analysis import (periodogram,
+                       fourier)
 
 
 __all__ = ['box',
@@ -17,4 +18,5 @@ __all__ = ['box',
            'tir',
            'freq',
            'roc',
-           'periodogram']
+           'periodogram',
+           'fourier']

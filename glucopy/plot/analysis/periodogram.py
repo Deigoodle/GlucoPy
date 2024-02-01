@@ -10,13 +10,9 @@ from ...classes import Gframe
 def periodogram(gf: Gframe,
                 per_day: bool = True,
                 height: float = None,
-                width: float = None):
+                width: float = None
+                ):
     '''
-    Plots the best-fit curve obtained by a Lomb-Scargle periodogram using astropy.timeseries.LombScargle.
-
-    For more details on the Lomb-Scargle periodogram implementation of astropy, 
-    see `astropy.timeseries.LombScargle() <https://docs.astropy.org/en/stable/timeseries/lombscargle.html>`_.
-
     Parameters
     ----------
     gf : Gframe
@@ -63,7 +59,7 @@ def periodogram(gf: Gframe,
     # Check input
     if not isinstance(gf, Gframe):
         raise TypeError('gf must be a Gframe object')
-    
+
     # Create subplots
     fig = make_subplots(rows=2, cols=1, subplot_titles=('Power vs Frequency', 'Original Data and Periodogram Fit'))
 
@@ -72,76 +68,31 @@ def periodogram(gf: Gframe,
 
         show_first = True
         for _, day_data in day_groups:
-            # Get time values as numbers
-            time_diff = day_data['Timestamp'].diff().dt.total_seconds().fillna(0) / 3600
-            time_values = time_diff.cumsum().values
-
-            # Compute periodogram
-            ls = LombScargle(time_values, day_data['CGM'])
-            frequency, power = ls.autopower()
-
-            # Get best-fit curve
-            best_frequency = frequency[np.argmax(power)]
-            best_curve = ls.model(time_values, best_frequency)
-
-            # Plot best-fit curve
-            fig.add_trace(go.Scatter(x=day_data['Time'], 
-                                     y=day_data['CGM'],
-                                     name='Original Data', 
-                                     visible=show_first),
-                          row=2,
-                          col=1)
-            fig.add_trace(go.Scatter(x=day_data['Time'], 
-                                     y=best_curve, 
-                                     name='Periodogram Fit',
-                                     visible=show_first),
-                          row=2,
-                          col=1)
-            
-            # Plot Power vs Frequency
-            fig.add_trace(go.Scatter(x=frequency, y=power, name='Power', visible=show_first), row=1, col=1)
+            compute_periodogram(df=day_data, 
+                                fig=fig, 
+                                show_trace=show_first, 
+                                per_day=per_day)
 
             if show_first:
                 show_first = False
+
     else:
-        # Get time values as numbers
-        time_diff = gf.data['Timestamp'].diff().dt.total_seconds().fillna(0) / 3600
-        time_values = time_diff.cumsum().values
+        compute_periodogram(df=gf.data,
+                            fig=fig,
+                            show_trace=True,
+                            per_day=per_day)
 
-        # Compute periodogram
-        ls = LombScargle(time_values, gf.data['CGM'])
-        frequency, power = ls.autopower()
-
-        # Get best-fit curve
-        best_frequency = frequency[np.argmax(power)]
-        best_curve = ls.model(time_values, best_frequency)
-        
-        # Plot best-fit curve
-        fig.add_trace(go.Scatter(x=gf.data['Timestamp'], 
-                                 y=gf.data['CGM'],
-                                 name='Original Data'),
-                      row=2,
-                      col=1)
-        fig.add_trace(go.Scatter(x=gf.data['Timestamp'], 
-                                 y=best_curve, 
-                                 name='Periodogram Fit'),
-                      row=2,
-                      col=1)
-        
-        # Plot Power vs Frequency
-        fig.add_trace(go.Scatter(x=frequency, y=power, name='Power'), row=1, col=1)
-    
     # Set layout
     fig.update_layout(title='Lomb-Scargle periodogram',
                       height=height,
                       width=width)
-    
+
     # Set axis titles
     fig.update_xaxes(title_text='Time [h]', row=2, col=1)
     fig.update_yaxes(title_text='Glucose [mg/dL]', row=2, col=1)
     fig.update_xaxes(title_text='Frequency [1/h]', row=1, col=1)
     fig.update_yaxes(title_text='Power', row=1, col=1)
-    
+
     # Add Dropdown
     if per_day:
         fig.update_layout(
@@ -165,7 +116,60 @@ def periodogram(gf: Gframe,
                 ),
             ]
         )
-    
+
     return fig
 
+def compute_periodogram(df, fig, show_trace, per_day):
+    '''
+    Calculates the periodogram and add the traces to the figure.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame with the data.
+    fig : plotly.graph_objects.Figure
+        Figure to add the traces.
+    show_trace : bool
+        If True, the traces will be visible.
+    per_day : bool
+        If True, the traces will use the 'Time' column as x-axis. If False, the traces will use the 'Timestamp' column as x-axis.
+    '''
+    # Get time values as numbers
+    time_diff = df['Timestamp'].diff().dt.total_seconds().fillna(0) / 3600
+    time_values = time_diff.cumsum().values
+
+    # Compute periodogram
+    ls = LombScargle(time_values, df['CGM'])
+    frequency, power = ls.autopower()
+
+    # Get best-fit curve
+    best_frequency = frequency[np.argmax(power)]
+    best_curve = ls.model(time_values, best_frequency)
+
+    # Get X values
+    if per_day:
+        x_values = df['Time']
+    else:
+        x_values = df['Timestamp']
+
+    fig.add_trace(go.Scatter(x=x_values, 
+                             y=df['CGM'],
+                             name='Original Data', 
+                             visible=show_trace),
+                  row=2,
+                  col=1)
+    fig.add_trace(go.Scatter(x=x_values, 
+                             y=best_curve, 
+                             name='Periodogram Fit',
+                             visible=show_trace),
+                  row=2,
+                  col=1)
+
+    # Plot Power vs Frequency
+    fig.add_trace(go.Scatter(x=frequency, 
+                             y=power, 
+                             name='Power', 
+                             visible=show_trace), 
+                  row=1, 
+                  col=1)
 
