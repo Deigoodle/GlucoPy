@@ -89,12 +89,15 @@ def box(gf: Gframe,
             fig = px.box(data_copy, x='Week', y='CGM', points=points, color='Week')
         else:
             fig = px.box(gf.data, x='Day', y='CGM', points=points, color='Day')
+        
+        fig.update_yaxes(title=f'Glucose [{gf.unit}]')
 
     else:
         fig = px.box(gf.data, x='CGM', points=points)
         fig.update_xaxes(title='Glucose')
 
     fig.update_layout(height=height, width=width)
+
 
     return fig
 

@@ -124,7 +124,7 @@ def agp(gf: Gframe,
     fig.update_layout(
         title='Ambulatory Glucose Profile',
         xaxis_title='Time of day [h]', 
-        yaxis_title='CGM (mg/dL)',
+        yaxis_title=f'Glucose [{gf.unit}]',
         height=height,
         width=width,
         xaxis=dict(

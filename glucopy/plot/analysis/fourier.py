@@ -179,7 +179,7 @@ def fourier(gf: Gframe,
                       height=height, 
                       width=width,
                       xaxis_title='Time',
-                      yaxis_title='Glucose',
+                      yaxis_title=f'Glucose [{gf.unit}]',
                       )
     
     # Update axes

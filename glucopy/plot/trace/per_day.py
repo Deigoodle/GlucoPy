@@ -87,7 +87,7 @@ def per_day(gf: Gframe,
     fig.update_xaxes(tickvals=list(range(0, 24*3600, 1*3600)), ticktext=[f'{h}' for h in range(0, 24, 1)])
 
     fig.update_layout(xaxis_title='Time of day [h]', 
-                      yaxis_title='CGM (mg/dL)',
+                      yaxis_title=f'Glucose [{gf.unit}]',
                       height=height,
                       width=width)
 

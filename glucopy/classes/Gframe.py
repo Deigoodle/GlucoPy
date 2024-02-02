@@ -984,7 +984,9 @@ class Gframe:
             import glucopy as gp
             import pandas as pd
             gf = gp.data('prueba_1')
-            smbg_timestamps = pd.to_datetime(['2020-11-27 22:00:00', '2020-11-28 01:00:00', '2020-11-28 04:00:00'])
+            smbg_timestamps = pd.to_datetime(['2020-11-27 22:00:00', 
+                                              '2020-11-28 01:00:00', 
+                                              '2020-11-28 04:00:00'])
             smbg_df = pd.DataFrame({'Timestamp': smbg_timestamps,
                                     'SMBG': [260, 239, 135]})
             gf.mard(smbg_df=smbg_df, slack=5, interpolate=False)

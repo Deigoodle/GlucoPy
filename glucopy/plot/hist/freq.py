@@ -93,8 +93,8 @@ def freq(gf: Gframe,
         
     fig.update_layout(
         title=f'Glucose Frequency {first_day}',
-        xaxis_title='Glucose (mg/dL)',
-        yaxis_title='Frecuency',
+        xaxis_title=f'Glucose [{gf.unit}]',
+        yaxis_title='Number of readings' if count else 'Frequency',
         height=height,
         width=width
     )
