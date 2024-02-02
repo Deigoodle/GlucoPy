@@ -12,6 +12,26 @@ def grade(df: pd.DataFrame,
     Calculates the contributions of the Glycaemic Risk Assessment Diabetes Equation (GRADE) to Hypoglycaemia,
     Euglycaemia and Hyperglycaemia. Or the GRADE scores for each value.
 
+    .. math::
+
+        GRADE = 425 * [\\log_{10}(\\log_{10} (X_i) + 0.16)]^2
+
+    - :math:`X_i` is the glucose value at time i in mmol/L.
+
+    The GRADE contribution percentages are calculated as follows:
+
+    .. math::
+
+        Hypoglycaemia \\% = 100 * \\frac{\\sum GRADE(X_i < 3.9 [mmol/L])}{\\sum GRADE(X_i)}
+
+    .. math::
+
+        Euglycaemia \\% = 100 * \\frac{\\sum GRADE(3.9 [mmol/L] <= X_i <= 8.9 [mmol/L])}{\\sum GRADE(X_i)}
+
+    .. math::
+
+        Hyperglycaemia \\% = 100 * \\frac{\\sum GRADE(X_i > 8.9 [mmol/L])}{\\sum GRADE(X_i)}
+
     Parameters
     ----------
     df : pandas.DataFrame

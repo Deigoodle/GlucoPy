@@ -5,7 +5,16 @@ from scipy.signal import find_peaks
 
 def mage(df: pd.DataFrame) -> float:
     '''
-    Calculates the Mean Amplitude of Glycaemic Excursions (MAGE) for each day.
+    Calculates the Mean Amplitude of Glycaemic Excursions (MAGE).
+
+    .. math::
+
+        MAGE = \\frac{1}{K} \\sum_{i=1}^K \\lambda_i * I(\\lambda_i > s)
+
+    - :math:`\\lambda_i` is the difference between a peak and a nadir of glycaemia (or nadir-peak).
+    - :math:`s` is the standar deviation of the glucose values.
+    - :math:`I(\\lambda_i > s)` is the indicator function that returns 1 if :math:`\\lambda_i > s` and 0 otherwise.
+    - :math:`K` is the number of events such that :math:`\\lambda_i > s`
 
     Parameters
     ----------

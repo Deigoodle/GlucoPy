@@ -5,7 +5,14 @@ import numpy as np
 def dt(df: pd.DataFrame
        ):
     '''
-    Calculates the Distance Travelled (DT) for each day.
+    Calculates the Distance Travelled (DT).
+
+    .. math::
+
+        DT = \\sum_{i=1}^{N-1} | X_{i+1} - X_i |
+
+    - :math:`X_i` is the glucose value at time i.
+    - :math:`N` is the number of glucose readings.
 
     Parameters
     ----------

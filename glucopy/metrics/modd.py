@@ -15,7 +15,15 @@ def modd(df: pd.DataFrame,
          ignore_na: bool = True
         ):
     '''
-    Calculates the Mean of Daily Differences (MODD) for a given time of day.
+    Calculates the Mean of Daily Differences (MODD).
+
+    .. math::
+
+        MODD = \\frac{1}{T} \\sum_{t=1}^T | X_t - X_{t-1} |
+
+    - :math:`X_t` is the glucose value at time t.
+    - :math:`X_{t-1}` is the glucose value 24 hours before time t.
+    - :math:`T` is the number of observations with a previous 24-hour observation.
 
     Parameters
     ----------

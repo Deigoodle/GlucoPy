@@ -413,7 +413,15 @@ class Gframe:
              slack: int = 0,
              ignore_na: bool = True) -> float:
         '''
-        Calculates the Mean of Daily Differences (MODD) for a given time of day.
+        Calculates the Mean of Daily Differences (MODD).
+
+        .. math::
+
+            MODD = \\frac{1}{T} \\sum_{t=1}^T | X_t - X_{t-1} |
+
+        - :math:`X_t` is the glucose value at time t.
+        - :math:`X_{t-1}` is the glucose value 24 hours before time t.
+        - :math:`T` is the number of observations with a previous 24-hour observation.
 
         Parameters
         ----------
@@ -650,7 +658,16 @@ class Gframe:
     def mage(self,
              per_day: bool = False):
         '''
-        Calculates the Mean Amplitude of Glycaemic Excursions (MAGE) for each day.
+        Calculates the Mean Amplitude of Glycaemic Excursions (MAGE).
+
+        .. math::
+
+            MAGE = \\frac{1}{K} \\sum_{i=1}^K \\lambda_i * I(\\lambda_i > s)
+
+        - :math:`\\lambda_i` is the difference between a peak and a nadir of glycaemia (or nadir-peak).
+        - :math:`s` is the standar deviation of the glucose values.
+        - :math:`I(\\lambda_i > s)` is the indicator function that returns 1 if :math:`\\lambda_i > s` and 0 otherwise.
+        - :math:`K` is the number of events such that :math:`\\lambda_i > s`
 
         Parameters
         ----------
@@ -664,11 +681,19 @@ class Gframe:
 
         Examples
         --------
+        Calculating the MAGE for the entire dataset:
+
         .. ipython:: python
 
             import glucopy as gp
             gf = gp.data('prueba_1')
             gf.mage()
+
+        Calculating the MAGE for each day:
+
+        .. ipython:: python
+
+            gf.mage(per_day=True)
         '''
         if per_day:
             # Group data by day
@@ -691,7 +716,14 @@ class Gframe:
     def dt(self,
            per_day: bool = False):
         '''
-        Calculates the Distance Travelled (DT) for each day.
+        Calculates the Distance Travelled (DT).
+
+        .. math::
+
+            DT = \\sum_{i=1}^{N-1} | X_{i+1} - X_i |
+
+        - :math:`X_i` is the glucose value at time i.
+        - :math:`N` is the number of glucose readings.
 
         Parameters
         ----------
@@ -745,8 +777,19 @@ class Gframe:
         '''
         Calculates the Low Blood Glucose Index (LBGI) or the High Blood Glucose Index (LBGI).
 
-        * Using lbgi() is equivalent to using bgi(index_type='l').
-        * Using hbgi() is equivalent to using bgi(index_type='h').
+        .. math::
+
+            LBGI = \\frac{1}{N} \\sum_{i=1}^N rl(X_i)
+
+        .. math::
+
+            HBGI = \\frac{1}{N} \\sum_{i=1}^N rh(X_i)
+
+        - :math:`N` is the number of glucose readings.
+        - :math:`rl(X_i) = 22.77 * f(X_i)^2` if :math:`f(X_i) < 0` and :math:`0` otherwise.
+        - :math:`rh(X_i) = 22.77 * f(X_i)^2` if :math:`f(X_i) > 0` and :math:`0` otherwise.
+        - :math:`f(X_i) = 1.509 * (\\ln(X_i)^{1.084} - 5.381)` for glucose readings in mg/dL.
+        - :math:`X_i` is the glucose value at time i.
 
         Parameters
         ----------
@@ -777,6 +820,11 @@ class Gframe:
         .. ipython:: python
 
             gf.bgi(index_type='h', per_day=True)
+
+        Notes
+        -----
+        * Using lbgi() is equivalent to using bgi(index_type='l').
+        * Using hbgi() is equivalent to using bgi(index_type='h').
         '''        
         if per_day:
             # Group data by day
@@ -815,6 +863,16 @@ class Gframe:
         '''
         Calculates the Average Daily Risk Range (ADRR).
 
+        .. math::
+
+            ADRR = \\frac{1}{D} \\sum_{d=1}^D LR_d + HR_d
+
+        - :math:`D` is the number of days.        
+        - :math:`LR_d = max(rl(X_1),...,rl(X_N))` for glucose readings :math:`X_1,...X_N` taken within a day :math:`d = 1,...,D`
+        - :math:`HR_d = max(rh(X_1),...,rh(X_N))` for glucose readings :math:`X_1,...X_N` taken within a day :math:`d = 1,...,D`
+        - :math:`N` is the number of glucose readings within a day.
+        - The definition of :math:`rl(X_i)` and :math:`rh(X_i)` is the same as in :meth:`glucopy.Gframe.bgi`.
+
         Parameters
         ----------
         None
@@ -844,6 +902,26 @@ class Gframe:
         '''
         Calculates the contributions of the Glycaemic Risk Assessment Diabetes Equation (GRADE) to Hypoglycaemia,
         Euglycaemia and Hyperglycaemia. Or the GRADE scores for each value.
+
+        .. math::
+
+            GRADE = 425 * [\\log_{10}(\\log_{10} (X_i) + 0.16)]^2
+
+        - :math:`X_i` is the glucose value at time i in mmol/L.
+
+        The GRADE contribution percentages are calculated as follows:
+
+        .. math::
+
+            Hypoglycaemia \\% = 100 * \\frac{\\sum GRADE(X_i < 3.9 [mmol/L])}{\\sum GRADE(X_i)}
+
+        .. math::
+
+            Euglycaemia \\% = 100 * \\frac{\\sum GRADE(3.9 [mmol/L] <= X_i <= 8.9 [mmol/L])}{\\sum GRADE(X_i)}
+
+        .. math::
+
+            Hyperglycaemia \\% = 100 * \\frac{\\sum GRADE(X_i > 8.9 [mmol/L])}{\\sum GRADE(X_i)}
 
         Parameters
         ----------
@@ -881,12 +959,22 @@ class Gframe:
         '''
         Calculates the Q-Score.
 
+        .. math::
+
+            Q{-}score = 8 + \\frac{\\bar x -7.8}{1.7} + \\frac{Range - 7.5}{2.9} + \\frac{t_{G<3.9} - 0.6}{2.9} + 
+                            \\frac{t_{G>8.9} - 6.2}{5.7} + \\frac{MODD - 1.8}{0.9}
+
+        - :math:`\\bar x` is the mean glucose.
+        - :math:`Range` is the mean of the differences between the maximum and minimum glucose for each day.
+        - :math:`t_{G<3.9}` is the mean time [h] spent under 3.9 mmol/L in each day.
+        - :math:`t_{G>8.9}` is the mean time [h] spent over 8.9 mmol/L in each day.
+        - :math:`MODD` is the Mean of Daily Differences (:meth:`glucopy.Gframe.modd`).
+
         Parameters
         ----------
         slack : int, default 0
             Maximum number of minutes that the given time can differ from the actual time in the data in the calculation
-            of MODD.
-
+            of :meth:`glucopy.Gframe.modd`.
 
         Returns
         -------

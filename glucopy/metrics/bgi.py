@@ -13,6 +13,20 @@ def bgi(df: pd.DataFrame,
     '''
     Calculates the Low Blood Glucose Index (LBGI) or the High Blood Glucose Index (LBGI).
 
+    .. math::
+
+        LBGI = \\frac{1}{N} \\sum_{i=1}^N rl(X_i)
+
+    .. math::
+
+        HBGI = \\frac{1}{N} \\sum_{i=1}^N rh(X_i)
+
+    - :math:`N` is the number of glucose readings.
+    - :math:`rl(X_i) = 22.77 * f(X_i)^2` if :math:`f(X_i) < 0` and :math:`0` otherwise.
+    - :math:`rh(X_i) = 22.77 * f(X_i)^2` if :math:`f(X_i) > 0` and :math:`0` otherwise.
+    - :math:`f(X_i) = 1.509 * (\\ln(X_i)^{1.084} - 5.381)` for glucose readings in mg/dL.
+    - :math:`X_i` is the glucose value at time i.
+
     Parameters
     ----------
     df : pandas.DataFrame
