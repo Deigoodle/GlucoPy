@@ -67,15 +67,9 @@ def mean(gf: Gframe,
     # Check input
     if not isinstance(gf, Gframe):
         raise TypeError('gf must be a Gframe object')
-    
-    # Create a copy of the data
-    data_copy = gf.data.copy()
-
-    # Extract the time from the 'Timestamp' column and floor to 15-minute intervals
-    data_copy['Interval'] = data_copy['Timestamp'].dt.floor('15Min').dt.time
 
     # Group the data by the 15-minute intervals
-    time_groups = data_copy.groupby('Interval')
+    time_groups = gf.data.groupby(gf.data['Timestamp'].dt.floor('15Min').dt.time)
 
     # Check if time_groups is empty
     if len(time_groups) == 0:

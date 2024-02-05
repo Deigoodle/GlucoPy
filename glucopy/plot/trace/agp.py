@@ -14,7 +14,23 @@ def agp(gf: Gframe,
         height: float = None,
         width: float = None,):
     '''
-    Plots an Ambulatory Glucose Profile plot of the CGM values in the Gframe object
+    Plots an Ambulatory Glucose Profile plot of the CGM values in the Gframe object.
+
+    The Procedure is as follows:
+
+    1. The data is grouped by hour
+    2. The 10th, 25th, 50th, 75th and 90th percentiles are calculated for each hour
+    3. A process of smoothing is applied to the 5 series of percentiles. The process is as follows:
+
+    .. math::
+
+        \\widetilde X_q(i) = median[ u(i), v(i), w(i) ]
+
+    - :math:`u(i) = median[ X_q(i-1), \\frac{3*X_q(i-1)-X_q(i-2)}{2}, X_q(i) ]`
+    - :math:`v(i) = median[ X_q(i-1), X_q(i), X_q(i+1) ]`
+    - :math:`w(i) = median[ X_q(i+1), \\frac{3*X_q(i+1)-X_q(i+2)}{2}, X_q(i) ]`
+    - :math:`\\widetilde X_q(i)` is the smoothed glucose concentration at time :math:`i` and percentile :math:`q`
+    - :math:`X_q(i)` is the glucose concentration at time :math:`i` and percentile :math:`q`
 
     Parameters
     ----------
