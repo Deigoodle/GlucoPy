@@ -8,14 +8,26 @@ requirements = [
         "scipy==1.11.4",
         "neurokit2==0.2.7",
         "requests==2.31.0", # neurokit dependency
-        "openpyxl==3.1.2", # for excel export
-        "xlrd==2.0.1", # for excel import
         "astropy==6.0.0",
         ]
 
+# Optional dependencies
+extras = {
+    "excel": ["openpyxl==3.1.2", "xlrd==2.0.1"]
+}
+
 setup(
-    name="glucopy",
-    version="0.1",
-    packages=find_packages(),
-    install_requires=requirements,
+    name = "glucopy",
+    version = "0.1.0",
+    description = "Python Toolbox for Glycaemic Signal Processing",
+    url = "https://github.com/Deigoodle/GlucoPy",
+    author = 'Diego Soto Castillo',
+    packages = find_packages(),
+    install_requires = requirements,
+    python_requires = "> = 3.11",
+    classifiers = [
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ]
 )

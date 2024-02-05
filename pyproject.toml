@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=61.0",]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "glucopy"
+version = "0.1.0"
+authors = [
+    {name = "Diego Soto Castillo", email = "diego.nicocastillo@gmail.com"},
+    ]
+description = "Python Toolbox for Glycaemic Signal Processing"
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ]
+dependencies = [
+    "numpy>=1.26.2",
+    "pandas>=2.1.4",
+    "plotly>=5.18.0",
+    "scipy>=1.11.4",
+    "neurokit2>=0.2.7",
+    "requests>=2.31.0", # neurokit dependency
+    "astropy>=6.0.0",
+]
+
+
+[project.urls]
+repository = "https://github.com/Deigoodle/GlucoPy"
+documentation = "https://deigoodle.github.io/GlucoPy/"
+
+[project.optional-dependencies]
+excel = ["openpyxl>=3.1.2", "xlrd>=2.0.1"]
+
+
