@@ -2,22 +2,20 @@
 Python Toolbox for glycaemic signal processing
 
 ## Table of Contents
-- [GlucoPy](#glucopy)
-  - [Table of Contents](#table-of-contents)
-  - [Main Features](#main-features)
-  - [Dependencies](#dependencies)
-  - [Installation from source](#installation-from-source)
-  - [Documentation](#documentation)
-  - [Examples](#examples)
-    - [Create a Gframe object from a .csv file](#create-a-gframe-object-from-a-csv-file)
-    - [Create a Gframe object from a .xslx file](#create-a-gframe-object-from-a-xslx-file)
-    - [Calculate some metrics](#calculate-some-metrics)
-    - [Plots](#plots)
-      - [Ambulatory Glucose Profile (AGP)](#ambulatory-glucose-profile-agp)
-      - [Frequency Histogram](#frequency-histogram)
-      - [MAGE Plot](#mage-plot)
-  - [Collection of Python Signal Processing Library Repositories](#collection-of-python-signal-processing-library-repositories)
-  - [Public Datasets](#public-datasets)
+- [Main Features](#main-features)
+- [Dependencies](#dependencies)
+- [Installation from source](#installation-from-source)
+- [Documentation](#documentation)
+- [Examples](#examples)
+  - [Create a Gframe object from a .csv file](#create-a-gframe-object-from-a-csv-file)
+  - [Create a Gframe object from a .xslx file](#create-a-gframe-object-from-a-xslx-file)
+  - [Calculate some metrics](#calculate-some-metrics)
+  - [Plots](#plots)
+    - [Ambulatory Glucose Profile (AGP)](#ambulatory-glucose-profile-agp)
+    - [Frequency Histogram](#frequency-histogram)
+    - [MAGE Plot](#mage-plot)
+- [Collection of Python Signal Processing Library Repositories](#collection-of-python-signal-processing-library-repositories)
+- [Public Datasets](#public-datasets)
   
 ## Main Features
 - Importing and exporting CGM signals in formats: **.csv**, **.xslx**, **.xls**
