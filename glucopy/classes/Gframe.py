@@ -127,6 +127,49 @@ class Gframe:
     def __repr__(self):
         return str(self.data)
     
+    # Glucose Unit Conversion
+    def convert_unit(self,
+                     new_unit: str = 'mmol/L'):
+        '''
+        Converts the unit of the CGM signal.
+
+        Parameters
+        ----------
+        new_unit : str, default 'mmol/L'
+            New unit for the CGM signal. Can be 'mg/dL' or 'mmol/L'.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        Converting the unit of the CGM signal to mmol/L:
+
+        .. ipython:: python
+
+            import glucopy as gp
+            gf = gp.data('prueba_1')
+            gf.convert_unit('mmol/L')
+        '''
+        # Check input
+        if new_unit not in ['mg/dL', 'mmol/L']:
+            raise ValueError("new_unit must be 'mg/dL' or 'mmol/L'")
+        
+        # Convert unit
+        if new_unit == 'mmol/L':
+            if self.unit == 'mg/dL':
+                self.data['CGM'] = mgdl_to_mmoll(self.data['CGM'])
+                self.unit = new_unit
+            else:
+                raise ValueError('The data is already in mmol/L')
+        else:
+            if self.unit == 'mmol/L':
+                self.data['CGM'] = mgdl_to_mmoll(self.data['CGM'], reverse=True)
+                self.unit = new_unit
+            else:
+                raise ValueError('The data is already in mg/dL')
+    
     # Metrics 
     # -------
     # 1. Joint data analysis metrics for glycaemia dynamics
@@ -1035,7 +1078,11 @@ class Gframe:
         
         # Calculate the difference between max and min for each day (range)
         differences = self.data.groupby('Day')['CGM'].apply(lambda x: x.max() - x.min())
+
+        # Mean of Max-Min for each day
         mean_difference = mgdl_to_mmoll(differences.mean())
+        if self.unit == 'mg/dL':
+            mean_difference = mgdl_to_mmoll(mean_difference)
 
         # Mean
         mean = self.mean()
