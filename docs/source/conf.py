@@ -39,8 +39,15 @@ html_theme = 'pydata_sphinx_theme'
 html_static_path = ['_static']
 
 autosummary_generate = True
+navigation_with_keys=False
 
 # Plot configuration
 plot_html_show_source_link = False
 plot_html_show_formats = False
+
+# HTML Theme
+html_theme_options = {
+    'navigation_depth': 4,
+    'github_url': 'https://github.com/Deigoodle/GlucoPy',
+}
 
