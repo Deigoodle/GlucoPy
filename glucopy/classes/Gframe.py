@@ -464,22 +464,30 @@ class Gframe:
         '''
         Calculates the Time in Range (TIR) for a given target range of glucose.
 
+        .. math::
+
+            TIR = \\frac{\\tau}{T} * 100
+
+        - :math:`\\tau` is the time spent within the target range.
+        - :math:`T` is the total time of observation.
+
         Parameters
         ----------
         per_day : bool, default False
             If True, returns a pandas Series with the TIR for each day. If False, returns the TIR for all days combined.
         target_range : list of int|float, default [0,70,180]
-            Target range in CGM unit for low, normal and high glycaemia. It must have at least 2 values, for the "normal"
-            range, low and high values will be values outside that range.
+            Interval of glucose concentration to calculate :math:`\\tau`. Can be a list of 1 number, in that case the 
+            time will be calculated below and above that number. It will always try to calculate the time below the first 
+            number and above the last number.
         percentage : bool, default True
-            If True, returns the TIR as a percentage. If False, returns the TIR as time.
+            If True, returns the TIR as a percentage. If False, returns the TIR as timedelta (:math:`TIR=\\tau`).
         decimals : int, default 2
             Number of decimal places to round to. Use None for no rounding.
 
         Returns
         -------
         tir : pandas.Series 
-            Series of TIR for each day.
+            Series of TIR.
 
         Examples
         --------
@@ -532,13 +540,21 @@ class Gframe:
         '''
         Calculates the Frequency Distribution (FD) for a given target range of glucose.
 
+        .. math::
+
+            FD = \\frac{n_i}{N}
+
+        - :math:`n_i` is the number of observations within the `i`-th interval.
+        - :math:`N` is the total number of observations.
+
         Parameters
         ----------
         per_day : bool, default False
             If True, returns a pandas Series with the FD for each day. If False, returns the FD for all days combined.
         target_range : list of int|float, default [0,70,180]
-            Target range in CGM unit. It must have at least 2 values, for the "normal"
-            range, low and high values will be values outside that range.
+            Interval of glucose concentration to calculate `FD`. Can be a list of 1 number, in that case the time will
+            be calculated below and above that number. It will always try to calculate the time below the first number
+            and above the last number.
         decimals : int, default 2
             Number of decimal places to round to. Use None for no rounding.
         count : bool, default False
@@ -593,8 +609,16 @@ class Gframe:
             threshold: int | float = 0,
             above: bool = True):
         '''
-        Calculates the Area Under the Curve (AUC).
+        Calculates the Area Under the Curve (AUC) using the trapezoidal rule.
 
+        .. math::
+
+            AUC = \\frac{1}{2} \\sum_{i=1}^{N} (X_i + X_{i-1}) * (T_i - T_{i-1})
+
+        - :math:`X_i` is the glucose value at time i.
+        - :math:`T_i` is the time at time i.
+        - :math:`N` is the number of glucose readings.
+            
         Parameters
         ----------
         per_day : bool, default False
@@ -805,6 +829,11 @@ class Gframe:
         bgi : float | pandas.Series
             Low Blood Glucose Index or High Blood Glucose Index.
 
+        Notes
+        -----
+        * Using :meth:`glucopy.Gframe.lbgi` is equivalent to using bgi(index_type='l').
+        * Using :meth:`glucopy.Gframe.hbgi` is equivalent to using bgi(index_type='h').
+
         Examples
         --------
         Calculating the LBGI for the entire dataset:
@@ -820,11 +849,6 @@ class Gframe:
         .. ipython:: python
 
             gf.bgi(index_type='h', per_day=True)
-
-        Notes
-        -----
-        * Using lbgi() is equivalent to using bgi(index_type='l').
-        * Using hbgi() is equivalent to using bgi(index_type='h').
         '''        
         if per_day:
             # Group data by day
@@ -917,11 +941,11 @@ class Gframe:
 
         .. math::
 
-            Euglycaemia \\% = 100 * \\frac{\\sum GRADE(3.9 [mmol/L] <= X_i <= 8.9 [mmol/L])}{\\sum GRADE(X_i)}
+            Euglycaemia \\% = 100 * \\frac{\\sum GRADE(3.9 [mmol/L] <= X_i <= 7.8 [mmol/L])}{\\sum GRADE(X_i)}
 
         .. math::
 
-            Hyperglycaemia \\% = 100 * \\frac{\\sum GRADE(X_i > 8.9 [mmol/L])}{\\sum GRADE(X_i)}
+            Hyperglycaemia \\% = 100 * \\frac{\\sum GRADE(X_i > 7.8 [mmol/L])}{\\sum GRADE(X_i)}
 
         Parameters
         ----------
@@ -1047,6 +1071,14 @@ class Gframe:
         '''
         Calculates the Mean Absolute Relative Difference (MARD).
 
+        .. math::
+
+            MARD = \\frac{1}{N} \\sum_{i=1}^N \\frac{|CGM_i - SMBG_i|}{SMBG_i} * 100
+
+        - :math:`N` is the number of SMBG readings.
+        - :math:`CGM_i` is the Continuous Glucose Monitoring (CGM) value at time i.
+        - :math:`SMBG_i` is the Self Monitoring of Blood Glucose (SMBG) value at time i.
+
         Parameters
         ----------
         smbg_df : pandas.DataFrame
@@ -1093,9 +1125,19 @@ class Gframe:
               per_day: bool = False,
               m: int = 1,
               slack: int = 0,
-              ignore_na: bool = True):
+              ignore_na: bool = True,
+              ddof: int = 1):
         '''
         Calculates the Continuous Overall Net Glycaemic Action (CONGA).
+
+        .. math::
+
+            CONGA = \\sqrt{\\frac{1}{k-ddof} \\sum_{t=t1} (D_t - \\bar D)^2}
+
+        - :math:`ddof` is the Delta Degrees of Freedom.
+        - :math:`D_t` is the difference between glycaemia at time `t` and `t` minus `m` hours ago.
+        - :math:`\\bar D` is the mean of the differences (:math:`D_t`).
+        - :math:`k` is the number of differences.
 
         Parameters
         ----------
@@ -1108,6 +1150,9 @@ class Gframe:
         ignore_na : bool, default True
             If True, ignores missing values (not found within slack). If False, raises an error 
             if there are missing values.
+        ddof : int, default 1
+            Delta Degrees of Freedom. The divisor used in calculations of standard deviation is N - ddof, where N 
+            represents the number of elements.
 
         Returns
         -------
@@ -1137,10 +1182,10 @@ class Gframe:
             conga.index.name = 'Day'
 
             for day, day_data in day_groups:
-                conga[day] = metrics.conga(df=day_data, m=m, slack=slack, ignore_na=ignore_na)
+                conga[day] = metrics.conga(df=day_data, m=m, slack=slack, ignore_na=ignore_na, ddof=ddof)
         
         else:
-            conga = metrics.conga(df=self.data, m=m, slack=slack, ignore_na=ignore_na)
+            conga = metrics.conga(df=self.data, m=m, slack=slack, ignore_na=ignore_na, ddof=ddof)
 
         return conga
 
@@ -1148,6 +1193,16 @@ class Gframe:
     def gvp(self):
         '''
         Calculates the Glucose Variability Percentage (GVP), with time in minutes.
+
+        .. math::
+
+            GVP = \\left( \\frac{L}{T_0} - 1\\right) * 100
+
+        - :math:`L = \\sum_{i=1}^N \\sqrt{\\Delta X_i^2 + \\Delta T_i^2}`
+        - :math:`T_0 = \\sum_{i=1}^N \\Delta T_i`
+        - :math:`N` is the number of glucose readings.
+        - :math:`\\Delta X_i` is the difference between glucose values at time i and i-1.
+        - :math:`\\Delta T_i` is the difference between times at time i and i-1.
 
         Parameters
         ----------
@@ -1174,6 +1229,14 @@ class Gframe:
             time_unit: str = 'm'):
         '''
         Calculates the Mean Absolute Glucose Change per unit of time (MAG).
+
+        .. math::
+
+            MAG = \\sum_{i=1}^{N} \\frac{|\\Delta X_i|}{\\Delta T_i}
+
+        - :math:`N` is the number of glucose readings.
+        - :math:`\\Delta X_i` is the difference between glucose values at time i and i-1.
+        - :math:`\\Delta T_i` is the difference between times at time i and i-1.
 
         Parameters
         ----------

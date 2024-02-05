@@ -9,6 +9,14 @@ def mard(cgm_df: pd.DataFrame,
     '''
     Calculates the Mean Absolute Relative Difference (MARD).
 
+    .. math::
+
+        MARD = \\frac{1}{N} \\sum_{i=1}^N \\frac{|CGM_i - SMBG_i|}{SMBG_i} * 100
+
+    - :math:`N` is the number of SMBG readings.
+    - :math:`CGM_i` is the Continuous Glucose Monitoring (CGM) value at time i.
+    - :math:`SMBG_i` is the Self Monitoring of Blood Glucose (SMBG) value at time i.
+
     Parameters
     ----------
     cgm_df : pandas.DataFrame

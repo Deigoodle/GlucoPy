@@ -5,10 +5,20 @@ import numpy as np
 def conga(df: pd.DataFrame,
           m: int = 1,
           slack: int = 0,
-          ignore_na: bool = True
+          ignore_na: bool = True,
+          ddof: int = 1
           ):
     '''
     Calculates the Continuous Overall Net Glycaemic Action (CONGA).
+
+    .. math::
+
+        CONGA = \\sqrt{\\frac{1}{k-ddof} \\sum_{t=t1} (D_t - \\bar D)^2}
+
+    - :math:`ddof` is the Delta Degrees of Freedom.
+    - :math:`D_t` is the difference between glycaemia at time `t` and `t` minus `m` hours ago.
+    - :math:`\\bar D` is the mean of the differences (:math:`D_t`).
+    - :math:`k` is the number of differences.
 
     Parameters
     ----------
@@ -22,6 +32,9 @@ def conga(df: pd.DataFrame,
     ignore_na : bool, default True
         If True, ignores missing values (not found within slack). If False, raises an error 
         if there are missing values.
+    ddof : int, default 1
+        Delta Degrees of Freedom. The divisor used in calculations of standard deviation is N - ddof, where N 
+        represents the number of elements.
 
     Returns
     -------
@@ -72,6 +85,6 @@ def conga(df: pd.DataFrame,
     differences = merged_data.loc[valid_data, 'CGM'] - merged_data.loc[valid_data, 'CGM_Next']
 
     # Calculate the standard deviation of the differences
-    conga = np.std(differences)
+    conga = np.std(differences, ddof=ddof)
 
     return conga

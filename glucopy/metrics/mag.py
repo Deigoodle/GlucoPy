@@ -11,6 +11,14 @@ def mag(df: pd.DataFrame,
     '''
     Calculates the Mean Absolute Glucose Change per unit of time (MAG).
 
+    .. math::
+
+        MAG = \\sum_{i=1}^{N} \\frac{|\\Delta X_i|}{\\Delta T_i}
+
+    - :math:`N` is the number of glucose readings.
+    - :math:`\\Delta X_i` is the difference between glucose values at time i and i-1.
+    - :math:`\\Delta T_i` is the difference between times at time i and i-1.
+
     Parameters
     ----------
     df : pandas.DataFrame

@@ -11,7 +11,15 @@ def auc(df: pd.DataFrame,
         above: bool = True
         ):
     '''
-    Calculates the Area Under the Curve (AUC).
+    Calculates the Area Under the Curve (AUC) using the trapezoidal rule.
+
+    .. math::
+
+        AUC = \\frac{1}{2} \\sum_{i=1}^{N} (X_i + X_{i-1}) * (T_i - T_{i-1})
+
+    - :math:`X_i` is the glucose value at time i.
+    - :math:`T_i` is the time at time i.
+    - :math:`N` is the number of glucose readings.
 
     Parameters
     ----------

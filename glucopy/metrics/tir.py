@@ -10,23 +10,30 @@ def tir(df: pd.DataFrame,
     '''
     Calculates the Time in Range (TIR) for a given target range of glucose.
 
+    .. math::
+
+        TIR = \\frac{\\tau}{T} * 100
+
+    - :math:`\\tau` is the time spent within the target range.
+    - :math:`T` is the total time of observation.
+
     Parameters
     ----------
-    df : pandas.DataFrame
-        DataFrame containing the CGM values. The dataframe must contain 'CGM' and 'Timestamp' columns present in
-        :attr:`glucopy.Gframe.data`.
+    per_day : bool, default False
+        If True, returns a pandas Series with the TIR for each day. If False, returns the TIR for all days combined.
     target_range : list of int|float, default [0,70,180]
-        Target range in CGM unit for low, normal and high glycaemia. It must have at least 2 values, for the "normal"
-        range, low and high values will be values outside that range.
+        Interval of glucose concentration to calculate :math:`\\tau`. Can be a list of 1 number, in that case the 
+        time will be calculated below and above that number. It will always try to calculate the time below the first 
+        number and above the last number.
     percentage : bool, default True
-        If True, returns the TIR as a percentage. If False, returns the TIR as time.
+        If True, returns the TIR as a percentage. If False, returns the TIR as timedelta (:math:`TIR=\\tau`).
     decimals : int, default 2
         Number of decimal places to round to. Use None for no rounding.
 
     Returns
     -------
     tir : pandas.Series 
-        Series of TIR for each day.
+        Series of TIR.
 
     Notes
     -----
@@ -56,9 +63,9 @@ def tir(df: pd.DataFrame,
     time_count = data_copy.groupby('ranges', observed=False)['Time_Diff'].sum()
 
     if percentage:
-        result = time_count / time_count.sum() * 100
+        tir = time_count / time_count.sum() * 100
         if decimals is not None:
-            tir = np.round(result, decimals=decimals)
+            tir = np.round(tir, decimals=decimals)
 
     else:
         tir = time_count.apply(lambda x: pd.to_timedelta(x, unit='s'))

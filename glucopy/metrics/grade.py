@@ -26,11 +26,11 @@ def grade(df: pd.DataFrame,
 
     .. math::
 
-        Euglycaemia \\% = 100 * \\frac{\\sum GRADE(3.9 [mmol/L] <= X_i <= 8.9 [mmol/L])}{\\sum GRADE(X_i)}
+        Euglycaemia \\% = 100 * \\frac{\\sum GRADE(3.9 [mmol/L] <= X_i <= 7.8 [mmol/L])}{\\sum GRADE(X_i)}
 
     .. math::
 
-        Hyperglycaemia \\% = 100 * \\frac{\\sum GRADE(X_i > 8.9 [mmol/L])}{\\sum GRADE(X_i)}
+        Hyperglycaemia \\% = 100 * \\frac{\\sum GRADE(X_i > 7.8 [mmol/L])}{\\sum GRADE(X_i)}
 
     Parameters
     ----------

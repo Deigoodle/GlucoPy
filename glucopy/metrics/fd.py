@@ -10,6 +10,13 @@ def fd(df: pd.DataFrame,
     '''
     Calculates the Frequency Distribution (FD) for a given target range of glucose.
 
+    .. math::
+
+        FD = \\frac{n_i}{N}
+
+    - :math:`n_i` is the number of observations within the `i`-th interval.
+    - :math:`N` is the total number of observations.
+
     Parameters
     ----------
     df : pandas.DataFrame
