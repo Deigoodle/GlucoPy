@@ -46,6 +46,8 @@ def mage(gf: Gframe,
     
     # Group the data by day
     day_groups = gf.data.groupby('Day')
+    day_means = []
+    day_stds = []
 
     # Create figure
     fig = go.Figure()
@@ -55,8 +57,13 @@ def mage(gf: Gframe,
     shapes = {day: [] for day in day_groups.groups.keys()}
     show_first = True
     for day, day_data in day_groups:
+        # Calculate the mean and std for each day
         day_mean = day_data['CGM'].mean()
         day_std = day_data['CGM'].std()
+
+        # Save the mean and std for each day
+        day_means.append(day_mean)
+        day_stds.append(day_std)
 
         # Initialize trace_indices[day] as an empty list
         trace_indices[day] = []
@@ -72,7 +79,6 @@ def mage(gf: Gframe,
 
         fig.add_trace(go.Scatter(x=day_data['Time'], y=[day_mean - day_std] * len(day_data), name='Mean - std',line=dict(dash='dot'),line_color='cyan', visible=show_first))
         trace_indices[day].append(len(fig.data) - 1)
-
 
         # find peaks and nadirs
         peaks, _ = find_peaks(day_data['CGM'].values)
@@ -142,7 +148,7 @@ def mage(gf: Gframe,
         yaxis=dict(range=[0, gf.data['CGM'].max()+10]),  # Set y-axis to start at 0 and end at the max value
         height=height,
         width=width,
-        title=f'MAGE for each day',
+        title=f'MAGE for each day.   Mean = {day_means[0]:.2f}   Std = {day_stds[0]:.2f}',
         shapes=shapes[first_day]
     )
 
@@ -153,12 +159,15 @@ def mage(gf: Gframe,
                 buttons=list([
                     dict(
                         args=[
-                            {"visible": [i in trace_indices[day] for i in range(len(fig.data))]},
-                            {"shapes": shapes[day]}
+                            {"visible": [i in trace_indices[day] for i in range(len(fig.data))]
+                             },  
+                            {"shapes": shapes[day], 
+                             "title": f'MAGE for each day.   Mean = {day_means[i]:.2f}   Std = {day_stds[i]:.2f}'
+                             }  
                         ],
                         label=str(day),
                         method="update"
-                    ) for day in day_groups.groups.keys()
+                    ) for i, day in enumerate(day_groups.groups.keys())
                 ]),
                 direction="down",
                 pad={"r": 10, "t": 10},
