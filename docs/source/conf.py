@@ -39,7 +39,7 @@ html_theme = 'pydata_sphinx_theme'
 html_static_path = ['_static']
 
 autosummary_generate = True
-navigation_with_keys=False
+navigation_with_keys = False
 
 # Plot configuration
 plot_html_show_source_link = False
