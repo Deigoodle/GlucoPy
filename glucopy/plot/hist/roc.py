@@ -63,17 +63,25 @@ def roc(gf: Gframe,
     
     if per_day:
         day_groups = gf.data.groupby('Day')
-        mean = []
-        std = []
+        day_means = []
+        day_stds = []
         show_first = True
         for day, day_data in day_groups:
+            # Get Time values in minutes
             x = day_data['CGM'].diff().abs() / (day_data['Timestamp'].diff().dt.total_seconds() / 60)
-            mean.append(x.mean())
-            std.append(x.std())
-            fig.add_trace(go.Histogram(x=x, name=str(day), visible=show_first, xbins=dict(size=0.1),
+
+            # Save day means and stds
+            day_means.append(x.mean())
+            day_stds.append(x.std())
+
+            # Add trace
+            fig.add_trace(go.Histogram(x=x, name=str(day), 
+                                       visible=show_first, 
+                                       xbins=dict(size=0.1),
                                        marker=dict(line=dict(color='black', width=1))))
+            
             if show_first:
-                fig.update_layout(title=f'Glucose Rate of Change {day}. Mean: {mean[0]:.2f} Std: {std[0]:.2f}')
+                fig.update_layout(title=f'Glucose Rate of Change {day}.   Mean = {day_means[0]:.2f}   Std = {day_stds[0]:.2f}')
                 show_first = False
     else:
         x = gf.data['CGM'].diff().abs() / (gf.data['Timestamp'].diff().dt.total_seconds() / 60)
@@ -96,7 +104,8 @@ def roc(gf: Gframe,
                     buttons=list([
                         dict(
                             args=[{"visible": [i==j for j in range(len(day_groups))]},
-                                  {"title": f'Glucose Rate of Change {day}. Mean: {mean[i]:.2f} Std: {std[i]:.2f}'}],
+                                  {"title": f'Glucose Rate of Change {day}.   Mean: {day_means[i]:.2f}   Std = {day_stds[i]:.2f}'}
+                            ],
                             label=str(day),
                             method="update"
                         ) for i, day in enumerate(day_groups.groups.keys())

@@ -1080,18 +1080,18 @@ class Gframe:
         differences = self.data.groupby('Day')['CGM'].apply(lambda x: x.max() - x.min())
 
         # Mean of Max-Min for each day
-        mean_difference = mgdl_to_mmoll(differences.mean())
-        if self.unit == 'mg/dL':
-            mean_difference = mgdl_to_mmoll(mean_difference)
+        mean_difference = differences.mean()
 
         # Mean
         mean = self.mean()
-        if self.unit == 'mg/dL':
-            mean = mgdl_to_mmoll(mean)
 
         # MODD
         modd = self.modd(slack=slack)
+
+        # Convert to mmol/L
         if self.unit == 'mg/dL':
+            mean = mgdl_to_mmoll(mean)
+            mean_difference = mgdl_to_mmoll(mean_difference)
             modd = mgdl_to_mmoll(modd)
 
         # fractions
