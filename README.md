@@ -45,8 +45,9 @@ pip install .
 The official documentation is hosted on [github.io/GlucoPy/](deigoodle.github.io/GlucoPy/)
 
 ## Examples
+All the **Metrics** are implemented as methods in the `glucopy.Gframe` class
 
-### Create a Gframe object from a .csv file
+### Create a `Gframe` object from a .csv file
 ```python
 import glucopy as gp
 
@@ -54,7 +55,7 @@ import glucopy as gp
 gf = gp.read_csv('path/to/file.csv')
 ```
 
-### Create a Gframe object from a .xslx file
+### Create a `Gframe` object from a .xslx file
 ```python
 # Read the file
 gf = gp.read_xlsx('path/to/file.xlsx')
@@ -82,7 +83,7 @@ hbgi = gf.hbgi()
 ```
 ### Plots
 
-Check the [documentation of glucopy.plot](https://deigoodle.github.io/GlucoPy/glucopy.plot.html) for a complete list of plots
+All the plots use a `Gframe` object as first parameter. Check the [documentation of glucopy.plot](https://deigoodle.github.io/GlucoPy/glucopy.plot.html) for a complete list of plots
 
 #### Ambulatory Glucose Profile (AGP)
 
