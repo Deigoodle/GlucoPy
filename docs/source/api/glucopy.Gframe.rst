@@ -18,6 +18,7 @@
       ~Gframe.auc
       ~Gframe.bgi
       ~Gframe.conga
+      ~Gframe.convert_unit
       ~Gframe.cv
       ~Gframe.dfa
       ~Gframe.dt

@@ -10,6 +10,13 @@ Constructor
 
    Gframe
 
+Utilities
+~~~~~~~~~
+.. autosummary::
+   :toctree: api/
+
+   Gframe.convert_unit
+
 Summary
 ~~~~~~~
 .. autosummary::
