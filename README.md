@@ -2,20 +2,24 @@
 Python Toolbox for glycaemic signal processing
 
 ## Table of Contents
-- [Main Features](#main-features)
-- [Dependencies](#dependencies)
-- [Installation from source](#installation-from-source)
-- [Documentation](#documentation)
-- [Examples](#examples)
-  - [Create a Gframe object from a .csv file](#create-a-gframe-object-from-a-csv-file)
-  - [Create a Gframe object from a .xslx file](#create-a-gframe-object-from-a-xslx-file)
-  - [Calculate some metrics](#calculate-some-metrics)
-  - [Plots](#plots)
-    - [Ambulatory Glucose Profile (AGP)](#ambulatory-glucose-profile-agp)
-    - [Frequency Histogram](#frequency-histogram)
-    - [MAGE Plot](#mage-plot)
-- [Collection of Python Signal Processing Library Repositories](#collection-of-python-signal-processing-library-repositories)
-- [Public Datasets](#public-datasets)
+- [GlucoPy](#glucopy)
+  - [Table of Contents](#table-of-contents)
+  - [Main Features](#main-features)
+  - [Dependencies](#dependencies)
+  - [Installation from source](#installation-from-source)
+  - [Documentation](#documentation)
+  - [Examples](#examples)
+    - [Create a `Gframe` object from a .csv file](#create-a-gframe-object-from-a-csv-file)
+    - [Create a `Gframe` object from a .xslx file](#create-a-gframe-object-from-a-xslx-file)
+    - [Create a `Gframe` object from a pandas `DataFrame`](#create-a-gframe-object-from-a-pandas-dataframe)
+    - [Create a `Gframe` object from Glucopy's datasets](#create-a-gframe-object-from-glucopys-datasets)
+    - [Calculate some metrics](#calculate-some-metrics)
+    - [Plots](#plots)
+      - [Ambulatory Glucose Profile (AGP)](#ambulatory-glucose-profile-agp)
+      - [Frequency Histogram](#frequency-histogram)
+      - [MAGE Plot](#mage-plot)
+  - [Collection of Python Signal Processing Library Repositories](#collection-of-python-signal-processing-library-repositories)
+  - [Public Datasets](#public-datasets)
   
 ## Main Features
 - Importing and exporting CGM signals in formats: **.csv**, **.xslx**, **.xls**
@@ -59,6 +63,22 @@ gf = gp.read_csv('path/to/file.csv')
 ```python
 # Read the file
 gf = gp.read_xlsx('path/to/file.xlsx')
+```
+
+### Create a `Gframe` object from a pandas `DataFrame`
+```python
+import pandas as pd
+
+# Create a DataFrame
+df = pd.read_csv('path/to/file.csv')
+
+gf = gp.Gframe(df)
+```
+
+### Create a `Gframe` object from Glucopy's datasets
+```python
+# Import the dataset
+gf = gp.data("prueba_1")
 ```
 
 ### Calculate some metrics
