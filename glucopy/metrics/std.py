@@ -37,6 +37,8 @@ def std(df: pd.DataFrame,
             # Group data by day
             day_groups = df.groupby('Day')
             std = day_groups['CGM'].std(ddof=ddof,**kwargs)
+            # Convert the index to string for easier access
+            std.index = std.index.map(str)
         
         else:
             std = df['CGM'].std(ddof=ddof,**kwargs)

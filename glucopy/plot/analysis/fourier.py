@@ -11,6 +11,7 @@ def fourier(gf: Gframe,
             amplitude_guess: [float] = None,
             phase_guess: [float] = None,
             num_days: int = 0,
+            full_output: bool = False,
             height: float = None,
             width: float = None
             ):
@@ -40,6 +41,8 @@ def fourier(gf: Gframe,
         Initial guess for the phase shifts, if None, all phase shifts are set to 1
     num_days : int, default 0
         Number of days to plot, if 0 all days are plotted.
+    full_output : bool, default False
+        If True, returns the figure and the best-fit parameters
     height : float, default None
         Height of the figure
     width : float, default None
@@ -117,6 +120,10 @@ def fourier(gf: Gframe,
     # Create list of days in case one day fails to fit
     list_of_days = list(gf.data['Day'].unique())
 
+    # Create Series for the best-fit parameters
+    #if full_output:
+
+
     # Loop over days
     show_first = True
     day_count = 0
@@ -132,7 +139,7 @@ def fourier(gf: Gframe,
         hour_range = num_time.max() - num_time.min()
 
         # Initial guess for the parameters of the Fourier series (m, amplitude, phase)
-        initial_guess = [auc[day]/hour_range] + [hour_range] + amplitude_guess + phase_guess
+        initial_guess = [auc[str(day)]/hour_range] + [hour_range] + amplitude_guess + phase_guess
 
         # Get best-fit parameters
         try:

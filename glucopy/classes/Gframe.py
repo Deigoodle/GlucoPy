@@ -565,7 +565,7 @@ class Gframe:
 
             # Calculate TIR for each day
             for day, day_data in day_groups:
-                tir[day] = metrics.tir(df=day_data, target_range=target_range, percentage=percentage, decimals=decimals).tolist()
+                tir[str(day)] = metrics.tir(df=day_data, target_range=target_range, percentage=percentage, decimals=decimals).tolist()
 
         else: # Calculate TIR for all data
             tir = metrics.tir(df=self.data, target_range=target_range, percentage=percentage, decimals=decimals)
@@ -638,7 +638,7 @@ class Gframe:
             fd.index.name = 'Day'
 
             for day, day_data in day_groups:
-                fd[day] = metrics.fd(df=day_data, target_range=target_range, decimals=decimals, count=count).values
+                fd[str(day)] = metrics.fd(df=day_data, target_range=target_range, decimals=decimals, count=count).values
         
         else:
             fd = metrics.fd(df=self.data, target_range=target_range, decimals=decimals, count=count)
@@ -711,7 +711,7 @@ class Gframe:
 
             # Calculate AUC for each day
             for day, day_data in day_groups:
-                auc[day] = metrics.auc(df=day_data, time_unit=time_unit, threshold=threshold, above=above)
+                auc[str(day)] = metrics.auc(df=day_data, time_unit=time_unit, threshold=threshold, above=above)
 
         else:
             auc = metrics.auc(df=self.data, time_unit=time_unit, threshold=threshold, above=above)
@@ -772,7 +772,7 @@ class Gframe:
 
             # Calculate MAGE for each day
             for day, day_data in day_groups:
-                mage[day] = metrics.mage(df=day_data)
+                mage[str(day)] = metrics.mage(df=day_data)
         
         else:
             mage = metrics.mage(df=self.data)
@@ -827,7 +827,7 @@ class Gframe:
 
             # Calculate DT for each day
             for day, day_data in day_groups:
-                dt[day] = metrics.dt(df=day_data)
+                dt[str(day)] = metrics.dt(df=day_data)
 
         else:
             dt = metrics.dt(df=self.data)
@@ -901,7 +901,7 @@ class Gframe:
             bgi.index.name = 'Day'
 
             for day, day_data in day_groups:
-                bgi[day] = metrics.bgi(df=day_data, unit=self.unit, index_type=index_type, maximum=maximum)
+                bgi[str(day)] = metrics.bgi(df=day_data, unit=self.unit, index_type=index_type, maximum=maximum)
 
         else: 
             bgi = metrics.bgi(df=self.data, unit=self.unit, index_type=index_type, maximum=maximum)
@@ -1229,7 +1229,7 @@ class Gframe:
             conga.index.name = 'Day'
 
             for day, day_data in day_groups:
-                conga[day] = metrics.conga(df=day_data, m=m, slack=slack, ignore_na=ignore_na, ddof=ddof)
+                conga[str(day)] = metrics.conga(df=day_data, m=m, slack=slack, ignore_na=ignore_na, ddof=ddof)
         
         else:
             conga = metrics.conga(df=self.data, m=m, slack=slack, ignore_na=ignore_na, ddof=ddof)
@@ -1326,7 +1326,7 @@ class Gframe:
             mag.index.name = 'Day'
 
             for day, day_data in day_groups:
-                mag[day] = metrics.mag(df=day_data, time_unit=time_unit)
+                mag[str(day)] = metrics.mag(df=day_data, time_unit=time_unit)
         
         else:
             mag = metrics.mag(df=self.data, time_unit=time_unit)
@@ -1401,7 +1401,7 @@ class Gframe:
             dfa.index.name = 'Day'
 
             for day, day_data in day_groups:
-                dfa[day] = metrics.dfa(df=day_data,
+                dfa[str(day)] = metrics.dfa(df=day_data,
                                        scale=scale,
                                        overlap=overlap,
                                        integrate=integrate,
@@ -1468,7 +1468,7 @@ class Gframe:
             samp_en.index.name = 'Day'
 
             for day, day_data in day_groups:
-                samp_en[day] = metrics.samp_en(df=day_data,
+                samp_en[str(day)] = metrics.samp_en(df=day_data,
                                                delay=delay,
                                                dimension=dimension,
                                                tolerance=tolerance,
@@ -1548,7 +1548,7 @@ class Gframe:
             mse.index.name = 'Day'
 
             for day, day_data in day_groups:
-                mse[day] = metrics.mse(df=day_data,
+                mse[str(day)] = metrics.mse(df=day_data,
                                        scale=scale,
                                        dimension=dimension,
                                        tolerance=tolerance,
