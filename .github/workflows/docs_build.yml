@@ -35,6 +35,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install sphinx
           pip install pydata-sphinx-theme
+          pip install sphinx-copybutton
           pip install ghp-import
           pip install iPython
           pip install pickleshare

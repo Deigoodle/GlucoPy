@@ -26,7 +26,8 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.autosummary',
               'IPython.sphinxext.ipython_console_highlighting',
               'IPython.sphinxext.ipython_directive',
-              'matplotlib.sphinxext.plot_directive' # Enables plotting in sphinx
+              'matplotlib.sphinxext.plot_directive', # Enables plotting in sphinx
+              'sphinx_copybutton',  # Add copy button to code blocks
               ]
 
 templates_path = ['_templates']
@@ -50,4 +51,11 @@ html_theme_options = {
     'navigation_depth': 4,
     'github_url': 'https://github.com/Deigoodle/GlucoPy',
 }
+html_css_files = [
+    'custom.css',
+]
+
+# This will remove the 'In [1]:' like prompts from copied text
+copybutton_prompt_text = r"In \[\d*\]: |\.\.\.: |\$ "
+copybutton_prompt_is_regexp = True
 

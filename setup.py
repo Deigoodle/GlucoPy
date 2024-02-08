@@ -6,9 +6,9 @@ requirements = [
         "pandas==2.1.4",
         "plotly==5.18.0",
         "scipy==1.11.4",
+        "astropy==6.0.0",
         "neurokit2==0.2.7",
         "requests==2.31.0", # neurokit dependency
-        "astropy==6.0.0",
         ]
 
 # Optional dependencies
@@ -24,6 +24,7 @@ setup(
     author = 'Diego Soto Castillo',
     packages = find_packages(),
     install_requires = requirements,
+    extras_require = extras,
     python_requires = ">=3.11",
     classifiers = [
         "Programming Language :: Python :: 3",

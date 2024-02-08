@@ -11,6 +11,7 @@ Welcome to Glucopy's documentation!
    :caption: Contents:
 
    glucopy
+   getting_started/index
 
 Indices and tables
 ==================
