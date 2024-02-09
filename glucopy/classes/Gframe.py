@@ -344,6 +344,9 @@ class Gframe:
         '''
         if per_day:
             pcv = self.cv(per_day=True,ddof=ddof,**kwargs) * 100
+
+            # Rename the series
+            pcv.name = '% Coefficient of Variation'
           
         else:
             pcv = self.cv(ddof=ddof,**kwargs) * 100
@@ -445,10 +448,7 @@ class Gframe:
             gf.iqr(per_day=True)
         '''
         
-        q1 = metrics.quantile(df=self.data, per_day=per_day, q=0.25, interpolation=interpolation, **kwargs)
-        q3 = metrics.quantile(df=self.data, per_day=per_day, q=0.75, interpolation=interpolation, **kwargs)
-        
-        return q3 - q1
+        return metrics.iqr(df=self.data, per_day=per_day, interpolation=interpolation, **kwargs)
     
     # Mean of Daily Differences
     def modd(self, 
@@ -560,7 +560,7 @@ class Gframe:
             day_groups = self.data.groupby('Day')
 
             # Initialize tir as an empty Series
-            tir = pd.Series(dtype=float)
+            tir = pd.Series(dtype=float, name='Time in Range')
             tir.index.name = 'Day'
 
             # Calculate TIR for each day
@@ -634,7 +634,7 @@ class Gframe:
             # Group data by day
             day_groups = self.data.groupby('Day')
 
-            fd = pd.Series(dtype=float)
+            fd = pd.Series(dtype=float, name = 'Time in Range')
             fd.index.name = 'Day'
 
             for day, day_data in day_groups:
@@ -706,7 +706,7 @@ class Gframe:
             day_groups = self.data.groupby('Day')
 
             # Initialize auc as an empty Series
-            auc = pd.Series(dtype=float)
+            auc = pd.Series(dtype=float, name = 'AUC')
             auc.index.name = 'Day'
 
             # Calculate AUC for each day
@@ -767,7 +767,7 @@ class Gframe:
             day_groups = self.data.groupby('Day')
 
             # Initialize mage as an empty Series
-            mage = pd.Series(dtype=float)
+            mage = pd.Series(dtype=float, name = 'MAGE')
             mage.index.name = 'Day'
 
             # Calculate MAGE for each day
@@ -822,7 +822,7 @@ class Gframe:
             # Group data by day
             day_groups = self.data.groupby('Day')
 
-            dt = pd.Series(dtype=float)
+            dt = pd.Series(dtype=float, name='Distance Travelled')
             dt.index.name = 'Day'
 
             # Calculate DT for each day
@@ -897,7 +897,7 @@ class Gframe:
             # Group data by day
             day_groups = self.data.groupby('Day')
 
-            bgi = pd.Series(dtype=float)
+            bgi = pd.Series(dtype=float, name = 'HBGI' if index_type == 'h' else 'LBGI')
             bgi.index.name = 'Day'
 
             for day, day_data in day_groups:
@@ -1225,7 +1225,7 @@ class Gframe:
         if per_day:
             # Group data by day
             day_groups = self.data.groupby('Day')
-            conga = pd.Series(dtype=float)
+            conga = pd.Series(dtype=float, name='CONGA')
             conga.index.name = 'Day'
 
             for day, day_data in day_groups:
@@ -1322,7 +1322,7 @@ class Gframe:
         if per_day:
             # Group data by day
             day_groups = self.data.groupby('Day')
-            mag = pd.Series(dtype=float)
+            mag = pd.Series(dtype=float, name='MAG')
             mag.index.name = 'Day'
 
             for day, day_data in day_groups:
@@ -1397,7 +1397,7 @@ class Gframe:
             # Group data by day
             day_groups = self.data.groupby('Day')
 
-            dfa = pd.Series(dtype=float)
+            dfa = pd.Series(dtype=float,name='DFA')
             dfa.index.name = 'Day'
 
             for day, day_data in day_groups:
@@ -1464,7 +1464,7 @@ class Gframe:
             # Group data by day
             day_groups = self.data.groupby('Day')
 
-            samp_en = pd.Series(dtype=float)
+            samp_en = pd.Series(dtype=float,name='Entropy Sample')
             samp_en.index.name = 'Day'
 
             for day, day_data in day_groups:
@@ -1544,7 +1544,7 @@ class Gframe:
             # Group data by day
             day_groups = self.data.groupby('Day')
 
-            mse = pd.Series(dtype=float)
+            mse = pd.Series(dtype=float,name='MSE')
             mse.index.name = 'Day'
 
             for day, day_data in day_groups:

@@ -37,5 +37,10 @@ def cv(df: pd.DataFrame,
     -----
     This function is meant to be used by :meth:`glucopy.Gframe.cv`
     '''
+    cv = std(df=df, per_day=per_day, ddof=ddof, **kwargs) / mean(df=df, per_day=per_day, **kwargs)
 
-    return std(df=df, per_day=per_day, ddof=ddof, **kwargs) / mean(df=df, per_day=per_day, **kwargs)
+    # Rename the series
+    if per_day:
+        cv.name = 'Coefficient of Variation'
+
+    return cv

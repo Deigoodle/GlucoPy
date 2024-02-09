@@ -69,5 +69,8 @@ def tir(df: pd.DataFrame,
 
     else:
         tir = time_count.apply(lambda x: pd.to_timedelta(x, unit='s'))
+
+    # Rename tir
+    tir.name = 'Time in Range'
     
     return tir

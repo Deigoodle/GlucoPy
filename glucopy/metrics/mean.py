@@ -33,8 +33,12 @@ def mean(df : pd.DataFrame,
             # Group data by day
             day_groups = df.groupby('Day')
             mean = day_groups['CGM'].mean(**kwargs)
+
             # Convert the index to string for easier access
             mean.index = mean.index.map(str)
+
+            # Rename the series
+            mean.name = 'Mean'
 
         else:
             mean = df['CGM'].mean(**kwargs)

@@ -65,6 +65,8 @@ def grade(df: pd.DataFrame,
         hypo = np.sum(grade[values < 3.9]) / grade_sum 
         hyper = np.sum(grade[values > 7.8]) / grade_sum
         eugly = 1 - hypo - hyper
-        grade = pd.Series([hypo, eugly, hyper], index=['Hypoglycaemia', 'Euglycaemia', 'Hyperglycaemia']) * 100
+        grade = pd.Series([hypo, eugly, hyper], 
+                          index=['Hypoglycaemia', 'Euglycaemia', 'Hyperglycaemia'], 
+                          name = 'GRADE') * 100
     
     return grade

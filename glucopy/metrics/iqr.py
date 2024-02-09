@@ -39,5 +39,11 @@ def iqr(df: pd.DataFrame,
         
     q1 = quantile(df=df, per_day=per_day, q=0.25, interpolation=interpolation, **kwargs)
     q3 = quantile(df=df, per_day=per_day, q=0.75, interpolation=interpolation, **kwargs)
+
+    iqr = q3 - q1
+
+    # Rename the series
+    if per_day:
+        iqr.name = 'Interquartile Range'
         
-    return q3 - q1
+    return iqr

@@ -40,8 +40,12 @@ def quantile(df: pd.DataFrame,
         # Group data by day
         day_groups = df.groupby('Day')
         quantile = day_groups['CGM'].quantile(q=q, interpolation=interpolation, **kwargs)
+
         # Convert the index to string for easier access
         quantile.index = quantile.index.map(str)
+
+        # Rename the series
+        quantile.name = f'Quantile {q}'
     
     else:
         quantile = df['CGM'].quantile(q=q, interpolation=interpolation, **kwargs)
