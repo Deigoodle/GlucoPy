@@ -3,7 +3,7 @@ from ..io import read_csv
 
 def data(dataset : str = 'prueba_1'):
     '''
-    Glucopy includes a few datasets to test the package, this function downloads
+    GlucoPy includes a few datasets to test the package, this function downloads
     and returns one of them as a Gframe object.
 
     The following datasets are available:

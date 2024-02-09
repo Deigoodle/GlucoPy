@@ -12,7 +12,7 @@ Python Toolbox for glycaemic signal processing
     - [Create a `Gframe` object from a .csv file](#create-a-gframe-object-from-a-csv-file)
     - [Create a `Gframe` object from a .xslx file](#create-a-gframe-object-from-a-xslx-file)
     - [Create a `Gframe` object from a pandas `DataFrame`](#create-a-gframe-object-from-a-pandas-dataframe)
-    - [Create a `Gframe` object from Glucopy's datasets](#create-a-gframe-object-from-glucopys-datasets)
+    - [Create a `Gframe` object from GlucoPy's datasets](#create-a-gframe-object-from-glucopys-datasets)
     - [Calculate some metrics](#calculate-some-metrics)
     - [Plots](#plots)
       - [Ambulatory Glucose Profile (AGP)](#ambulatory-glucose-profile-agp)
@@ -75,7 +75,7 @@ df = pd.read_csv('path/to/file.csv')
 gf = gp.Gframe(df)
 ```
 
-### Create a `Gframe` object from Glucopy's datasets
+### Create a `Gframe` object from GlucoPy's datasets
 ```python
 # Import the dataset
 gf = gp.data("prueba_1")
