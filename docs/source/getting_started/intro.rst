@@ -26,7 +26,7 @@ Importing data
 
     gf = gp.read_excel('path_to_file.xlsx')
 
-- Using a `pandas.DataFrame`:
+- Using a :py:class:`pandas.DataFrame`:
 
 .. code-block:: python
 
