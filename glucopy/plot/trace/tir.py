@@ -177,11 +177,11 @@ def tir(gf: Gframe,
     # update layout
     fig.update_layout(
         xaxis_title='Time of day [h]',
-        yaxis_title=f'CGM [{gf.unit}]',
+        yaxis_title=f'Glucose [{gf.unit}]',
         yaxis=dict(range=[0, gf.data['CGM'].max()+10]),  # Set y-axis to start at 0 and end at the max value
         height=height,
         width=width,
-        title_text='CGM values for each day',
+        title_text='Glucose values in range for each day',
         shapes=shapes[first_day]
     )
 

@@ -191,7 +191,7 @@ def mean(gf: Gframe,
     # update lauyout
     fig.update_layout(title_text='Mean and standard deviation for each time',
                       xaxis_title='Time of day [h]', 
-                      yaxis_title=f'CGM [{gf.unit}]',
+                      yaxis_title=f'Glucose [{gf.unit}]',
                       height=height,
                       width=width)
 

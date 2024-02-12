@@ -94,7 +94,7 @@ def box(gf: Gframe,
 
     else:
         fig = px.box(gf.data, x='CGM', points=points)
-        fig.update_xaxes(title='Glucose')
+        fig.update_xaxes(title=f'Glucose [{gf.unit}]')
 
     fig.update_layout(height=height, width=width)
 
