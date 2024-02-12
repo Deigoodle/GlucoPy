@@ -70,6 +70,12 @@ by the :py:class:`pandas.Series` object. For example, to calculate the max of th
 
     day_means.max()
 
+You can alos access the mean of a specific day using the index of the :py:class:`pandas.Series`:
+
+.. ipython:: python
+
+    day_means["2020-12-01"]
+
 Glycaemia specific metrics
 --------------------------
 :class:`Gframe` also provides methods to calculate metrics specific to glycaemia. For example, to calculate the
