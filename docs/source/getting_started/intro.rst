@@ -20,11 +20,19 @@ Importing data
 
     gf = gp.read_csv('path_to_file.csv')
 
-- Or using the :func:`read_excel` function:
+- Using the :func:`read_excel` function:
 
 .. code-block:: python
 
     gf = gp.read_excel('path_to_file.xlsx')
+
+- Using a `pandas.DataFrame`:
+
+.. code-block:: python
+
+    import pandas as pd
+    df = pd.read_csv('path_to_file.csv')
+    gf = gp.Gframe(df)
 
 - If you have no `CGM` dataset, you can still try this toolbox using the sample data provided with the package in
   the :func:`data` function
