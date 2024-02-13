@@ -1,4 +1,4 @@
-def time_factor(t: str) -> int:
+def time_factor(t: str):
     '''
     Return the time factor of a given time string.
 

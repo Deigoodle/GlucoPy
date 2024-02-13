@@ -1,13 +1,10 @@
-# Built-in
-import datetime
-
 # 3rd party
 import pandas as pd
 
 def disjoin_days_and_hours(df,
                            date_column: str | int = 0, 
                            cgm_column: str | int = 1,
-                           date_format: str | None = None) -> pd.DataFrame:
+                           date_format: str | None = None):
     '''
     Disjoins a dataframe with a column with datetime objects into a dataframe with columns for day, time and cgm values
 

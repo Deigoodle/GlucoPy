@@ -3,7 +3,7 @@ import numpy as np
 
 FACTOR = 18.0
 
-def mgdl_to_mmoll(mgdl: float | int | np.ndarray) -> float | int | np.ndarray:
+def mgdl_to_mmoll(mgdl: float | int | np.ndarray):
     '''
     Convert mg/dL to mmol/L.
 

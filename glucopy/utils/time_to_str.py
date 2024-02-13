@@ -1,7 +1,7 @@
 # Built-in
 import datetime
 
-def time_to_str(time:datetime.time) -> str:
+def time_to_str(time:datetime.time):
     '''
     Converts a datetime.time object to a string with format 'hh:mm:ss'
 
