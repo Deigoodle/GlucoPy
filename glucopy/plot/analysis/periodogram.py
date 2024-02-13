@@ -13,6 +13,8 @@ def periodogram(gf: Gframe,
                 width: float = None
                 ):
     '''
+    Plot the best-fit curve obtained by a Lomb-Scargle periodogram.
+
     Parameters
     ----------
     gf : Gframe
