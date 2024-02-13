@@ -8,7 +8,8 @@ import datetime
 
 # Local
 from glucopy.utils import (disjoin_days_and_hours,
-                           mgdl_to_mmoll)
+                           mgdl_to_mmoll,
+                           mmoll_to_mgdl)
 import glucopy.metrics as metrics
 
 class Gframe:
@@ -165,7 +166,7 @@ class Gframe:
                 raise ValueError('The data is already in mmol/L')
         else:
             if self.unit == 'mmol/L':
-                self.data['CGM'] = mgdl_to_mmoll(self.data['CGM'], reverse=True)
+                self.data['CGM'] = mmoll_to_mgdl(self.data['CGM'])
                 self.unit = new_unit
             else:
                 raise ValueError('The data is already in mg/dL')
@@ -501,7 +502,7 @@ class Gframe:
     # Time in Range
     def tir(self, 
             per_day: bool = False,
-            target_range:list= [0,70,180],
+            interval:list= [0,70,180],
             percentage: bool = True,
             decimals: int = 2):
         '''
@@ -518,7 +519,7 @@ class Gframe:
         ----------
         per_day : bool, default False
             If True, returns a pandas Series with the TIR for each day. If False, returns the TIR for all days combined.
-        target_range : list of int|float, default [0,70,180]
+        interval : list of int|float, default [0,70,180]
             Interval of glucose concentration to calculate :math:`\\tau`. Can be a list of 1 number, in that case the 
             time will be calculated below and above that number. It will always try to calculate the time below the first 
             number and above the last number.
@@ -547,7 +548,7 @@ class Gframe:
 
         .. ipython:: python
 
-            gf.tir(target_range=[0,70,150,180,230])
+            gf.tir(interval=[0,70,150,180,230])
 
         Calculating the TIR for each day and the default range (0,70,180):
 
@@ -565,10 +566,10 @@ class Gframe:
 
             # Calculate TIR for each day
             for day, day_data in day_groups:
-                tir[str(day)] = metrics.tir(df=day_data, target_range=target_range, percentage=percentage, decimals=decimals).tolist()
+                tir[str(day)] = metrics.tir(df=day_data, interval=interval, percentage=percentage, decimals=decimals).tolist()
 
         else: # Calculate TIR for all data
-            tir = metrics.tir(df=self.data, target_range=target_range, percentage=percentage, decimals=decimals)
+            tir = metrics.tir(df=self.data, interval=interval, percentage=percentage, decimals=decimals)
 
         return tir
     
@@ -577,7 +578,7 @@ class Gframe:
     # Frecuency distribution : counts the amount of observations given certain intervals of CGM
     def fd(self,
            per_day: bool = False,
-           target_range: list = [0,70,180],
+           interval: list = [0,70,180],
            decimals: int = 2,
            count: bool = False):
         '''
@@ -594,7 +595,7 @@ class Gframe:
         ----------
         per_day : bool, default False
             If True, returns a pandas Series with the FD for each day. If False, returns the FD for all days combined.
-        target_range : list of int|float, default [0,70,180]
+        interval : list of int|float, default [0,70,180]
             Interval of glucose concentration to calculate `FD`. Can be a list of 1 number, in that case the time will
             be calculated below and above that number. It will always try to calculate the time below the first number
             and above the last number.
@@ -622,7 +623,7 @@ class Gframe:
 
         .. ipython:: python
 
-            gf.fd(target_range=[0,70,150,180,230])
+            gf.fd(interval=[0,70,150,180,230])
         
         Calculating the FD for each day and the default range (0,70,180):
 
@@ -638,10 +639,10 @@ class Gframe:
             fd.index.name = 'Day'
 
             for day, day_data in day_groups:
-                fd[str(day)] = metrics.fd(df=day_data, target_range=target_range, decimals=decimals, count=count).values
+                fd[str(day)] = metrics.fd(df=day_data, interval=interval, decimals=decimals, count=count).values
         
         else:
-            fd = metrics.fd(df=self.data, target_range=target_range, decimals=decimals, count=count)
+            fd = metrics.fd(df=self.data, interval=interval, decimals=decimals, count=count)
 
         return fd
 
@@ -1060,11 +1061,11 @@ class Gframe:
         '''
         # Time in range [70.2,160.2] mg/dL = [3.9,8.9] mmol/L
         if self.unit == 'mmol/L':
-            target_range = [3.9,8.9]
+            interval = [3.9,8.9]
         elif self.unit == 'mg/dL':
-            target_range = [70.2,160.2]
+            interval = [70.2,160.2]
 
-        tir_per_day = self.tir(per_day=True, target_range=target_range, percentage=False)
+        tir_per_day = self.tir(per_day=True, interval=interval, percentage=False)
 
         # List with the Timedelta corresponding to the time spent under 3.9 mmol/L for each day
         tir_per_day_minus_3_9 = [time[0].total_seconds() for time in tir_per_day] 
@@ -1604,8 +1605,13 @@ class Gframe:
             gf = gp.data('prueba_1')
             gf.summary()
         '''
+        # Time in range [70,180] mg/dL
+        tir_interval = np.array([0, 70, 180])
+        if self.unit == 'mmol/L':
+            tir_interval = mgdl_to_mmoll(tir_interval)
+
         # Metrics that return Series
-        tir = self.tir()
+        tir = self.tir(interval=tir_interval)
         grade = self.grade()
 
         # Summary

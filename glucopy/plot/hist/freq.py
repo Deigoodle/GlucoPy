@@ -1,12 +1,13 @@
 # 3rd party
 import plotly.graph_objects as go
+import numpy as np
 
 # Local
 from ...classes import Gframe
 
 def freq(gf: Gframe,
          per_day: bool = True,
-         target_range: list = [0,70,180],
+         interval: list = [0,70,180],
          count: bool = False,
          height: float = None,
          width: float = None):
@@ -19,7 +20,7 @@ def freq(gf: Gframe,
         Gframe object to plot
     per_day : bool, default True
         If True, the plot will be separated by days
-    target_range : list, default [0,70,180]
+    interval : list, default [0,70,180]
         Target range for the glucose
     count : bool, default False
         If True, the y axis will be the count of the glucose in the target range. If False, the y axis will be the
@@ -56,7 +57,7 @@ def freq(gf: Gframe,
 
     .. ipython:: python
 
-        fig = gp.plot.freq(gf, per_day=False, target_range=[0,100,200,300])
+        fig = gp.plot.freq(gf, per_day=False, interval=[0,100,200,300])
 
     .. image:: /../img/freq_plot_2.png
         :alt: Frequency plot
@@ -66,17 +67,28 @@ def freq(gf: Gframe,
     if not isinstance(gf, Gframe):
         raise TypeError('gf must be a Gframe object')
 
-    # Check input, Ensure target_range is a list with 0 and the max value of the data
-    if not isinstance(target_range, list) or not all(isinstance(i, (int, float)) for i in target_range):
-        raise ValueError("target_range must be a list of numbers")
-    if 0 not in target_range:
-        target_range = [0] + target_range
-    if max(gf.data['CGM']) > target_range[-1]:
-        target_range = target_range + [max(gf.data['CGM'])]
+    # Check input, Ensure interval is a list or numpy array of numbers
+    if not isinstance(interval, (list, np.ndarray)):
+        raise ValueError("interval must be a list or numpy array of numbers")
+    
+    # Convert interval to a list if it's a numpy array
+    if isinstance(interval, np.ndarray):
+        interval = interval.tolist()
+    
+    # Add 0 to the target range if it is not present to count the time below the target range
+    if 0 not in interval:
+        interval = [0] + interval
+
+    # Add the max value of the data to the target range if it is not present to count the time above the target range
+    max_value = max(gf.data['CGM'])
+    if max_value <= interval[-1]:
+        max_value = interval[-1] + 1
+    if max_value > interval[-1]:
+        interval = interval + [max_value]
 
     # Get frequencies
-    frequencies = gf.fd(per_day = per_day, target_range = target_range, count = count)
-    range_labels = [f'{target_range[i]}-{target_range[i+1]}' for i in range(len(target_range)-1)]
+    frequencies = gf.fd(per_day = per_day, interval = interval, count = count)
+    range_labels = [f'{interval[i]}-{interval[i+1]}' for i in range(len(interval)-1)]
     
     fig = go.Figure()
     first_day = ''
