@@ -160,8 +160,8 @@ def smooth_sequence(y: list,
     ----------
     y : list
         Sequence of values to smooth
-    e : float, default 
-        Tolerance for negligible change, by default 1
+    e : float, default 1
+        Tolerance for negligible change
 
     Returns
     -------

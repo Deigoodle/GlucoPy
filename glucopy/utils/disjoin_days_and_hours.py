@@ -12,10 +12,10 @@ def disjoin_days_and_hours(df,
     ----------
     df : pd.DataFrame
         DataFrame to disjoin
-    date_column : str or int, optional
-        Column name or index with datetime objects, by default 0
-    cgm_column : str or int, optional
-        Column name or index with cgm values, by default 1
+    date_column : str or int, default 0
+        Column name or index with datetime objects
+    cgm_column : str or int, default 1
+        Column name or index with cgm values
     date_format : str, default None
         Format of the date information, if None, it will be assumed that the date information is in a consistent format
 

@@ -18,7 +18,7 @@ def std(df: pd.DataFrame,
             standard deviation for the entire dataset.
         ddof : int, default 1
             Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of
-            elements. By default ddof is 1.
+            elements.
 
         Returns
         -------

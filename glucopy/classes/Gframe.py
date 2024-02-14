@@ -211,7 +211,7 @@ class Gframe:
 
         return metrics.mean(df=self.data, per_day=per_day)
     
-    # Standard Deviation, by default ddof=1, so its divided by n-1
+    # Standard Deviation
     def std(self,
             per_day: bool = False,
             ddof:int = 1,
@@ -226,7 +226,7 @@ class Gframe:
             standard deviation for the entire dataset.
         ddof : int, default 1
             Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of
-            elements. By default ddof is 1.
+            elements.
 
         Returns
         -------
