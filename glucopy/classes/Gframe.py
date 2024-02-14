@@ -185,7 +185,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns a pandas Series with the mean for each day. If False, returns the mean for all days combined.
+            If True, returns a pandas Series with the mean for each day. If False, returns the mean for the entire dataset.
         **kwargs : dict
             Additional keyword arguments to be passed to the function. For more information view the documentation for
             pandas.DataFrameGroupBy.mean() for per_day=True and pandas.DataFrame.mean() for per_day=False.
@@ -226,7 +226,7 @@ class Gframe:
         ----------
         per_day : bool, default False
             If True, returns a pandas Series with the standard deviation for each day. If False, returns the 
-            standard deviation for all days combined.
+            standard deviation for the entire dataset.
         ddof : int, default 1
             Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of
             elements. By default ddof is 1.
@@ -270,7 +270,7 @@ class Gframe:
         ----------
         per_day : bool, default False
             If True, returns the an array with the coefficient of variation for each day. If False, returns
-            the coefficient of variation for all days combined.
+            the coefficient of variation for the entire dataset.
         ddof : int, default 1
             Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of 
             elements. By default ddof is 1.
@@ -314,7 +314,7 @@ class Gframe:
         ----------
         per_day : bool, default False
             If True, returns the a pandas.Series with the percentage coefficient of variation for each day. If False,
-            returns the percentage coefficient of variation for all days combined.
+            returns the percentage coefficient of variation for the entire dataset.
         ddof : int, default 1
             Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of 
             elements. By default ddof is 1.
@@ -419,7 +419,7 @@ class Gframe:
         ----------
         per_day : bool, default False
             If True, returns a pandas.Series with the interquartile range for each day. If False, returns the
-            interquartile range for all days combined.
+            interquartile range for the entire dataset.
         interpolation : str, default 'linear'
             This optional parameter specifies the interpolation method to use, when the desired quantile lies between
             two data points i and j. Default is 'linear'. 
@@ -518,7 +518,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns a pandas Series with the TIR for each day. If False, returns the TIR for all days combined.
+            If True, returns a pandas Series with the TIR for each day. If False, returns the TIR for the entire dataset.
         interval : list of int|float, default [0,70,180]
             Interval of glucose concentration to calculate :math:`\\tau`. Can be a list of 1 number, in that case the 
             time will be calculated below and above that number. It will always try to calculate the time below the first 
@@ -594,7 +594,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns a pandas Series with the FD for each day. If False, returns the FD for all days combined.
+            If True, returns a pandas Series with the FD for each day. If False, returns the FD for the entire dataset.
         interval : list of int|float, default [0,70,180]
             Interval of glucose concentration to calculate `FD`. Can be a list of 1 number, in that case the time will
             be calculated below and above that number. It will always try to calculate the time below the first number
@@ -666,7 +666,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns a pandas Series with the AUC for each day. If False, returns the AUC for all days combined.
+            If True, returns a pandas Series with the AUC for each day. If False, returns the AUC for the entire dataset.
         time_unit : str, default 'm' (minutes)
             The time unit for the x-axis. Can be 's (seconds)', 'm (minutes)', or 'h (hours)'.
         threshold : int | float, default 0
@@ -740,7 +740,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns a pandas Series with the MAGE for each day. If False, returns the MAGE for all days combined.
+            If True, returns a pandas Series with the MAGE for each day. If False, returns the MAGE for the entire dataset.
 
         Returns
         -------
@@ -796,7 +796,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns a pandas Series with the DT for each day. If False, returns the DT for all days combined.
+            If True, returns a pandas Series with the DT for each day. If False, returns the DT for the entire dataset.
 
         Returns
         -------
@@ -862,7 +862,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns a pandas Series with the LBGI for each day. If False, returns the BGI for all days combined.
+            If True, returns a pandas Series with the LBGI for each day. If False, returns the BGI for the entire dataset.
         index_type : str, default 'h'
             Type of index to calculate. Can be 'h' (High Blood Glucose Index) or 'l' (Low Blood Glucose Index).
         maximum : bool, default False
@@ -1190,7 +1190,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns the CONGA for each day separately. If False, returns the CONGA for all days combined.
+            If True, returns the CONGA for each day separately. If False, returns the CONGA for the entire dataset.
         m : int, default 1
             Number of hours to use for the CONGA calculation.
         slack : int, default 0
@@ -1289,7 +1289,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns the an array with the MAG for each day. If False, returns the MAG for all days combined.
+            If True, returns the an array with the MAG for each day. If False, returns the MAG for the entire dataset.
         time_unit : str, default 'm' (minutes)
             The time time_unit for the x-axis. Can be 's (seconds)', 'm (minutes)', or 'h (hours)'.
         
@@ -1356,7 +1356,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns the an array with the DFA for each day. If False, returns the DFA for all days combined. If
+            If True, returns the an array with the DFA for each day. If False, returns the DFA for the entire dataset. If
             a day has very few data points, the DFA for that day will be NaN.
 
         Returns
@@ -1438,7 +1438,7 @@ class Gframe:
         ----------
         per_day : bool, default False
             If True, returns the an array with the Sample Entropy for each day. If False, returns the Sample Entropy for
-            all days combined.
+            the entire dataset.
         
         Returns
         -------
@@ -1504,7 +1504,7 @@ class Gframe:
         ----------
         per_day : bool, default False
             If True, returns the an array with the Multiscale Sample Entropy for each day. If False, returns the 
-            Multiscale Sample Entropy for all days combined.        
+            Multiscale Sample Entropy for the entire dataset.        
             
         Returns
         -------

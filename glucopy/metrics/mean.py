@@ -14,7 +14,7 @@ def mean(df : pd.DataFrame,
             DataFrame containing the CGM values. The dataframe must contain 'CGM' and 'Day' columns present in
             :attr:`glucopy.Gframe.data`.
         per_day : bool, default False
-            If True, returns a pandas Series with the mean for each day. If False, returns the mean for all days combined.
+            If True, returns a pandas Series with the mean for each day. If False, returns the mean for the entire dataset.
         **kwargs : dict
             Additional keyword arguments to be passed to the function. For more information view the documentation for
             pandas.DataFrameGroupBy.mean() for per_day=True and pandas.DataFrame.mean() for per_day=False.

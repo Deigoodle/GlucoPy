@@ -20,7 +20,7 @@ def tir(df: pd.DataFrame,
     Parameters
     ----------
     per_day : bool, default False
-        If True, returns a pandas Series with the TIR for each day. If False, returns the TIR for all days combined.
+        If True, returns a pandas Series with the TIR for each day. If False, returns the TIR for the entire dataset.
     interval : list of int|float, default [0,70,180]
         Interval of glucose concentration to calculate :math:`\\tau`. Can be a list of 1 number, in that case the 
         time will be calculated below and above that number. It will always try to calculate the time below the first 

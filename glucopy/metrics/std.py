@@ -16,7 +16,7 @@ def std(df: pd.DataFrame,
             :attr:`glucopy.Gframe.data`.
         per_day : bool, default False
             If True, returns a pandas Series with the standard deviation for each day. If False, returns the 
-            standard deviation for all days combined.
+            standard deviation for the entire dataset.
         ddof : int, default 1
             Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of
             elements. By default ddof is 1.

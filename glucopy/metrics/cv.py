@@ -20,7 +20,7 @@ def cv(df: pd.DataFrame,
         :attr:`glucopy.Gframe.data`.
     per_day : bool, default False
         If True, returns the an array with the coefficient of variation for each day. If False, returns
-        the coefficient of variation for all days combined.
+        the coefficient of variation for the entire dataset.
     ddof : int, default 1
         Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of 
         elements. By default ddof is 1.

@@ -19,7 +19,7 @@ def iqr(df: pd.DataFrame,
         :attr:`glucopy.Gframe.data`.
     per_day : bool, default False
         If True, returns a pandas.Series with the interquartile range for each day. If False, returns the
-        interquartile range for all days combined.
+        interquartile range for the entire dataset.
     interpolation : str, default 'linear'
         This optional parameter specifies the interpolation method to use, when the desired quantile lies between
         two data points i and j. Default is 'linear'. 
