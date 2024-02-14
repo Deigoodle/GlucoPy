@@ -4,7 +4,6 @@ import pandas as pd
 def std(df: pd.DataFrame,
         per_day: bool = False,
         ddof: int = 1,
-        **kwargs
         ):
         '''
         Calculates the standard deviation of the CGM values.
@@ -20,9 +19,6 @@ def std(df: pd.DataFrame,
         ddof : int, default 1
             Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of
             elements. By default ddof is 1.
-        **kwargs : dict
-            Additional keyword arguments to be passed to the function. For more information view the documentation for
-            pandas.DataFrameGroupBy.std().
 
         Returns
         -------
@@ -36,7 +32,7 @@ def std(df: pd.DataFrame,
         if per_day:
             # Group data by day
             day_groups = df.groupby('Day')
-            std = day_groups['CGM'].std(ddof=ddof,**kwargs)
+            std = day_groups['CGM'].std(ddof=ddof)
 
             # Convert the index to string for easier access
             std.index = std.index.map(str)
@@ -45,7 +41,7 @@ def std(df: pd.DataFrame,
             std.name = 'Standard Deviation'
         
         else:
-            std = df['CGM'].std(ddof=ddof,**kwargs)
+            std = df['CGM'].std(ddof=ddof)
 
         
 

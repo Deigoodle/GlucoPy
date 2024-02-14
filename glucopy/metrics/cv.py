@@ -8,7 +8,6 @@ from .mean import mean
 def cv(df: pd.DataFrame,
        per_day: bool = False,
        ddof: int = 1,
-       **kwargs
        ):
     '''
     Calculates the Coefficient of Variation (CV) of the CGM values.
@@ -24,9 +23,6 @@ def cv(df: pd.DataFrame,
     ddof : int, default 1
         Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of 
         elements. By default ddof is 1.
-    **kwargs : dict
-        Additional keyword arguments to be passed to the function. For more information view the documentation for
-        pandas.DataFrameGroupBy.mean() and std().
 
     Returns
     -------
@@ -37,7 +33,7 @@ def cv(df: pd.DataFrame,
     -----
     This function is meant to be used by :meth:`glucopy.Gframe.cv`
     '''
-    cv = std(df=df, per_day=per_day, ddof=ddof, **kwargs) / mean(df=df, per_day=per_day, **kwargs)
+    cv = std(df=df, per_day=per_day, ddof=ddof) / mean(df=df, per_day=per_day)
 
     # Rename the series
     if per_day:

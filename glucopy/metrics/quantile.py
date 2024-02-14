@@ -5,7 +5,6 @@ def quantile(df: pd.DataFrame,
              per_day: bool = False,
              q:float = 0.5,
              interpolation:str = 'linear',
-             **kwargs
              ):
     '''
     Calculates the quantile of the CGM values.
@@ -23,9 +22,6 @@ def quantile(df: pd.DataFrame,
     interpolation : str, default 'linear'
         This optional parameter specifies the interpolation method to use, when the desired quantile lies between 
         two data points i and j. Default is 'linear'.
-    **kwargs : dict
-        Additional keyword arguments to be passed to the function. For more information view the documentation for
-        pandas.DataFrameGroupBy.quantile().
 
     Returns
     -------
@@ -39,7 +35,7 @@ def quantile(df: pd.DataFrame,
     if per_day:
         # Group data by day
         day_groups = df.groupby('Day')
-        quantile = day_groups['CGM'].quantile(q=q, interpolation=interpolation, **kwargs)
+        quantile = day_groups['CGM'].quantile(q=q, interpolation=interpolation)
 
         # Convert the index to string for easier access
         quantile.index = quantile.index.map(str)
@@ -48,6 +44,6 @@ def quantile(df: pd.DataFrame,
         quantile.name = f'Quantile {q}'
     
     else:
-        quantile = df['CGM'].quantile(q=q, interpolation=interpolation, **kwargs)
+        quantile = df['CGM'].quantile(q=q, interpolation=interpolation)
     
     return quantile

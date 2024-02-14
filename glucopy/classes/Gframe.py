@@ -177,8 +177,8 @@ class Gframe:
 
     # Sample Mean
     def mean(self,
-             per_day: bool = False,
-             **kwargs):
+             per_day: bool = False
+             ):
         '''
         Calculates the mean of the CGM values.
 
@@ -186,10 +186,7 @@ class Gframe:
         ----------
         per_day : bool, default False
             If True, returns a pandas Series with the mean for each day. If False, returns the mean for the entire dataset.
-        **kwargs : dict
-            Additional keyword arguments to be passed to the function. For more information view the documentation for
-            pandas.DataFrameGroupBy.mean() for per_day=True and pandas.DataFrame.mean() for per_day=False.
-
+            
         Returns
         -------
         mean : float | pandas.Series
@@ -212,13 +209,13 @@ class Gframe:
             gf.mean(per_day=True)     
         '''
 
-        return metrics.mean(df=self.data, per_day=per_day, **kwargs)
+        return metrics.mean(df=self.data, per_day=per_day)
     
     # Standard Deviation, by default ddof=1, so its divided by n-1
     def std(self,
             per_day: bool = False,
             ddof:int = 1,
-            **kwargs):
+            ):
         '''
         Calculates the standard deviation of the CGM values.
 
@@ -230,9 +227,6 @@ class Gframe:
         ddof : int, default 1
             Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of
             elements. By default ddof is 1.
-        **kwargs : dict
-            Additional keyword arguments to be passed to the function. For more information view the documentation for
-            pandas.DataFrameGroupBy.std().
 
         Returns
         -------
@@ -256,13 +250,13 @@ class Gframe:
             gf.std(per_day=True)
         '''
         
-        return metrics.std(df=self.data, per_day=per_day, ddof=ddof, **kwargs)
+        return metrics.std(df=self.data, per_day=per_day, ddof=ddof)
     
     # Coefficient of Variation
     def cv(self,
            per_day: bool = False,
            ddof:int = 1,
-           **kwargs):
+           ):
         '''
         Calculates the Coefficient of Variation (CV) of the CGM values.
 
@@ -274,9 +268,6 @@ class Gframe:
         ddof : int, default 1
             Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of 
             elements. By default ddof is 1.
-        **kwargs : dict
-            Additional keyword arguments to be passed to the function. For more information view the documentation for
-            pandas.DataFrameGroupBy.mean() and std().
 
         Returns
         -------
@@ -300,13 +291,13 @@ class Gframe:
             gf.cv(per_day=True)       
         '''
 
-        return metrics.cv(df=self.data, per_day=per_day, ddof=ddof, **kwargs)
+        return metrics.cv(df=self.data, per_day=per_day, ddof=ddof)
             
     # % Coefficient of Variation
     def pcv(self,
             per_day: bool = False,
             ddof:int = 1,
-            **kwargs):
+            ):
         '''
         Calculates the Percentage Coefficient of Variation (%CV) of the CGM values.
         
@@ -318,9 +309,6 @@ class Gframe:
         ddof : int, default 1
             Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of 
             elements. By default ddof is 1.
-        **kwargs : dict
-            Additional keyword arguments to be passed to the function. For more information view the documentation for
-            pandas.DataFrameGroupBy.mean() and std().
 
         Returns
         -------
@@ -344,13 +332,13 @@ class Gframe:
             gf.pcv(per_day=True)
         '''
         if per_day:
-            pcv = self.cv(per_day=True,ddof=ddof,**kwargs) * 100
+            pcv = self.cv(per_day=True, ddof=ddof) * 100
 
             # Rename the series
             pcv.name = '% Coefficient of Variation'
           
         else:
-            pcv = self.cv(ddof=ddof,**kwargs) * 100
+            pcv = self.cv(ddof=ddof) * 100
 
         return pcv
     
@@ -359,7 +347,7 @@ class Gframe:
                  per_day: bool = False,
                  q:float = 0.5,
                  interpolation:str = 'linear',
-                 **kwargs):
+                 ):
         '''
         Calculates the quantile of the CGM values.
 
@@ -373,9 +361,6 @@ class Gframe:
         interpolation : str, default 'linear'
             This optional parameter specifies the interpolation method to use, when the desired quantile lies between 
             two data points i and j. Default is 'linear'.
-        **kwargs : dict
-            Additional keyword arguments to be passed to the function. For more information view the documentation for
-            pandas.DataFrameGroupBy.quantile().
 
         Returns
         -------
@@ -405,13 +390,13 @@ class Gframe:
             gf.quantile(per_day=True)
         '''
         
-        return metrics.quantile(df=self.data, per_day=per_day, q=q, interpolation=interpolation, **kwargs)
+        return metrics.quantile(df=self.data, per_day=per_day, q=q, interpolation=interpolation)
     
     # Interquartile Range
     def iqr(self,
             per_day: bool = False,
             interpolation:str = 'linear',
-            **kwargs):
+            ):
         '''
         Calculates the Interquartile Range (IQR) of the CGM values.
 
@@ -423,9 +408,6 @@ class Gframe:
         interpolation : str, default 'linear'
             This optional parameter specifies the interpolation method to use, when the desired quantile lies between
             two data points i and j. Default is 'linear'. 
-        **kwargs : dict
-            Additional keyword arguments to be passed to the function. For more information view the documentation for
-            pandas.DataFrameGroupBy.quantile().
 
         Returns
         -------
@@ -449,7 +431,7 @@ class Gframe:
             gf.iqr(per_day=True)
         '''
         
-        return metrics.iqr(df=self.data, per_day=per_day, interpolation=interpolation, **kwargs)
+        return metrics.iqr(df=self.data, per_day=per_day, interpolation=interpolation)
     
     # Mean of Daily Differences
     def modd(self, 

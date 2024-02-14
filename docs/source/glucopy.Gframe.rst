@@ -24,8 +24,11 @@ Summary
 
    Gframe.summary
 
+Metrics
+~~~~~~~
+
 1. Joint data analysis metrics for glycaemia dynamics
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------------------------------
 
 .. autosummary::
    :toctree: api/
@@ -40,7 +43,7 @@ Summary
    Gframe.tir
 
 2. Analysis of distribution in the plane for glycaemia dynamics
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------------------------------
 
 .. autosummary::
    :toctree: api/
@@ -49,7 +52,7 @@ Summary
    Gframe.auc
 
 3. Amplitude and distribution of frequencies metrics for glycaemia dynamics
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------------------------------------------
 
 .. autosummary::
    :toctree: api/
@@ -58,7 +61,7 @@ Summary
    Gframe.dt
 
 4. Metrics for the analysis of glycaemic dynamics using scores of glucose values
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------------------------------------------------------
 
 .. autosummary::
    :toctree: api/
@@ -71,7 +74,7 @@ Summary
    Gframe.qscore
 
 5. Metrics for the analysis of glycaemic dynamics using variability estimation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------------------------------------------------
 
 .. autosummary::
    :toctree: api/
@@ -82,7 +85,7 @@ Summary
    Gframe.mag
 
 6. Computational methods for the analysis of glycemic dynamics
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------------------------------------
 
 .. autosummary::
    :toctree: api/
