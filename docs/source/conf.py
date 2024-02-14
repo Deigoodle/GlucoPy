@@ -9,9 +9,9 @@
 # Add project root to path
 import os
 import sys
+import inspect
 
 sys.path.insert(0, os.path.abspath('../..'))
-
 
 project = 'GlucoPy'
 copyright = '2024, Diego Soto Castillo'
@@ -22,7 +22,8 @@ author = 'Diego Soto Castillo'
 
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.napoleon',  # Enables support for NumPy-style docstrings
-              'sphinx.ext.viewcode',  # Add links to highlighted source code
+              #'sphinx.ext.viewcode',  # Add links to highlighted source code
+              'sphinx.ext.linkcode', # Add links to GitHub source code
               'sphinx.ext.autosummary',
               'IPython.sphinxext.ipython_console_highlighting',
               'IPython.sphinxext.ipython_directive',
@@ -65,4 +66,28 @@ intersphinx_mapping = {
     'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
     'plotly': ('https://plotly.com/python-api-reference', None),
 }
+
+# Link to the source code
+import inspect
+import os
+import sys
+
+def linkcode_resolve(domain, info):
+    if domain != 'py':
+        return None
+    if not info['module']:
+        return None
+    module = sys.modules[info['module']]
+    fullname = info['fullname']
+    obj = module
+    for part in fullname.split('.'):
+        try:
+            obj = getattr(obj, part)
+        except AttributeError:
+            return None
+    relpath = os.path.relpath(inspect.getsourcefile(obj))
+    lineno = inspect.getsourcelines(obj)[1]
+    return f"https://github.com/deigoodle/GlucoPy/tree/main/glucopy/{relpath}#L{lineno}"
+    
+
 

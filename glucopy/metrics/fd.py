@@ -28,7 +28,7 @@ def fd(df: pd.DataFrame,
     decimals : int, default 2
         Number of decimal places to round to. Use None for no rounding.
     count : bool, default False
-        If True, returns the count of observations for each range. If False, returns the percentage of observations
+        If True, returns the count of observations for each range. If False, returns the frequency of observations.
 
     Returns
     -------
