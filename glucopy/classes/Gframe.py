@@ -359,8 +359,14 @@ class Gframe:
         q : float, default 0.5
             Value between 0 and 1 for the desired quantile.
         interpolation : str, default 'linear'
-            This optional parameter specifies the interpolation method to use, when the desired quantile lies between 
-            two data points i and j. Default is 'linear'.
+            This optional parameter specifies the interpolation method to use, when the desired quantile lies between
+            two data points i and j. Can be one of the following:
+
+            - 'linear': i + (j - i) * fraction, where fraction is the fractional part of the index surrounded by i and j.
+            - 'lower': i.
+            - 'higher': j.
+            - 'nearest': i or j, whichever is nearest.
+            - 'midpoint': (i + j) / 2.
 
         Returns
         -------
@@ -407,7 +413,13 @@ class Gframe:
             interquartile range for the entire dataset.
         interpolation : str, default 'linear'
             This optional parameter specifies the interpolation method to use, when the desired quantile lies between
-            two data points i and j. Default is 'linear'. 
+            two data points i and j. Can be one of the following:
+
+            - 'linear': i + (j - i) * fraction, where fraction is the fractional part of the index surrounded by i and j.
+            - 'lower': i.
+            - 'higher': j.
+            - 'nearest': i or j, whichever is nearest.
+            - 'midpoint': (i + j) / 2.
 
         Returns
         -------
@@ -564,11 +576,11 @@ class Gframe:
            decimals: int = 2,
            count: bool = False):
         '''
-        Calculates the Frequency Distribution (FD) for a given target range of glucose.
+        Calculates the Frequency Distribution (Fi) for a given target range of glucose.
 
         .. math::
 
-            FD = \\frac{n_i}{N}
+            F_i = \\frac{n_i}{N}
 
         - :math:`n_i` is the number of observations within the `i`-th interval.
         - :math:`N` is the total number of observations.

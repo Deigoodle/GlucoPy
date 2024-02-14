@@ -21,7 +21,13 @@ def iqr(df: pd.DataFrame,
         interquartile range for the entire dataset.
     interpolation : str, default 'linear'
         This optional parameter specifies the interpolation method to use, when the desired quantile lies between
-        two data points i and j. Default is 'linear'. 
+        two data points i and j. Can be one of the following:
+
+        - 'linear': i + (j - i) * fraction, where fraction is the fractional part of the index surrounded by i and j.
+        - 'lower': i.
+        - 'higher': j.
+        - 'nearest': i or j, whichever is nearest.
+        - 'midpoint': (i + j) / 2.
 
     Returns
     -------
