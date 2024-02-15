@@ -11,14 +11,15 @@ def samp_en(df: pd.DataFrame,
     '''
     Calculates the Sample Entropy using neurokit2.entropy_sample()
 
-    For more information on the parameters and details of the neurokit2.entropy_sample() method, 
-    see the `neurokit2 documentation <https://neuropsychology.github.io/NeuroKit/functions/complexity.html#neurokit2.complexity.entropy_sample>`_.
+    For more information on the parameters and details see :py:func:`neurokit2.complexity.entropy_sample`.
 
     Parameters
     ----------
-    df: pandas.DataFrame
-        DataFrame containing the CGM values. The dataframe must contain 'CGM' column present in
-        :attr:`glucopy.Gframe.data`.
+    per_day : bool, default False
+        If True, returns a :py:class:`pandas.Series` with the Sample Entropy for each day. If False, returns the Sample Entropy for
+        the entire dataset.
+    others: 
+        For more information on the rest of the parameters see :py:func:`neurokit2.complexity.entropy_sample`.
     
     Returns
     -------

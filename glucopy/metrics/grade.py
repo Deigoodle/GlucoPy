@@ -7,7 +7,8 @@ from glucopy.utils import mgdl_to_mmoll
 
 def grade(df: pd.DataFrame,
           percentage: bool = True,
-          unit: str = 'mg/dL'):
+          unit: str = 'mg/dL'
+          ):
     '''
     Calculates the contributions of the Glycaemic Risk Assessment Diabetes Equation (GRADE) to Hypoglycaemia,
     Euglycaemia and Hyperglycaemia. Or the GRADE scores for each value.
@@ -16,21 +17,18 @@ def grade(df: pd.DataFrame,
 
         GRADE = 425 * [\\log_{10}(\\log_{10} (X_i) + 0.16)]^2
 
-    - :math:`X_i` is the glucose value at time i in mmol/L.
+    - :math:`X_i` is the glucose value in mmol/L at time i.
 
     The GRADE contribution percentages are calculated as follows:
 
     .. math::
+        :nowrap:
 
-        Hypoglycaemia \\% = 100 * \\frac{\\sum GRADE(X_i < 3.9 [mmol/L])}{\\sum GRADE(X_i)}
-
-    .. math::
-
-        Euglycaemia \\% = 100 * \\frac{\\sum GRADE(3.9 [mmol/L] <= X_i <= 7.8 [mmol/L])}{\\sum GRADE(X_i)}
-
-    .. math::
-
-        Hyperglycaemia \\% = 100 * \\frac{\\sum GRADE(X_i > 7.8 [mmol/L])}{\\sum GRADE(X_i)}
+        \\begin{align*}
+        \\text{Hypoglycaemia %} &= 100 * \\frac{\\sum \\text{GRADE}(X_i < 3.9 [\\text{mmol/L}])}{\\sum \\text{GRADE}(X_i)} \\\\
+        \\text{Euglycaemia %} &= 100 * \\frac{\\sum \\text{GRADE}(3.9 [\\text{mmol/L}] \\leq X_i \\leq 7.8 [\\text{mmol/L}])}{\\sum \\text{GRADE}(X_i)} \\\\
+        \\text{Hyperglycaemia %} &= 100 * \\frac{\\sum \\text{GRADE}(X_i > 7.8 [\\text{mmol/L}])}{\\sum \\text{GRADE}(X_i)}
+        \\end{align*}
 
     Parameters
     ----------

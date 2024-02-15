@@ -14,15 +14,15 @@ def dfa(df: pd.DataFrame,
     '''
     Calculates the Detrended Fluctuation Analysis (DFA) using neurokit2.fractal_dfa().
 
-    For more information on the parameters and details of the neurokit2.fractal_dfa() method, 
-    see the neurokit2 documentation: 
-    `neurokit2.fractal_dfa() <https://neuropsychology.github.io/NeuroKit/functions/complexity.html#neurokit2.complexity.fractal_dfa>`_.
+    For more information on the parameters and details see :py:func:`neurokit2.complexity.fractal_dfa`.
 
     Parameters
     ----------
-    df: pandas.DataFrame
-        DataFrame containing the CGM values. The dataframe must contain 'CGM' column present in
-        :attr:`glucopy.Gframe.data`.
+    per_day : bool, default False
+        If True, returns a :py:class:`pandas.Series` with the DFA for each day. If False, returns the DFA for the entire dataset. If
+        a day has very few data points, the DFA for that day will be NaN.
+    others: 
+        For more information on the rest of the parameters see :py:func:`neurokit2.complexity.fractal_dfa`.
 
     Returns
     -------

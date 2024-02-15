@@ -18,7 +18,7 @@ def cv(df: pd.DataFrame,
         DataFrame containing the CGM values. The dataframe must contain 'CGM' and 'Day' columns present in
         :attr:`glucopy.Gframe.data`.
     per_day : bool, default False
-        If True, returns the an array with the coefficient of variation for each day. If False, returns
+        If True, returns a :py:class:`pandas.Series` with the coefficient of variation for each day. If False, returns
         the coefficient of variation for the entire dataset.
     ddof : int, default 1
         Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of 

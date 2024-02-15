@@ -15,7 +15,7 @@ def mard(cgm_df: pd.DataFrame,
 
     - :math:`N` is the number of SMBG readings.
     - :math:`CGM_i` is the Continuous Glucose Monitoring (CGM) value at time i.
-    - :math:`SMBG_i` is the Self Monitoring of Blood Glucose (SMBG) value at time i.
+    - :math:`SMBG_i` is the Self-Monitoring of Blood Glucose (SMBG) value at time i.
 
     Parameters
     ----------

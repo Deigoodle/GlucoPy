@@ -19,10 +19,10 @@ def modd(df: pd.DataFrame,
 
     .. math::
 
-        MODD = \\frac{1}{T} \\sum_{t=1}^T | X_t - X_{t-1} |
+        MODD = \\frac{1}{T} \\sum_{t=1}^{T-1} | X_{t+1} - X_t |
 
     - :math:`X_t` is the glucose value at time t.
-    - :math:`X_{t-1}` is the glucose value 24 hours before time t.
+    - :math:`X_{t+1}` is the glucose value 24 hours after time t.
     - :math:`T` is the number of observations with a previous 24-hour observation.
 
     Parameters

@@ -65,6 +65,7 @@ copybutton_prompt_is_regexp = True
 intersphinx_mapping = {
     'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
     'plotly': ('https://plotly.com/python-api-reference', None),
+    'neurokit2': ('https://neuropsychology.github.io/NeuroKit/', None),
 }
 
 # Link to the source code

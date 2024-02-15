@@ -15,10 +15,12 @@ def auc(df: pd.DataFrame,
 
     .. math::
 
-        AUC = \\frac{1}{2} \\sum_{i=1}^{N} (X_i + X_{i-1}) * (T_i - T_{i-1})
+        AUC = \\frac{1}{2} \\sum_{i=1}^{N-1} (X_i + X_{i+1}) * (t_{i+1} - t_i)
 
-    - :math:`X_i` is the glucose value at time i.
-    - :math:`T_i` is the time at time i.
+    - :math:`X_i` is the :math:`i`-th measurement of the glucose concentration at time :math:`t_i`.
+    - :math:`X_{i+1}` is the :math:`(i+1)`-th measurement of the glucose concentration at time :math:`t_{i+1}`.
+    - :math:`t_i` is the :math:`i`-th time associated with the :math:`X_i` measurement.
+    - :math:`t_{i+1}` is the :math:`(i+1)`-th time associated with the :math:`X_{i+1}` measurement.
     - :math:`N` is the number of glucose readings.
 
     Parameters

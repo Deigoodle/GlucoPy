@@ -185,7 +185,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns a pandas Series with the mean for each day. If False, returns the mean for the entire dataset.
+            If True, returns a :py:class:`pandas.Series` with the mean for each day. If False, returns the mean for the entire dataset.
             
         Returns
         -------
@@ -222,7 +222,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns a pandas Series with the standard deviation for each day. If False, returns the 
+            If True, returns a :py:class:`pandas.Series` with the standard deviation for each day. If False, returns the 
             standard deviation for the entire dataset.
         ddof : int, default 1
             Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of
@@ -263,7 +263,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns the an array with the coefficient of variation for each day. If False, returns
+            If True, returns a :py:class:`pandas.Series` with the coefficient of variation for each day. If False, returns
             the coefficient of variation for the entire dataset.
         ddof : int, default 1
             Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of 
@@ -304,7 +304,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns the a pandas.Series with the percentage coefficient of variation for each day. If False,
+            If True, returns a pandas.Series with the percentage coefficient of variation for each day. If False,
             returns the percentage coefficient of variation for the entire dataset.
         ddof : int, default 1
             Delta Degrees of Freedom. The divisor used in calculations is N - ddof, where N represents the number of 
@@ -455,10 +455,10 @@ class Gframe:
 
         .. math::
 
-            MODD = \\frac{1}{T} \\sum_{t=1}^T | X_t - X_{t-1} |
+            MODD = \\frac{1}{T} \\sum_{t=1}^{T-1} | X_{t+1} - X_t |
 
         - :math:`X_t` is the glucose value at time t.
-        - :math:`X_{t-1}` is the glucose value 24 hours before time t.
+        - :math:`X_{t+1}` is the glucose value 24 hours after time t.
         - :math:`T` is the number of observations with a previous 24-hour observation.
 
         Parameters
@@ -512,7 +512,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns a pandas Series with the TIR for each day. If False, returns the TIR for the entire dataset.
+            If True, returns a :py:class:`pandas.Series` with the TIR for each day. If False, returns the TIR for the entire dataset.
         interval : list of int|float, default [0,70,180]
             Interval of glucose concentration to calculate :math:`\\tau`. Can be a list of 1 number, in that case the 
             time will be calculated below and above that number. It will always try to calculate the time below the first 
@@ -588,7 +588,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns a pandas Series with the FD for each day. If False, returns the FD for the entire dataset.
+            If True, returns a :py:class:`pandas.Series` with the FD for each day. If False, returns the FD for the entire dataset.
         interval : list of int|float, default [0,70,180]
             Interval of glucose concentration to calculate `FD`. Can be a list of 1 number, in that case the time will
             be calculated below and above that number. It will always try to calculate the time below the first number
@@ -651,16 +651,18 @@ class Gframe:
 
         .. math::
 
-            AUC = \\frac{1}{2} \\sum_{i=1}^{N} (X_i + X_{i-1}) * (T_i - T_{i-1})
+            AUC = \\frac{1}{2} \\sum_{i=1}^{N-1} (X_i + X_{i+1}) * (t_{i+1} - t_i)
 
-        - :math:`X_i` is the glucose value at time i.
-        - :math:`T_i` is the time at time i.
+        - :math:`X_i` is the :math:`i`-th measurement of the glucose concentration at time :math:`t_i`.
+        - :math:`X_{i+1}` is the :math:`(i+1)`-th measurement of the glucose concentration at time :math:`t_{i+1}`.
+        - :math:`t_i` is the :math:`i`-th time associated with the :math:`X_i` measurement.
+        - :math:`t_{i+1}` is the :math:`(i+1)`-th time associated with the :math:`X_{i+1}` measurement.
         - :math:`N` is the number of glucose readings.
             
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns a pandas Series with the AUC for each day. If False, returns the AUC for the entire dataset.
+            If True, returns a :py:class:`pandas.Series` with the AUC for each day. If False, returns the AUC for the entire dataset.
         time_unit : str, default 'm' (minutes)
             The time unit for the x-axis. Can be 's (seconds)', 'm (minutes)', or 'h (hours)'.
         threshold : int | float, default 0
@@ -724,9 +726,9 @@ class Gframe:
 
         .. math::
 
-            MAGE = \\frac{1}{K} \\sum_{i=1}^K \\lambda_i * I(\\lambda_i > s)
+            MAGE = \\frac{1}{K} \\sum \\lambda_i * I(\\lambda_i > s)
 
-        - :math:`\\lambda_i` is the difference between a peak and a nadir of glycaemia (or nadir-peak).
+        - :math:`\\lambda_i` is the difference between a pair of consecutive peak and nadir of glycaemia (or nadir-peak).
         - :math:`s` is the standar deviation of the glucose values.
         - :math:`I(\\lambda_i > s)` is the indicator function that returns 1 if :math:`\\lambda_i > s` and 0 otherwise.
         - :math:`K` is the number of events such that :math:`\\lambda_i > s`
@@ -734,7 +736,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns a pandas Series with the MAGE for each day. If False, returns the MAGE for the entire dataset.
+            If True, returns a :py:class:`pandas.Series` with the MAGE for each day. If False, returns the MAGE for the entire dataset.
 
         Returns
         -------
@@ -790,7 +792,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns a pandas Series with the DT for each day. If False, returns the DT for the entire dataset.
+            If True, returns a :py:class:`pandas.Series` with the DT for each day. If False, returns the DT for the entire dataset.
 
         Returns
         -------
@@ -851,12 +853,12 @@ class Gframe:
         - :math:`rl(X_i) = 22.77 * f(X_i)^2` if :math:`f(X_i) < 0` and :math:`0` otherwise.
         - :math:`rh(X_i) = 22.77 * f(X_i)^2` if :math:`f(X_i) > 0` and :math:`0` otherwise.
         - :math:`f(X_i) = 1.509 * (\\ln(X_i)^{1.084} - 5.381)` for glucose readings in mg/dL.
-        - :math:`X_i` is the glucose value at time i.
+        - :math:`X_i` is the glucose value in mg/dL at time i.
 
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns a pandas Series with the LBGI for each day. If False, returns the BGI for the entire dataset.
+            If True, returns a :py:class:`pandas.Series` with the LBGI for each day. If False, returns the BGI for the entire dataset.
         index_type : str, default 'h'
             Type of index to calculate. Can be 'h' (High Blood Glucose Index) or 'l' (Low Blood Glucose Index).
         maximum : bool, default False
@@ -930,9 +932,9 @@ class Gframe:
             ADRR = \\frac{1}{D} \\sum_{d=1}^D LR_d + HR_d
 
         - :math:`D` is the number of days.        
-        - :math:`LR_d = max(rl(X_1),...,rl(X_N))` for glucose readings :math:`X_1,...X_N` taken within a day :math:`d = 1,...,D`
-        - :math:`HR_d = max(rh(X_1),...,rh(X_N))` for glucose readings :math:`X_1,...X_N` taken within a day :math:`d = 1,...,D`
-        - :math:`N` is the number of glucose readings within a day.
+        - :math:`LR_d = max(rl(X_1),...,rl(X_N))` for glucose readings :math:`X_1,...X_N` taken in a day :math:`d = 1,...,D`
+        - :math:`HR_d = max(rh(X_1),...,rh(X_N))` for glucose readings :math:`X_1,...X_N` taken in a day :math:`d = 1,...,D`
+        - :math:`N` is the number of glucose readings in a day.
         - The definition of :math:`rl(X_i)` and :math:`rh(X_i)` is the same as in :meth:`glucopy.Gframe.bgi`.
 
         Parameters
@@ -969,21 +971,18 @@ class Gframe:
 
             GRADE = 425 * [\\log_{10}(\\log_{10} (X_i) + 0.16)]^2
 
-        - :math:`X_i` is the glucose value at time i in mmol/L.
+        - :math:`X_i` is the glucose value in mmol/L at time i.
 
         The GRADE contribution percentages are calculated as follows:
 
         .. math::
+            :nowrap:
 
-            Hypoglycaemia \\% = 100 * \\frac{\\sum GRADE(X_i < 3.9 [mmol/L])}{\\sum GRADE(X_i)}
-
-        .. math::
-
-            Euglycaemia \\% = 100 * \\frac{\\sum GRADE(3.9 [mmol/L] <= X_i <= 7.8 [mmol/L])}{\\sum GRADE(X_i)}
-
-        .. math::
-
-            Hyperglycaemia \\% = 100 * \\frac{\\sum GRADE(X_i > 7.8 [mmol/L])}{\\sum GRADE(X_i)}
+            \\begin{align*}
+            Hypoglycaemia % &= 100 * \\frac{\\sum GRADE(X_i < 3.9 [\\text{mmol/L}])}{\\sum GRADE(X_i)} \\\\
+            \\text{Euglycaemia % &= 100 * \\frac{\\sum GRADE(3.9 [\\text{mmol/L}] \\leq X_i \\leq 7.8 [\\text{mmol/L}])}{\\sum GRADE(X_i)} \\\\
+            \\text{Hyperglycaemia %} &= 100 * \\frac{\\sum GRADE(X_i > 7.8 [\\text{mmol/L}])}{\\sum GRADE(X_i)}
+            \\end{align*}
 
         Parameters
         ----------
@@ -1005,7 +1004,7 @@ class Gframe:
             import glucopy as gp
             gf = gp.data('prueba_1')
             gf.grade()
-        
+
         Calculating the GRADE scores for each value:
 
         .. ipython:: python
@@ -1023,10 +1022,10 @@ class Gframe:
 
         .. math::
 
-            Q{-}score = 8 + \\frac{\\bar x -7.8}{1.7} + \\frac{Range - 7.5}{2.9} + \\frac{t_{G<3.9} - 0.6}{2.9} + 
+            Q{-}score = 8 + \\frac{\\bar X -7.8}{1.7} + \\frac{Range - 7.5}{2.9} + \\frac{t_{G<3.9} - 0.6}{2.9} + 
                             \\frac{t_{G>8.9} - 6.2}{5.7} + \\frac{MODD - 1.8}{0.9}
 
-        - :math:`\\bar x` is the mean glucose.
+        - :math:`\\bar X` is the sample mean (:meth:`glucopy.Gframe.mean`)
         - :math:`Range` is the mean of the differences between the maximum and minimum glucose for each day.
         - :math:`t_{G<3.9}` is the mean time [h] spent under 3.9 mmol/L in each day.
         - :math:`t_{G>8.9}` is the mean time [h] spent over 8.9 mmol/L in each day.
@@ -1119,7 +1118,7 @@ class Gframe:
 
         - :math:`N` is the number of SMBG readings.
         - :math:`CGM_i` is the Continuous Glucose Monitoring (CGM) value at time i.
-        - :math:`SMBG_i` is the Self Monitoring of Blood Glucose (SMBG) value at time i.
+        - :math:`SMBG_i` is the Self-Monitoring of Blood Glucose (SMBG) value at time i.
 
         Parameters
         ----------
@@ -1283,7 +1282,7 @@ class Gframe:
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns the an array with the MAG for each day. If False, returns the MAG for the entire dataset.
+            If True, returns the a :py:class:`pandas.Series` with the MAG for each day. If False, returns the MAG for the entire dataset.
         time_unit : str, default 'm' (minutes)
             The time time_unit for the x-axis. Can be 's (seconds)', 'm (minutes)', or 'h (hours)'.
         
@@ -1343,15 +1342,15 @@ class Gframe:
         '''
         Calculates the Detrended Fluctuation Analysis (DFA) using neurokit2.fractal_dfa().
 
-        For more information on the parameters and details of the neurokit2.fractal_dfa() method, 
-        see the neurokit2 documentation: 
-        `neurokit2.fractal_dfa() <https://neuropsychology.github.io/NeuroKit/functions/complexity.html#neurokit2.complexity.fractal_dfa>`_.
+        For more information on the parameters and details see :py:func:`neurokit2.complexity.fractal_dfa`.
 
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns the an array with the DFA for each day. If False, returns the DFA for the entire dataset. If
+            If True, returns a :py:class:`pandas.Series` with the DFA for each day. If False, returns the DFA for the entire dataset. If
             a day has very few data points, the DFA for that day will be NaN.
+        others: 
+            For more information on the rest of the parameters see :py:func:`neurokit2.complexity.fractal_dfa`.
 
         Returns
         -------
@@ -1425,14 +1424,15 @@ class Gframe:
         '''
         Calculates the Sample Entropy using neurokit2.entropy_sample()
 
-        For more information on the parameters and details of the neurokit2.entropy_sample() method, 
-        see the `neurokit2 documentation <https://neuropsychology.github.io/NeuroKit/functions/complexity.html#neurokit2.complexity.entropy_sample>`_.
+        For more information on the parameters and details see :py:func:`neurokit2.complexity.entropy_sample`.
 
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns the an array with the Sample Entropy for each day. If False, returns the Sample Entropy for
+            If True, returns a :py:class:`pandas.Series` with the Sample Entropy for each day. If False, returns the Sample Entropy for
             the entire dataset.
+        others: 
+            For more information on the rest of the parameters see :py:func:`neurokit2.complexity.entropy_sample`.
         
         Returns
         -------
@@ -1490,15 +1490,15 @@ class Gframe:
         '''
         Calculates the Multiscale Sample Entropy using neurokit2.entropy_multiscale()
 
-        For more information on the parameters and details of the neurokit2.entropy_sample() method, 
-        see the neurokit2 documentation: 
-        `neurokit2.entropy_multiscale() <https://neuropsychology.github.io/NeuroKit/functions/complexity.html#entropy-multiscale>`_.
-
+        For more information on the parameters and details see :py:func:`neurokit2.complexity.entropy_multiscale`.
+        
         Parameters
         ----------
         per_day : bool, default False
-            If True, returns the an array with the Multiscale Sample Entropy for each day. If False, returns the 
-            Multiscale Sample Entropy for the entire dataset.        
+            If True, returns a :py:class:`pandas.Series` with the Multiscale Sample Entropy for each day. If False, returns the 
+            Multiscale Sample Entropy for the entire dataset. 
+        others:
+            For more information on the rest of the parameters see :py:func:`neurokit2.complexity.entropy_multiscale`.       
             
         Returns
         -------
