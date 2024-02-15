@@ -1,0 +1,670 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Intro to GlucoPy &#8212; GlucoPy  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3240ad12" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=2d1f89a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'getting_started/intro';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API Reference" href="../glucopy.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">GlucoPy  documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../glucopy.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deigoodle/GlucoPy" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../glucopy.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deigoodle/GlucoPy" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Intro to <code class="docutils literal notranslate"><span class="pre">GlucoPy</span></code></a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Getting Started</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Intro to...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="intro-to-glucopy">
+<h1>Intro to <code class="docutils literal notranslate"><span class="pre">GlucoPy</span></code><a class="headerlink" href="#intro-to-glucopy" title="Link to this heading">#</a></h1>
+<p>Using <code class="docutils literal notranslate"><span class="pre">GlucoPy</span></code> is simple. The first step is to import the package.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">glucopy</span> <span class="k">as</span> <span class="nn">gp</span>
+</pre></div>
+</div>
+<p>Then, you need to import <cite>CGM</cite> data.</p>
+<section id="importing-data">
+<h2>Importing data<a class="headerlink" href="#importing-data" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Using the <a class="reference internal" href="../api/glucopy.read_csv.html#glucopy.read_csv" title="glucopy.read_csv"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_csv()</span></code></a> function:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gf</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;path_to_file.csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Using the <a class="reference internal" href="../api/glucopy.read_excel.html#glucopy.read_excel" title="glucopy.read_excel"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_excel()</span></code></a> function:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gf</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s1">&#39;path_to_file.xlsx&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Using a <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;path_to_file.csv&#39;</span><span class="p">)</span>
+<span class="n">gf</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">Gframe</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>If you have no <cite>CGM</cite> dataset, you can still try this toolbox using the sample data provided with the package in
+the <a class="reference internal" href="../api/glucopy.data.html#glucopy.data" title="glucopy.data"><code class="xref py py-func docutils literal notranslate"><span class="pre">data()</span></code></a> function</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gf</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>All the previous functions return an instance of <a class="reference internal" href="../api/glucopy.Gframe.html#glucopy.Gframe" title="glucopy.Gframe"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gframe</span></code></a> which is the main object of the package. This object
+contains the <cite>CGM</cite> data and provides a set of methods to manipulate and analyze it.</p>
+</section>
+<section id="calculating-metrics">
+<h2>Calculating metrics<a class="headerlink" href="#calculating-metrics" title="Link to this heading">#</a></h2>
+<section id="basic-metrics">
+<h3>Basic metrics<a class="headerlink" href="#basic-metrics" title="Link to this heading">#</a></h3>
+<p>The <a class="reference internal" href="../api/glucopy.Gframe.html#glucopy.Gframe" title="glucopy.Gframe"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gframe</span></code></a> object provides a set of methods to calculate metrics from the <cite>CGM</cite> data. For example, simple metrics like
+the mean, standard deviation, and coefficient of variation can be calculated using like this:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">glucopy</span> <span class="k">as</span> <span class="nn">gp</span>
+
+<span class="gp">In [2]: </span><span class="n">gf</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+
+<span class="gp">In [3]: </span><span class="n">mean</span> <span class="o">=</span> <span class="n">gf</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+<span class="gp">In [4]: </span><span class="n">std</span> <span class="o">=</span> <span class="n">gf</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+
+<span class="gp">In [5]: </span><span class="n">cv</span> <span class="o">=</span> <span class="n">gf</span><span class="o">.</span><span class="n">cv</span><span class="p">()</span>
+
+<span class="gp">In [6]: </span><span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">cv</span>
+<span class="gh">Out[6]: </span><span class="go">(144.28068149003755, 64.72869948664865, 0.44863039748753963)</span>
+</pre></div>
+</div>
+</section>
+<section id="calculating-metrics-for-each-day">
+<h3>Calculating metrics for each day<a class="headerlink" href="#calculating-metrics-for-each-day" title="Link to this heading">#</a></h3>
+<p>Most of the methods provided by <a class="reference internal" href="../api/glucopy.Gframe.html#glucopy.Gframe" title="glucopy.Gframe"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gframe</span></code></a> can be calculated for each day of the dataset. For example, to calculate the
+mean for each day:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [7]: </span><span class="n">day_means</span> <span class="o">=</span> <span class="n">gf</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">per_day</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="gp">In [8]: </span><span class="n">day_means</span>
+<span class="gh">Out[8]: </span>
+<span class="go">Day</span>
+<span class="go">2020-11-27    277.636364</span>
+<span class="go">2020-11-28    138.677083</span>
+<span class="go">2020-11-29    146.552083</span>
+<span class="go">2020-11-30    120.052083</span>
+<span class="go">2020-12-01    139.229167</span>
+<span class="go">                 ...    </span>
+<span class="go">2021-03-14    146.645161</span>
+<span class="go">2021-03-15    126.593407</span>
+<span class="go">2021-03-16    161.957895</span>
+<span class="go">2021-03-17    113.833333</span>
+<span class="go">2021-03-18    170.000000</span>
+<span class="go">Name: Mean, Length: 112, dtype: float64</span>
+</pre></div>
+</div>
+<p>And since the returned value when <cite>per_day</cite> is set to <cite>True</cite> is a <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="(in pandas v2.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Series</span></code></a>, you can use any method provided
+by the <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="(in pandas v2.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Series</span></code></a> object. For example, to calculate the max of the means:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">day_means</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="gh">Out[9]: </span><span class="go">277.6363636363636</span>
+</pre></div>
+</div>
+<p>You can alos access the mean of a specific day using the index of the <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="(in pandas v2.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Series</span></code></a>:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="n">day_means</span><span class="p">[</span><span class="s2">&quot;2020-12-01&quot;</span><span class="p">]</span>
+<span class="gh">Out[10]: </span><span class="go">139.22916666666666</span>
+</pre></div>
+</div>
+</section>
+<section id="glycaemia-specific-metrics">
+<h3>Glycaemia specific metrics<a class="headerlink" href="#glycaemia-specific-metrics" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../api/glucopy.Gframe.html#glucopy.Gframe" title="glucopy.Gframe"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gframe</span></code></a> also provides methods to calculate metrics specific to glycaemia. For example, to calculate the
+Time in Range (TIR) for a given range:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [11]: </span><span class="n">tir</span> <span class="o">=</span> <span class="n">gf</span><span class="o">.</span><span class="n">tir</span><span class="p">()</span> <span class="c1"># default range is [70, 180]</span>
+
+<span class="gp">In [12]: </span><span class="n">tir</span>
+<span class="gh">Out[12]: </span>
+<span class="go">ranges</span>
+<span class="go">(0.0, 70.0]       11.24</span>
+<span class="go">(70.0, 180.0]     61.04</span>
+<span class="go">(180.0, 445.0]    27.72</span>
+<span class="go">Name: Time in Range, dtype: float64</span>
+</pre></div>
+</div>
+<p>Calculating the Mean of Daily Differences (MODD)</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [13]: </span><span class="n">modd</span> <span class="o">=</span> <span class="n">gf</span><span class="o">.</span><span class="n">modd</span><span class="p">()</span>
+
+<span class="gp">In [14]: </span><span class="n">modd</span>
+<span class="gh">Out[14]: </span><span class="go">69.06133828996282</span>
+</pre></div>
+</div>
+<p>Calculating the Glucose Variability Percentage (GVP)</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [15]: </span><span class="n">gvp</span> <span class="o">=</span> <span class="n">gf</span><span class="o">.</span><span class="n">gvp</span><span class="p">()</span>
+
+<span class="gp">In [16]: </span><span class="n">gvp</span>
+<span class="gh">Out[16]: </span><span class="go">33.76052564549197</span>
+</pre></div>
+</div>
+<p>You can check the documentation of <a class="reference internal" href="../glucopy.Gframe.html"><span class="doc">Gframe</span></a> to see the full list of methods provided.</p>
+</section>
+<section id="summary">
+<h3>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h3>
+<p>You can also calculate a summary of the dataset using the <a class="reference internal" href="../api/glucopy.Gframe.summary.html#glucopy.Gframe.summary" title="glucopy.Gframe.summary"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Gframe.summary()</span></code></a> method:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [17]: </span><span class="n">summary</span> <span class="o">=</span> <span class="n">gf</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+
+<span class="gp">In [18]: </span><span class="n">summary</span>
+<span class="gh">Out[18]: </span>
+<span class="go">                                Metric        Value</span>
+<span class="go">0                                 Mean       144.28</span>
+<span class="go">1                   Standard Deviation        64.73</span>
+<span class="go">2             Coefficient of Variation         0.45</span>
+<span class="go">3                                  IQR        95.00</span>
+<span class="go">4                                 MODD        69.06</span>
+<span class="go">5              % Time below 70 [mg/dL]        11.24</span>
+<span class="go">6   % Time in between (70,180] [mg/dL]        61.04</span>
+<span class="go">7             % Time above 180 [mg/dL]        27.72</span>
+<span class="go">8                                  AUC  23075053.50</span>
+<span class="go">9                                 MAGE       121.68</span>
+<span class="go">10                   Distance Traveled    115800.00</span>
+<span class="go">11                                LBGI         5.74</span>
+<span class="go">12                                HBGI        13.51</span>
+<span class="go">13                                ADRR       101.97</span>
+<span class="go">14               GRADE Hypoglycaemia %        16.00</span>
+<span class="go">15                 GRADE Euglycaemia %         8.05</span>
+<span class="go">16              GRADE Hyperglycaemia %        75.95</span>
+<span class="go">17                             Q-Score        13.89</span>
+<span class="go">18                               CONGA        45.72</span>
+<span class="go">19                                 GVP        33.76</span>
+<span class="go">20                                 MAG        43.56</span>
+<span class="go">21                                 DFA         0.85</span>
+<span class="go">22                              SampEn         0.63</span>
+<span class="go">23                                 MSE         1.26</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="plotting">
+<h2>Plotting<a class="headerlink" href="#plotting" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">GlucoPy</span></code> uses <a class="reference external" href="https://plotly.com/python/">Plotly</a> to create interactive plots. The module <a class="reference internal" href="../glucopy.plot.html"><span class="doc">Plot</span></a> provides a set of functions to create different
+types of plots. For example, to create a plot of the <cite>CGM</cite> data:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [19]: </span><span class="n">gp</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">per_day</span><span class="p">(</span><span class="n">gf</span><span class="p">,</span><span class="n">num_days</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="gh">Out[19]: </span>
+</pre></div>
+</div>
+<img alt="per_day_plot" class="align-center" src="../_images/per_day_plot_2.png" />
+<p>Or a plot that highlighs the <cite>TIR</cite>:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [20]: </span><span class="n">gp</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">tir</span><span class="p">(</span><span class="n">gf</span><span class="p">)</span>
+<span class="gh">Out[20]: </span>
+</pre></div>
+</div>
+<img alt="tir_plot" class="align-center" src="../_images/tir_plot_1.png" />
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="installation.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Installation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../glucopy.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">API Reference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#importing-data">Importing data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculating-metrics">Calculating metrics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-metrics">Basic metrics</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#calculating-metrics-for-each-day">Calculating metrics for each day</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#glycaemia-specific-metrics">Glycaemia specific metrics</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting">Plotting</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/getting_started/intro.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Diego Soto Castillo.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,810 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>glucopy.Gframe &#8212; GlucoPy  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3240ad12" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=2d1f89a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/glucopy.Gframe';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="glucopy.Gframe.convert_unit" href="glucopy.Gframe.convert_unit.html" />
+    <link rel="prev" title="Gframe" href="../glucopy.Gframe.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">GlucoPy  documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../glucopy.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deigoodle/GlucoPy" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../glucopy.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Deigoodle/GlucoPy" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../glucopy.Gframe.html">Gframe</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">glucopy.Gframe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.convert_unit.html">glucopy.Gframe.convert_unit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.summary.html">glucopy.Gframe.summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.mean.html">glucopy.Gframe.mean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.std.html">glucopy.Gframe.std</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.cv.html">glucopy.Gframe.cv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.pcv.html">glucopy.Gframe.pcv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.quantile.html">glucopy.Gframe.quantile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.iqr.html">glucopy.Gframe.iqr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.modd.html">glucopy.Gframe.modd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.tir.html">glucopy.Gframe.tir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.fd.html">glucopy.Gframe.fd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.auc.html">glucopy.Gframe.auc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.mage.html">glucopy.Gframe.mage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.dt.html">glucopy.Gframe.dt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.bgi.html">glucopy.Gframe.bgi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.hbgi.html">glucopy.Gframe.hbgi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.lbgi.html">glucopy.Gframe.lbgi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.adrr.html">glucopy.Gframe.adrr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.grade.html">glucopy.Gframe.grade</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.qscore.html">glucopy.Gframe.qscore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.mard.html">glucopy.Gframe.mard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.conga.html">glucopy.Gframe.conga</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.gvp.html">glucopy.Gframe.gvp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.mag.html">glucopy.Gframe.mag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.dfa.html">glucopy.Gframe.dfa</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.samp_en.html">glucopy.Gframe.samp_en</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.Gframe.mse.html">glucopy.Gframe.mse</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../glucopy.io.html">Input/Output</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.read_excel.html">glucopy.read_excel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.save_excel.html">glucopy.save_excel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.read_csv.html">glucopy.read_csv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.save_csv.html">glucopy.save_csv</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../glucopy.plot.html">Plot</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.plot.box.html">glucopy.plot.box</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.plot.agp.html">glucopy.plot.agp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.plot.mage.html">glucopy.plot.mage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.plot.mean.html">glucopy.plot.mean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.plot.per_day.html">glucopy.plot.per_day</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.plot.tir.html">glucopy.plot.tir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.plot.freq.html">glucopy.plot.freq</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.plot.roc.html">glucopy.plot.roc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.plot.fourier.html">glucopy.plot.fourier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.plot.periodogram.html">glucopy.plot.periodogram</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../glucopy.utils.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.mgdl_to_mmoll.html">glucopy.mgdl_to_mmoll</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.mmoll_to_mgdl.html">glucopy.mmoll_to_mgdl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.str_to_time.html">glucopy.str_to_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.time_factor.html">glucopy.time_factor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.time_to_str.html">glucopy.time_to_str</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.disjoin_days_and_hours.html">glucopy.disjoin_days_and_hours</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../glucopy.data.html">Example Data</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.data.html">glucopy.data</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../glucopy.metrics.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.mean.html">glucopy.metrics.mean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.std.html">glucopy.metrics.std</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.cv.html">glucopy.metrics.cv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.quantile.html">glucopy.metrics.quantile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.iqr.html">glucopy.metrics.iqr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.modd.html">glucopy.metrics.modd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.tir.html">glucopy.metrics.tir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.fd.html">glucopy.metrics.fd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.auc.html">glucopy.metrics.auc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.mage.html">glucopy.metrics.mage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.dt.html">glucopy.metrics.dt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.bgi.html">glucopy.metrics.bgi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.grade.html">glucopy.metrics.grade</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.mard.html">glucopy.metrics.mard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.conga.html">glucopy.metrics.conga</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.gvp.html">glucopy.metrics.gvp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.mag.html">glucopy.metrics.mag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.dfa.html">glucopy.metrics.dfa</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.samp_en.html">glucopy.metrics.samp_en</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glucopy.metrics.mse.html">glucopy.metrics.mse</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../glucopy.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../glucopy.Gframe.html" class="nav-link">Gframe</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">glucopy.Gframe</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="glucopy-gframe">
+<h1>glucopy.Gframe<a class="headerlink" href="#glucopy-gframe" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="glucopy.Gframe">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">glucopy.</span></span><span class="sig-name descname"><span class="pre">Gframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mg/dL'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cgm_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deigoodle/GlucoPy/tree/main/glucopy/../glucopy/classes/Gframe.py#L15"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#glucopy.Gframe" title="Link to this definition">#</a></dt>
+<dd><p>Class for the analysis of CGM data. it uses a pandas DataFrame as the main data structure.</p>
+<p>To create a Gframe object from a csv file or an excel file, check Input/Output glucopy.read_csv()
+and glucopy.read_excel().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>pandas DataFrame</em>) – DataFrame containing the CGM signal information, it will be saved into a DataFrame with the columns
+[‘Timestamp’,’Day’,’Time’,’CGM’]</p></li>
+<li><p><strong>unit</strong> (<em>str</em><em>, </em><em>default 'mg/dL'</em>) – CGM signal measurement unit.</p></li>
+<li><p><strong>date_column</strong> (<em>str</em><em> or </em><em>str array</em><em>, </em><em>default None</em>) – The name or names of the column(s) containing the date information
+If it’s a str, it will be the name of the single column containing the date information
+If it’s a str array, it will be the 2 names of the columns containing the date information, eg. [‘Date’,’Time’]
+If it’s None, it will be assumed that the date information is in the first column</p></li>
+<li><p><strong>cgm_column</strong> (<em>str</em><em>, </em><em>default None</em>) – The name of the column containing the CGM signal information
+If it’s None, it will be assumed that the CGM signal information is in the second column</p></li>
+<li><p><strong>date_format</strong> (<em>str</em><em>, </em><em>default None</em>) – Format of the date information, if None, it will be assumed that the date information is in a consistent format</p></li>
+<li><p><strong>dropna</strong> (<em>bool</em><em>, </em><em>default True</em>) – If True, removes all rows with NaN values</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="glucopy.Gframe.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#glucopy.Gframe.data" title="Link to this definition">#</a></dt>
+<dd><p>DataFrame containing the CGM signal information, it will be saved into a DataFrame with the columns:</p>
+<ul class="simple">
+<li><p>‘Timestamp’ : datetime64[ns]  # pandas datetime</p></li>
+<li><p>‘Day’ : datetime.date</p></li>
+<li><p>‘Time’ : datetime.time</p></li>
+<li><p>‘CGM’ : number</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="glucopy.Gframe.unit">
+<span class="sig-name descname"><span class="pre">unit</span></span><a class="headerlink" href="#glucopy.Gframe.unit" title="Link to this definition">#</a></dt>
+<dd><p>CGM signal measurement unit. Can be ‘mg/dL’ or ‘mmol/L’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="glucopy.Gframe.n_samples">
+<span class="sig-name descname"><span class="pre">n_samples</span></span><a class="headerlink" href="#glucopy.Gframe.n_samples" title="Link to this definition">#</a></dt>
+<dd><p>Number of samples in the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="glucopy.Gframe.n_days">
+<span class="sig-name descname"><span class="pre">n_days</span></span><a class="headerlink" href="#glucopy.Gframe.n_days" title="Link to this definition">#</a></dt>
+<dd><p>Number of days in the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="glucopy.Gframe.max">
+<span class="sig-name descname"><span class="pre">max</span></span><a class="headerlink" href="#glucopy.Gframe.max" title="Link to this definition">#</a></dt>
+<dd><p>Maximum value of the CGM signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="glucopy.Gframe.min">
+<span class="sig-name descname"><span class="pre">min</span></span><a class="headerlink" href="#glucopy.Gframe.min" title="Link to this definition">#</a></dt>
+<dd><p>Minimum value of the CGM signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>Creating a Gframe object from a pandas DataFrame:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">glucopy</span> <span class="k">as</span> <span class="nn">gp</span>
+
+<span class="gp">In [2]: </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="gp">In [3]: </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">:[</span><span class="s1">&#39;2020-01-01 12:00:00&#39;</span><span class="p">,</span><span class="s1">&#39;2020-01-01 12:05:00&#39;</span><span class="p">,</span><span class="s1">&#39;2020-01-01 12:10:00&#39;</span><span class="p">],</span>
+<span class="gp">   ...: </span>                   <span class="s1">&#39;CGM&#39;</span><span class="p">:[</span><span class="mi">100</span><span class="p">,</span><span class="mi">110</span><span class="p">,</span><span class="mi">120</span><span class="p">]})</span>
+<span class="gp">   ...: </span>
+
+<span class="gp">In [4]: </span><span class="n">gf</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">Gframe</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+<span class="gp">In [5]: </span><span class="n">gf</span>
+<span class="gh">Out[5]: </span>
+<span class="go">            Timestamp         Day      Time  CGM</span>
+<span class="go">0 2020-01-01 12:00:00  2020-01-01  12:00:00  100</span>
+<span class="go">1 2020-01-01 12:05:00  2020-01-01  12:05:00  110</span>
+<span class="go">2 2020-01-01 12:10:00  2020-01-01  12:10:00  120</span>
+</pre></div>
+</div>
+<p>Creating a Gframe object from a pandas DataFrame with extra columns:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">:[</span><span class="s1">&#39;2020-01-01 12:00:00&#39;</span><span class="p">,</span><span class="s1">&#39;2020-01-01 12:05:00&#39;</span><span class="p">,</span><span class="s1">&#39;2020-01-01 12:10:00&#39;</span><span class="p">],</span>
+<span class="gp">   ...: </span>                    <span class="s1">&#39;Extra&#39;</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span>
+<span class="gp">   ...: </span>                    <span class="s1">&#39;CGM&#39;</span><span class="p">:[</span><span class="mi">100</span><span class="p">,</span><span class="mi">110</span><span class="p">,</span><span class="mi">120</span><span class="p">]})</span>
+<span class="gp">   ...: </span>
+
+<span class="gp">In [7]: </span><span class="n">gf</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">Gframe</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">cgm_column</span><span class="o">=</span><span class="s1">&#39;CGM&#39;</span><span class="p">,</span> <span class="n">date_column</span><span class="o">=</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">)</span>
+
+<span class="gp">In [8]: </span><span class="n">gf</span>
+<span class="gh">Out[8]: </span>
+<span class="go">            Timestamp         Day      Time  CGM</span>
+<span class="go">0 2020-01-01 12:00:00  2020-01-01  12:00:00  100</span>
+<span class="go">1 2020-01-01 12:05:00  2020-01-01  12:05:00  110</span>
+<span class="go">2 2020-01-01 12:10:00  2020-01-01  12:10:00  120</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="glucopy.Gframe.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mg/dL'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cgm_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deigoodle/GlucoPy/tree/main/glucopy/../glucopy/classes/Gframe.py#L88"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#glucopy.Gframe.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#glucopy.Gframe.__init__" title="glucopy.Gframe.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([data, unit, date_column, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="glucopy.Gframe.adrr.html#glucopy.Gframe.adrr" title="glucopy.Gframe.adrr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">adrr</span></code></a>()</p></td>
+<td><p>Calculates the Average Daily Risk Range (ADRR).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="glucopy.Gframe.auc.html#glucopy.Gframe.auc" title="glucopy.Gframe.auc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">auc</span></code></a>([per_day, time_unit, threshold, above])</p></td>
+<td><p>Calculates the Area Under the Curve (AUC) using the trapezoidal rule.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="glucopy.Gframe.bgi.html#glucopy.Gframe.bgi" title="glucopy.Gframe.bgi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bgi</span></code></a>([per_day, index_type, maximum])</p></td>
+<td><p>Calculates the Low Blood Glucose Index (LBGI) or the High Blood Glucose Index (LBGI).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="glucopy.Gframe.conga.html#glucopy.Gframe.conga" title="glucopy.Gframe.conga"><code class="xref py py-obj docutils literal notranslate"><span class="pre">conga</span></code></a>([per_day, m, slack, ignore_na, ddof])</p></td>
+<td><p>Calculates the Continuous Overall Net Glycaemic Action (CONGA).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="glucopy.Gframe.convert_unit.html#glucopy.Gframe.convert_unit" title="glucopy.Gframe.convert_unit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_unit</span></code></a>([new_unit])</p></td>
+<td><p>Converts the unit of the CGM signal.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="glucopy.Gframe.cv.html#glucopy.Gframe.cv" title="glucopy.Gframe.cv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cv</span></code></a>([per_day, ddof])</p></td>
+<td><p>Calculates the Coefficient of Variation (CV) of the CGM values.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="glucopy.Gframe.dfa.html#glucopy.Gframe.dfa" title="glucopy.Gframe.dfa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dfa</span></code></a>([per_day, scale, overlap, integrate, ...])</p></td>
+<td><p>Calculates the Detrended Fluctuation Analysis (DFA) using neurokit2.fractal_dfa().</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="glucopy.Gframe.dt.html#glucopy.Gframe.dt" title="glucopy.Gframe.dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dt</span></code></a>([per_day])</p></td>
+<td><p>Calculates the Distance Travelled (DT).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="glucopy.Gframe.fd.html#glucopy.Gframe.fd" title="glucopy.Gframe.fd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fd</span></code></a>([per_day, interval, decimals, count])</p></td>
+<td><p>Calculates the Frequency Distribution (Fi) for a given target range of glucose.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="glucopy.Gframe.grade.html#glucopy.Gframe.grade" title="glucopy.Gframe.grade"><code class="xref py py-obj docutils literal notranslate"><span class="pre">grade</span></code></a>([percentage])</p></td>
+<td><p>Calculates the contributions of the Glycaemic Risk Assessment Diabetes Equation (GRADE) to Hypoglycaemia, Euglycaemia and Hyperglycaemia.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="glucopy.Gframe.gvp.html#glucopy.Gframe.gvp" title="glucopy.Gframe.gvp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gvp</span></code></a>()</p></td>
+<td><p>Calculates the Glucose Variability Percentage (GVP), with time in minutes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="glucopy.Gframe.hbgi.html#glucopy.Gframe.hbgi" title="glucopy.Gframe.hbgi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hbgi</span></code></a>([per_day, maximum])</p></td>
+<td><p>This is an alias for <a class="reference internal" href="glucopy.Gframe.bgi.html#glucopy.Gframe.bgi" title="glucopy.Gframe.bgi"><code class="xref py py-meth docutils literal notranslate"><span class="pre">glucopy.Gframe.bgi()</span></code></a> with <cite>index_type='h'</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="glucopy.Gframe.iqr.html#glucopy.Gframe.iqr" title="glucopy.Gframe.iqr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iqr</span></code></a>([per_day, interpolation])</p></td>
+<td><p>Calculates the Interquartile Range (IQR) of the CGM values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="glucopy.Gframe.lbgi.html#glucopy.Gframe.lbgi" title="glucopy.Gframe.lbgi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lbgi</span></code></a>([per_day, maximum])</p></td>
+<td><p>This is an alias for <a class="reference internal" href="glucopy.Gframe.bgi.html#glucopy.Gframe.bgi" title="glucopy.Gframe.bgi"><code class="xref py py-meth docutils literal notranslate"><span class="pre">glucopy.Gframe.bgi()</span></code></a> with <cite>index_type='l'</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="glucopy.Gframe.mag.html#glucopy.Gframe.mag" title="glucopy.Gframe.mag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mag</span></code></a>([per_day, time_unit])</p></td>
+<td><p>Calculates the Mean Absolute Glucose Change per unit of time (MAG).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="glucopy.Gframe.mage.html#glucopy.Gframe.mage" title="glucopy.Gframe.mage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mage</span></code></a>([per_day])</p></td>
+<td><p>Calculates the Mean Amplitude of Glycaemic Excursions (MAGE).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="glucopy.Gframe.mard.html#glucopy.Gframe.mard" title="glucopy.Gframe.mard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mard</span></code></a>(smbg_df[, slack, interpolate])</p></td>
+<td><p>Calculates the Mean Absolute Relative Difference (MARD).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="glucopy.Gframe.mean.html#glucopy.Gframe.mean" title="glucopy.Gframe.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean</span></code></a>([per_day])</p></td>
+<td><p>Calculates the mean of the CGM values.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="glucopy.Gframe.modd.html#glucopy.Gframe.modd" title="glucopy.Gframe.modd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modd</span></code></a>([target_time, slack, ignore_na])</p></td>
+<td><p>Calculates the Mean of Daily Differences (MODD).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="glucopy.Gframe.mse.html#glucopy.Gframe.mse" title="glucopy.Gframe.mse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mse</span></code></a>([per_day, scale, dimension, tolerance, ...])</p></td>
+<td><p>Calculates the Multiscale Sample Entropy using neurokit2.entropy_multiscale()</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="glucopy.Gframe.pcv.html#glucopy.Gframe.pcv" title="glucopy.Gframe.pcv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pcv</span></code></a>([per_day, ddof])</p></td>
+<td><p>Calculates the Percentage Coefficient of Variation (%CV) of the CGM values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="glucopy.Gframe.qscore.html#glucopy.Gframe.qscore" title="glucopy.Gframe.qscore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qscore</span></code></a>([slack])</p></td>
+<td><p>Calculates the Q-Score.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="glucopy.Gframe.quantile.html#glucopy.Gframe.quantile" title="glucopy.Gframe.quantile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">quantile</span></code></a>([per_day, q, interpolation])</p></td>
+<td><p>Calculates the quantile of the CGM values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="glucopy.Gframe.samp_en.html#glucopy.Gframe.samp_en" title="glucopy.Gframe.samp_en"><code class="xref py py-obj docutils literal notranslate"><span class="pre">samp_en</span></code></a>([per_day, delay, dimension, tolerance])</p></td>
+<td><p>Calculates the Sample Entropy using neurokit2.entropy_sample()</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="glucopy.Gframe.std.html#glucopy.Gframe.std" title="glucopy.Gframe.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">std</span></code></a>([per_day, ddof])</p></td>
+<td><p>Calculates the standard deviation of the CGM values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="glucopy.Gframe.summary.html#glucopy.Gframe.summary" title="glucopy.Gframe.summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">summary</span></code></a>([auc_time_unit, mag_time_unit, ...])</p></td>
+<td><p>Calculates a summary of the metrics for the entire dataset or for each day separately.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="glucopy.Gframe.tir.html#glucopy.Gframe.tir" title="glucopy.Gframe.tir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tir</span></code></a>([per_day, interval, percentage, decimals])</p></td>
+<td><p>Calculates the Time in Range (TIR) for a given target range of glucose.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../glucopy.Gframe.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Gframe</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="glucopy.Gframe.convert_unit.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">glucopy.Gframe.convert_unit</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#glucopy.Gframe"><code class="docutils literal notranslate"><span class="pre">Gframe</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#glucopy.Gframe.data"><code class="docutils literal notranslate"><span class="pre">Gframe.data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#glucopy.Gframe.unit"><code class="docutils literal notranslate"><span class="pre">Gframe.unit</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#glucopy.Gframe.n_samples"><code class="docutils literal notranslate"><span class="pre">Gframe.n_samples</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#glucopy.Gframe.n_days"><code class="docutils literal notranslate"><span class="pre">Gframe.n_days</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#glucopy.Gframe.max"><code class="docutils literal notranslate"><span class="pre">Gframe.max</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#glucopy.Gframe.min"><code class="docutils literal notranslate"><span class="pre">Gframe.min</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#glucopy.Gframe.__init__"><code class="docutils literal notranslate"><span class="pre">Gframe.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/api/glucopy.Gframe.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Diego Soto Castillo.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
